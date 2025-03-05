@@ -133,14 +133,14 @@ const App = () => {
   useEffect(() => {
     getPublicSetting("primaryColorLight")
       .then((color) => {
-        setPrimaryColorLight(color || "#0000FF");
+        setPrimaryColorLight(color || "#e17101");
       })
       .catch((error) => {
         console.log("Error reading setting", error);
       });
     getPublicSetting("primaryColorDark")
       .then((color) => {
-        setPrimaryColorDark(color || "#39ACE7");
+        setPrimaryColorDark(color || "#ff9f3f");
       })
       .catch((error) => {
         console.log("Error reading setting", error);
@@ -168,11 +168,11 @@ const App = () => {
       });
     getPublicSetting("appName")
       .then((name) => {
-        setAppName(name || "Multi100");
+        setAppName(name || "CRM Clique Responde");
       })
       .catch((error) => {
         console.log("Error reading setting", error);
-        setAppName("Multi100");
+        setAppName("CRM Clique Responde");
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

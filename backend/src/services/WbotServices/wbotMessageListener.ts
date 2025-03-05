@@ -50,7 +50,7 @@ import VerifyCurrentSchedule from "../CompanyService/VerifyCurrentSchedule";
 import Campaign from "../../models/Campaign";
 import CampaignShipping from "../../models/CampaignShipping";
 import { Op } from "sequelize";
-import { campaignQueue, parseToMilliseconds, randomValue } from "../../queues";
+import handleRandomUser, { campaignQueue, parseToMilliseconds, randomValue } from "../../queues";
 import User from "../../models/User";
 import { sayChatbot } from "./ChatBotListener";
 import MarkDeleteWhatsAppMessage from "./MarkDeleteWhatsAppMessage";
@@ -1401,6 +1401,7 @@ const verifyQueue = async (
   let randomUserId;
 
   if (choosenQueue) {
+    await handleRandomUser(choosenQueue)
     try {
       const userQueue = await ListUserQueueServices(choosenQueue.id);
 

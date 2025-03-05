@@ -47,6 +47,8 @@ import ScheduledMessages from "../models/ScheduledMessages";
 import ScheduledMessagesEnvio from "../models/ScheduledMessagesEnvio";
 import Versions from "../models/Versions";
 import QuickMessageComponent from "../models/QuickMessageComponent";
+import Rotations from "../models/Rotations"
+import RotationUsers from "../models/RotationUsers"
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -101,7 +103,9 @@ const models = [
   ScheduledMessages,
   ScheduledMessagesEnvio,
   Versions,
-  QuickMessageComponent
+  QuickMessageComponent,
+  Rotations,
+  RotationUsers
 ];
 
 sequelize.addModels(models);

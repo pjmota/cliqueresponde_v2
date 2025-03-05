@@ -81,8 +81,6 @@ const messages = {
           groups: "Grupos",
         },
         users: {
-
-
           name: "Nome",
           numberAppointments: "Quantidade de Atendimentos",
           statusNow: "Atual",
@@ -487,8 +485,7 @@ const messages = {
           text: "Horários de atendimento",
           add: "Adicionar fila",
           edit: "Editar fila",
-          confirmationDelete:
-            "Tem certeza? Todas as opções de integrações serão deletadas.",
+          confirmationDelete: "Tem certeza? Todas as opções de integrações serão deletadas.",
         },
         form: {
           name: "Nome",
@@ -534,6 +531,37 @@ const messages = {
           selectIntegration: "Selecione uma Integração",
           addOptions: "Adicionar opções",
         },
+        rotation:{
+          toolTipTitle: "Adicione opções para configurar rodízio",
+          toolTip:
+            "O rodízio seguirá a ordem configurada.",
+          title: {
+            add: "Adicionar roleta",
+            edit: "Editar roleta",
+            rotation: "Configurar rodízio"
+          },
+          form: {
+            lastSequence: "Última Sequência",
+            queueId: "Fila",
+            sequence: "Sequência",
+          },
+          buttons: {
+            okAdd: "Adicionar",
+            okEdit: "Salvar",
+            cancel: "Cancelar",
+          },
+          rotationOptions: {
+            id: "id",
+            user: "Usuário",
+            sequence: "Sequência",
+            actions: "Ações",
+            toasts: {
+              warning: "Selecione um usuário e uma sequência para salvar",
+              warningOption: "Finalize a configuração do usuário atual"
+            },
+          },
+          success: "Roleta salva com sucesso.",
+        },
         serviceHours: {
           dayWeek: "Dia da semana",
           startTimeA: "Hora Inicial - Turno A",
@@ -547,6 +575,28 @@ const messages = {
           friday: "Sexta-feira",
           saturday: "Sábado",
           sunday: "Domingo",
+        },
+        rotations: {
+          table: {
+            id: "ID",
+            lastSequence: "Última Sequência",
+            queueId: "Fila",
+            sequence: "Sequência",
+            queueName: "Nome Fila",
+            actions: "Ações",
+          },
+          buttons: {
+            add: "Adicionar roleta",
+          },
+          toasts: {
+            deleted: "Roleta excluída com sucesso.",
+          },
+          confirmationModal: {
+            name: "Roleta",
+            deleteTitle: "Excluir",
+            deleteMessage:
+              "Todos os dados da roleta serão perdidas. Deseja mesmo prosseguir com esta ação?.",
+          },
         },
       },
       queueIntegrationModal: {
@@ -1753,6 +1803,7 @@ const messages = {
         ERR_WAPP_GREETING_REQUIRED:
           "A mensagem de saudação é obrigatório quando há mais de uma fila.",
         ERR_OUT_OF_HOURS: "Fora do Horário de Expediente!",
+        ERR_CONFLICT_ROTATIONUSERS_FOUND: "Já existe um usuário com essa sequência cadastrada. É necessário trocar a sequência."
       },
     },
   },

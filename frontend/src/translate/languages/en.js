@@ -155,8 +155,12 @@ const messages = {
 			},
 			queueModal: {
 				title: {
+					queueData: "Queue data",
+          text: "Opening hours",
 					add: "Add queue",
 					edit: "Edit queue",
+					confirmationDelete: "He is sure? All integration options will be deleted.",
+          rotation: "Configure rotation"
 				},
 				form: {
 					name: "Name",

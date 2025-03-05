@@ -41,6 +41,8 @@ import companySettingsRoutes from "./companySettingsRoutes";
 import promptRoutes from "./promptRouter";
 import statisticsRoutes from "./statisticsRoutes";
 import scheduleMessageRoutes from "./ScheduledMessagesRoutes";
+import rotationsRoutes from "./rotationsRoutes";
+import rotationUsersRoutes from "./rotationUsersRoute";
 
 const routes = Router();
 
@@ -86,4 +88,6 @@ routes.use(promptRoutes);
 routes.use(statisticsRoutes);
 routes.use(companySettingsRoutes);
 routes.use(scheduleMessageRoutes);
+routes.use(rotationsRoutes);
+routes.use(rotationUsersRoutes);
 export default routes;

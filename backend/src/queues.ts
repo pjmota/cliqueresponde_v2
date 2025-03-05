@@ -41,6 +41,7 @@ import TicketTag from "./models/TicketTag";
 import Tag from "./models/Tag";
 import { delay } from "@whiskeysockets/baileys";
 import Plan from "./models/Plan";
+import UpdateUserService from "./services/RotationsService/UpdateService";
 
 const connection = process.env.REDIS_URI || "";
 const limiterMax = process.env.REDIS_OPT_LIMITER_MAX || 1;
@@ -1284,185 +1285,260 @@ async function handleVerifyQueue(job) {
   }
 };
 
-async function handleRandomUser() {
-  // logger.info("Iniciando a randomização dos atendimentos...");
-
+export default async function handleRandomUser(param?) {
+ logger.info("Iniciando a randomização dos atendimentos...");
+  if(param) {
+    setTimeout(async () => {
+      await executing();
+    }, 2000);
+  }
   const jobR = new CronJob('0 */2 * * * *', async () => {
+    await executing();
+  });
 
-    try {
-      const companies = await Company.findAll({
-        attributes: ['id', 'name'],
-        where: {
-          status: true
-        },
-        include: [
-          {
-            model: Queues,
-            attributes: ["id", "name", "ativarRoteador", "tempoRoteador"],
-            where: {
-              ativarRoteador: true,
-              tempoRoteador: {
-                [Op.ne]: 0
-              }
+  jobR.start();
+}
+
+const executing = async () => {
+  logger.info("Iniciando a randomização dos atendimentos parte 2...");
+  let getNextUserId: () => number | undefined = undefined;
+  try {
+    const companies = await Company.findAll({
+      attributes: ['id', 'name'],
+      where: {
+        status: true
+      },
+      include: [
+        {
+          model: Queues,
+          attributes: ["id", "name", "ativarRoteador", "tempoRoteador"],
+          where: {
+            ativarRoteador: true,
+            tempoRoteador: {
+              [Op.ne]: 0
             }
-          },
-        ]
-      });
+          }
+        },
+      ]
+    });
 
-      if (companies) {
-        companies.map(async c => {
-          c.queues.map(async q => {
-            const { count, rows: tickets } = await Ticket.findAndCountAll({
-              where: {
-                companyId: c.id,
-                status: "pending",
-                queueId: q.id,
-              },
-            });
+    if (companies) {
+      companies.map(async c => {
+        c.queues.map(async q => {
+          const { count, rows: tickets } = await Ticket.findAndCountAll({
+            where: {
+              companyId: c.id,
+              status: "pending",
+              queueId: q.id,
+            },
+          });
 
-            //logger.info(`Localizado: ${count} filas para randomização.`);
+          //logger.info(`Localizado: ${count} filas para randomização.`);
 
-            const getRandomUserId = (userIds) => {
-              const randomIndex = Math.floor(Math.random() * userIds.length);
-              return userIds[randomIndex];
+          const getRandomUserId = (userIds) => {
+            const randomIndex = Math.floor(Math.random() * userIds.length);
+            return userIds[randomIndex];
+          };
+
+          const createSequentialUserIdGenerator: (userIds: number[]) => () => number = (userIds) => {
+            let currentIndex = -1;
+            return () => {
+              currentIndex++;
+              if (currentIndex >= userIds.length) {
+                currentIndex = 0;
+              }
+              return userIds[currentIndex];
             };
+          };
 
-            // Function to fetch the User record by userId
-            const findUserById = async (userId, companyId) => {
-              try {
-                const user = await User.findOne({
-                  where: {
-                    id: userId,
-                    companyId
-                  },
-                });
 
-                if (user && user?.profile === "user") {
-                  if (user.online === true) {
-                    return user.id;
-                  } else {
-                    // logger.info("USER OFFLINE");
-                    return 0;
-                  }
+
+          // Function to fetch the User record by userId
+          const findUserById = async (userId, companyId, rotationUsers?) => {
+            try {
+              const user = await User.findOne({
+                where: {
+                  id: userId,
+                  companyId
+                },
+                //logging: console.log
+              });
+
+              if (user && user?.profile === "user") {
+                if (user.online === true) {
+                  return user.id;
+                } else if (rotationUsers) {
+                  return user.id;
                 } else {
-                  // logger.info("ADMIN");
+                  // logger.info("USER OFFLINE");
                   return 0;
                 }
-
-              } catch (errorV) {
-                Sentry.captureException(errorV);
-                logger.error("SearchForUsersRandom -> VerifyUsersRandom: error", errorV.message);
-                throw errorV;
+              } else {
+                // logger.info("ADMIN");
+                return 0;
               }
-            };
 
-            if (count > 0) {
-              for (const ticket of tickets) {
-                const { queueId, userId } = ticket;
-                const tempoRoteador = q.tempoRoteador;
-                // Find all UserQueue records with the specific queueId
-                const userQueues = await UserQueue.findAll({
-                  where: {
-                    queueId: queueId,
-                  },
-                });
+            } catch (errorV) {
+              Sentry.captureException(errorV);
+              logger.error("SearchForUsersRandom -> VerifyUsersRandom: error", errorV.message);
+              throw errorV;
+            }
+          };
 
-                const contact = await ShowContactService(ticket.contactId, ticket.companyId);
+          
 
-                // Extract the userIds from the UserQueue records
-                const userIds = userQueues.map((userQueue) => userQueue.userId);
+          if (count > 0) {
+            for (const ticket of tickets) {
+              const { queueId, userId } = ticket;
+              const tempoRoteador = q.tempoRoteador;
+              // Find all UserQueue records with the specific queueId
+              const userQueues = await UserQueue.findAll({
+                where: {
+                  queueId: queueId,
+                },
+              });
 
-                const tempoPassadoB = moment().subtract(tempoRoteador, "minutes").utc().toDate();
-                const updatedAtV = new Date(ticket.updatedAt);
+              const contact = await ShowContactService(ticket.contactId, ticket.companyId);
 
-                let settings = await CompaniesSettings.findOne({
-                  where: {
-                    companyId: ticket.companyId
+              // Extract the userIds from the UserQueue records
+              const userIds = userQueues.map((userQueue) => userQueue.userId);
+
+              const tempoPassadoB = moment().subtract(tempoRoteador, "minutes").utc().toDate();
+
+
+              const updatedAtV = new Date(ticket.updatedAt);
+
+              let settings = await CompaniesSettings.findOne({
+                where: {
+                  companyId: ticket.companyId
+                }
+              });
+              const sendGreetingMessageOneQueues = settings.sendGreetingMessageOneQueues === "enabled" || false;
+
+              const rotationUsers = await sequelize.query(
+                `
+                  select
+                    ru."userId",
+                    ru."sequence",
+                    ru."rotationId",
+                    r."lastSequence"
+                  from "RotationUsers" ru
+                    left join "Rotations" r on r.id = ru."rotationId"
+                  where r."companyId" = ${ticket.companyId}
+                `,
+              {
+                type: QueryTypes.SELECT,
+                //logging:console.log
+              }
+
+            );
+
+              if (!userId && !rotationUsers) {
+
+
+                // ticket.userId is null, randomly select one of the provided userIds
+                const randomUserId = getRandomUserId(userIds);
+
+
+                if (randomUserId !== undefined && await findUserById(randomUserId, ticket.companyId) > 0) {
+                  // Update the ticket with the randomly selected userId
+                  //ticket.userId = randomUserId;
+                  //ticket.save();
+
+                  if (sendGreetingMessageOneQueues) {
+                    const ticketToSend = await ShowTicketService(ticket.id, ticket.companyId);
+
+                    await SendWhatsAppMessage({ body: `\u200e *Assistente Virtual*:\nAguarde enquanto localizamos um atendente... Você será atendido em breve!`, ticket: ticketToSend });
+
                   }
-                });
-                const sendGreetingMessageOneQueues = settings.sendGreetingMessageOneQueues === "enabled" || false;
 
-                if (!userId) {
-                  // ticket.userId is null, randomly select one of the provided userIds
-                  const randomUserId = getRandomUserId(userIds);
+                  await UpdateTicketService({
+                    ticketData: { status: "pending", userId: randomUserId },
+                    ticketId: ticket.id,
+                    companyId: ticket.companyId,
 
+                  });
 
-                  if (randomUserId !== undefined && await findUserById(randomUserId, ticket.companyId) > 0) {
-                    // Update the ticket with the randomly selected userId
-                    //ticket.userId = randomUserId;
-                    //ticket.save();
+                  //await ticket.reload();
+                  logger.info(`Ticket ID ${ticket.id} atualizado para UserId ${randomUserId} - ${ticket.updatedAt}`);
+                } else {
+                  //logger.info(`Ticket ID ${ticket.id} NOT updated with UserId ${randomUserId} - ${ticket.updatedAt}`);            
+                }
 
-                    if (sendGreetingMessageOneQueues) {
-                      const ticketToSend = await ShowTicketService(ticket.id, ticket.companyId);
+              } else /* if (userIds.includes(userId)) */ {
 
-                      await SendWhatsAppMessage({ body: `\u200e *Assistente Virtual*:\nAguarde enquanto localizamos um atendente... Você será atendido em breve!`, ticket: ticketToSend });
+                if (tempoPassadoB > updatedAtV) {
+                  // ticket.userId is present and is in userIds, exclude it from random selection
 
-                    }
+                  //const availableUserIds = userIds.filter((id) => id !== userId);
+                  const availableUserIds = rotationUsers ? rotationUsers.filter((e: any) => e.sequence !== e.lastSequence).map((item: any) => item.userId) : userIds.filter((id) => id !== userId);
 
-                    await UpdateTicketService({
-                      ticketData: { status: "pending", userId: randomUserId },
-                      ticketId: ticket.id,
-                      companyId: ticket.companyId,
-
-                    });
-
-                    //await ticket.reload();
-                    logger.info(`Ticket ID ${ticket.id} atualizado para UserId ${randomUserId} - ${ticket.updatedAt}`);
-                  } else {
-                    //logger.info(`Ticket ID ${ticket.id} NOT updated with UserId ${randomUserId} - ${ticket.updatedAt}`);            
+                  if (!getNextUserId || availableUserIds.length !== rotationUsers.length) {
+                    getNextUserId = createSequentialUserIdGenerator(availableUserIds);
                   }
 
-                } else if (userIds.includes(userId)) {
-                  if (tempoPassadoB > updatedAtV) {
-                    // ticket.userId is present and is in userIds, exclude it from random selection
-                    const availableUserIds = userIds.filter((id) => id !== userId);
 
-                    if (availableUserIds.length > 0) {
-                      // Randomly select one of the remaining userIds
-                      const randomUserId = getRandomUserId(availableUserIds);
+                  if (availableUserIds.length > 0) {
+                    // Randomly select one of the remaining userIds
+                    const randomUserId = rotationUsers ? getNextUserId() : getRandomUserId(availableUserIds);
 
-                      if (randomUserId !== undefined && await findUserById(randomUserId, ticket.companyId) > 0) {
-                        // Update the ticket with the randomly selected userId
-                        //ticket.userId = randomUserId;
-                        //ticket.save();
+                    if (randomUserId !== undefined && await findUserById(randomUserId, ticket.companyId, rotationUsers) > 0) {
+                      // Update the ticket with the randomly selected userId
+                      //ticket.userId = randomUserId;
+                      //ticket.save();
 
-                        if (sendGreetingMessageOneQueues) {
+                      if (sendGreetingMessageOneQueues && !rotationUsers) {
 
-                          const ticketToSend = await ShowTicketService(ticket.id, ticket.companyId);
-                          await SendWhatsAppMessage({ body: "*Assistente Virtual*:\nAguarde enquanto localizamos um atendente... Você será atendido em breve!", ticket: ticketToSend });
-                        };
+                        const ticketToSend = await ShowTicketService(ticket.id, ticket.companyId);
+                        await SendWhatsAppMessage({ body: "*Assistente Virtual*:\nAguarde enquanto localizamos um atendente... Você será atendido em breve!", ticket: ticketToSend });
+                      };
 
+                      if(rotationUsers && !ticket.userId) {
+                        await UpdateTicketService({
+                          ticketData: { status: "pending", userId: randomUserId },
+                          ticketId: ticket.id,
+                          companyId: ticket.companyId,
+                        });
+
+                        const data: any = rotationUsers.filter((e: any) => e.userId === randomUserId )
+                        const rotationData = {
+                          lastSequence: Number(data[0].sequence)
+                        }
+
+                        await UpdateUserService({rotationData, id: data[0].rotationId});
+
+                        logger.info(`Ticket ID ${ticket.id} atualizado para UserId ${randomUserId} - ${ticket.updatedAt}`);
+                      } else if(!rotationUsers) {
                         await UpdateTicketService({
                           ticketData: { status: "pending", userId: randomUserId },
                           ticketId: ticket.id,
                           companyId: ticket.companyId,
 
                         });
-
                         logger.info(`Ticket ID ${ticket.id} atualizado para UserId ${randomUserId} - ${ticket.updatedAt}`);
-                      } else {
-                        //logger.info(`Ticket ID ${ticket.id} NOT updated with UserId ${randomUserId} - ${ticket.updatedAt}`);            
                       }
 
+
+                    } else {
+                      //logger.info(`Ticket ID ${ticket.id} NOT updated with UserId ${randomUserId} - ${ticket.updatedAt}`);            
                     }
+
                   }
                 }
-
               }
+
             }
-          })
+          }
         })
-      }
-    } catch (e) {
-      Sentry.captureException(e);
-      logger.error("SearchForUsersRandom -> VerifyUsersRandom: error", e.message);
-      throw e;
+      })
     }
-
-  });
-
-  jobR.start();
+  } catch (e) {
+    Sentry.captureException(e);
+    logger.error("SearchForUsersRandom -> VerifyUsersRandom: error", e.message);
+    throw e;
+  }
 }
+
 
 async function handleProcessLanes() {
   const job = new CronJob('*/1 * * * *', async () => {

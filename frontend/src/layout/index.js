@@ -268,7 +268,7 @@ const LoggedInLayout = ({ children, themeToggle }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const { handleLogout, loading } = useContext(AuthContext);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(true);
   const [drawerVariant, setDrawerVariant] = useState("permanent");
   // const [dueDate, setDueDate] = useState("");
   //   const socketManager = useContext(SocketContext);
@@ -320,6 +320,7 @@ const LoggedInLayout = ({ children, themeToggle }) => {
 
     const companyId = user.companyId;
     const userId = user.id;
+
     if (companyId) {
       //    const socket = socketManager.GetSocket();
 
@@ -526,7 +527,7 @@ const LoggedInLayout = ({ children, themeToggle }) => {
               onClick={handleMenu}
             >
               <Avatar
-                alt="Multi100"
+                alt={user.name}
                 className={classes.avatar2}
                 src={profileUrl}
               />
