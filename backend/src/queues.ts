@@ -1471,12 +1471,27 @@ const executing = async () => {
                   // ticket.userId is present and is in userIds, exclude it from random selection
 
                   //const availableUserIds = userIds.filter((id) => id !== userId);
-                  const availableUserIds = rotationUsers ? rotationUsers.filter((e: any) => e.sequence !== e.lastSequence).map((item: any) => item.userId) : userIds.filter((id) => id !== userId);
+
+                  const availableUserIds = rotationUsers ? 
+                  (() => {
+                    const orderedUsers: any = [...rotationUsers]; // Clona o array para evitar mutação
+                    const lastSeq = orderedUsers[0]?.lastSequence; // Pega o lastSequence do primeiro item (assumindo que todos têm o mesmo valor)
+                    
+                    if (lastSeq !== undefined) {
+                      // Ordena os elementos circularmente
+                      const startIndex = orderedUsers.findIndex(e => e.sequence === lastSeq) + 1;
+                      const sortedUsers = [...orderedUsers.slice(startIndex), ...orderedUsers.slice(0, startIndex)];
+                      
+                      return sortedUsers.map(user => user.userId);
+                    }
+              
+                    return [];
+                  })()
+                  : userIds.filter((id) => id !== userId);
 
                   if (!getNextUserId || availableUserIds.length !== rotationUsers.length) {
                     getNextUserId = createSequentialUserIdGenerator(availableUserIds);
                   }
-
 
                   if (availableUserIds.length > 0) {
                     // Randomly select one of the remaining userIds
