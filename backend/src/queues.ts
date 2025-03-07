@@ -292,12 +292,10 @@ async function handleSendScheduledMessage(job) {
       // Realizar a soma da data com base no intervalo e valor do intervalo
       let novaData = new Date(dataExistente); // Clone da data existente para não modificar a original
 
-      console.log(unidadeIntervalo)
       if (unidadeIntervalo !== "minuts") {
         novaData.setDate(novaData.getDate() + schedule.valorIntervalo * (unidadeIntervalo === 'days' ? 1 : unidadeIntervalo === 'weeks' ? 7 : 30));
       } else {
         novaData.setMinutes(novaData.getMinutes() + Number(schedule.valorIntervalo));
-        console.log(novaData)
       }
 
       if (schedule.tipoDias === 5 && !isDiaUtil(novaData)) {
@@ -1285,21 +1283,41 @@ async function handleVerifyQueue(job) {
   }
 };
 
-export default async function handleRandomUser(param?) {
- logger.info("Iniciando a randomização dos atendimentos...");
+export default async function handleRandomUser(param?, ticketId?) {
+
+  interface WhatsappQueue {
+    whatsappId: number;
+    queueId: number;
+    createdAt: string;
+    updatedAt: string;
+  }
+  
+  interface ParamType {
+    id: number;
+    name: string;
+    color: string;
+    greetingMessage: string;
+    integrationId: number | null;
+    fileListId: number | null;
+    closeTicket: boolean;
+    chatbots: any[]; // Pode ser mais específico se souber a estrutura
+    WhatsappQueue?: WhatsappQueue; // Opcional para evitar erro se for undefined
+  }
+
+  const queue = param?.WhatsappQueue.queueId as ParamType;
   if(param) {
     setTimeout(async () => {
-      await executing();
+      await executing(queue, ticketId);
     }, 2000);
   }
-  const jobR = new CronJob('0 */2 * * * *', async () => {
-    await executing();
-  });
+  // const jobR = new CronJob('*/10 * * * * *', async () => {
+  //   await executing();
+  // });
 
-  jobR.start();
+  // jobR.start();
 }
 
-const executing = async () => {
+const executing = async (queue, ticketId?) => {
   logger.info("Iniciando a randomização dos atendimentos parte 2...");
   let getNextUserId: () => number | undefined = undefined;
   try {
@@ -1388,7 +1406,7 @@ const executing = async () => {
           
 
           if (count > 0) {
-            for (const ticket of tickets) {
+            for (const ticket of tickets.filter(e => e.id === ticketId)) {
               const { queueId, userId } = ticket;
               const tempoRoteador = q.tempoRoteador;
               // Find all UserQueue records with the specific queueId
@@ -1424,7 +1442,8 @@ const executing = async () => {
                     r."lastSequence"
                   from "RotationUsers" ru
                     left join "Rotations" r on r.id = ru."rotationId"
-                  where r."companyId" = ${ticket.companyId}
+                  where r."companyId" = ${ticket.companyId} and r."queueId" = ${queue}
+                  order by ru."sequence" asc
                 `,
               {
                 type: QueryTypes.SELECT,
@@ -1472,11 +1491,13 @@ const executing = async () => {
 
                   //const availableUserIds = userIds.filter((id) => id !== userId);
 
+                          
                   const availableUserIds = rotationUsers ? 
                   (() => {
                     const orderedUsers: any = [...rotationUsers]; // Clona o array para evitar mutação
-                    const lastSeq = orderedUsers[0]?.lastSequence; // Pega o lastSequence do primeiro item (assumindo que todos têm o mesmo valor)
                     
+                    const lastSeq = orderedUsers[0]?.lastSequence; // Pega o lastSequence do primeiro item (assumindo que todos têm o mesmo valor)
+                
                     if (lastSeq !== undefined) {
                       // Ordena os elementos circularmente
                       const startIndex = orderedUsers.findIndex(e => e.sequence === lastSeq) + 1;
@@ -1519,8 +1540,10 @@ const executing = async () => {
                         const rotationData = {
                           lastSequence: Number(data[0].sequence)
                         }
-
+                        
                         await UpdateUserService({rotationData, id: data[0].rotationId});
+                        if(ticket.id === ticketId) {
+                        }
 
                         logger.info(`Ticket ID ${ticket.id} atualizado para UserId ${randomUserId} - ${ticket.updatedAt}`);
                       } else if(!rotationUsers) {

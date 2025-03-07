@@ -4,7 +4,8 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import Typography from "@material-ui/core/Typography";
-import { Button, IconButton, StepContent, TextField, MenuItem } from "@material-ui/core";
+import { Button, IconButton, StepContent, TextField, MenuItem, Box } from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
 import { Field } from "formik";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
@@ -39,128 +40,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function RotationOptions({ rotationId, setRotationUser, setSavedOptions, queueId }) {
-  const { users } = useUsers(999999);
-  const classes = useStyles();
-  const [options, setOptions] = useState([]);
-  const [paramsRotationUsers, setParamsRotationUsers] = useState([]);
-  const [user, setUser] = useState([]);
-
-  const [redefineRotationId, setRedefineRotationId] = useState(null);
-
-  const userConnected = useAuth();
-
-  // const [roule, setOptions] = useState([]);
-
-  useEffect(() => {
-    if (rotationId) {
-      const fetchOptions = async () => {
-        try {
-          let optionsList = []
-          const { data } = await api.get(`/rotations?rotationId=${rotationId}`);
-
-          const rotationUsers = await api.get(`/rotationUsers`, {
-            params: {
-              rotationId
-            }
-          });
-
-          for (let i=0; i < rotationUsers.data.rotationUsers.length; i++) {
-            const options = {
-              userId: 1
-            }
-            const user = await handleGetUser(rotationUsers.data.rotationUsers[i])
-
-            optionsList.push({
-              ...data.rotations[0],
-              userId: user.id,
-              user: user.name,
-              sequence: 1,
-              edition: false,
-              option: options.length + 1,
-              rotationId,
-              parentId: null,
-              children: [],
-            })
-          }
-
-          setOptions(optionsList);
-          setParamsRotationUsers(rotationUsers.data.rotationUsers);
-        } catch (e) {
-          toastError(e);
-        }
-      };
-      fetchOptions();
-    }
-  }, []);
-
-  useEffect(() => {
-    setUser(users)
-  }, [users]);
-
-  const renderStepper = () => {
-    if (options.length > 0) {
-      return (
-        <RotationOptionStepper
-          rotationId={rotationId}
-          updateOptions={updateOptions}
-          options={options}
-          users={user}
-          setRotationUser={setRotationUser}
-          setSavedOptions={setSavedOptions}
-          setRedefineRotationId={setRedefineRotationId}
-          redefineRotationId={redefineRotationId}
-          queueId={queueId}
-          paramsRotationUsers={paramsRotationUsers}
-        />
-      );
-    }
-  };
-
-  const updateOptions = () => {
-    setOptions([...options]);
-  };
-
-  const addOption = () => {
-    const validOptions = options.find((value) => {
-      return value.user.length === 0
-    })
-
-    if (validOptions) return toast(`${i18n.t("queueModal.rotation.rotationOptions.toasts.warningOption")}`)
-    const newOption = {
-      user: "",
-      userId: "",
-      sequence: "",
-      edition: false,
-      option: options.length + 1,
-      rotationId,
-      parentId: null,
-      children: [],
-    };
-    setOptions([...options, newOption]);
-  };
-
-  return (
-    <div className={classes.root}>
-      <br />
-      <Typography>
-        Usuário
-        <Button
-          color="primary"
-          size="small"
-          onClick={addOption}
-          startIcon={<AddIcon />}
-          style={{ marginLeft: 10 }}
-          variant="outlined"
-        >
-          Adicionar
-        </Button>
-      </Typography>
-      {renderStepper()}
-    </div>
-  );
-}
-
 export const handleGetUser = async (option) => {
   if (!option.userId) return
   const userId = Number(option.userId)
@@ -177,12 +56,13 @@ export function RotationOptionStepper({
   options, 
   updateOptions, 
   users, 
-  setRotationUser, 
-  setSavedOptions,
+  setRotationUser,
   queueId,
   setRedefineRotationId,
   redefineRotationId,
-  paramsRotationUsers
+  paramsRotationUsers,
+  setIndexEdit,
+  indexEdit
 }) {
   const classes = useStyles();
   const [activeOption, setActiveOption] = useState(-1);
@@ -191,16 +71,19 @@ export function RotationOptionStepper({
     const option = options[index];
     if (option !== undefined && option.id !== undefined) {
       try {
-        const { data } = await api.request({
-          url: "/rotations",
-          method: "GET",
-          params: { rotationId, parentId: option.id },
-        });
+        const { data } = await api.get(`/rotationUsers`, {
+          params: {
+            rotationId: option.id,
+            userId: option.userId
+          }
+        })
+        /* const rotationUsers = await api.get(`/rotationUsers`, {
+          params: {
+            rotationId: data.rotations[0].id
+          }
+        }) */
 
-        const options = {
-          userId: 1
-        }
-        const user = await handleGetUser(options)
+        const user = await handleGetUser(option)
 
         /* optionsList.push({
           ...data.rotations[0],
@@ -214,7 +97,8 @@ export function RotationOptionStepper({
           children: [],
         }) */
 
-        const optionList = data.rotations.map((option) => {
+
+        const optionList = data.rotationUsers.map((option) => {
           return {
             ...option,
             userId: user.id,
@@ -239,16 +123,14 @@ export function RotationOptionStepper({
     try {
       if (!option.userId || !option.sequence) toast(`${i18n.t("queueModal.rotation.rotationOptions.toasts.warning")}`);
       if (option.id && option.updatedAt) {
-
         option.userId = Number(option.userId)
         option.sequence = Number(option.sequence)
 
-        await api.put(`/rotations/${option.id}`, { option });
+        await api.put(`/rotations/${option.id}`, { ...option });
 
         const user = await handleGetUser(option)
         option.user = user.name
       } else {
-
         option.queueId = queueId;
         const user = await handleGetUser(option)
         option.user = user.name
@@ -269,7 +151,6 @@ export function RotationOptionStepper({
       }
 
       option.edition = false;
-      setSavedOptions(true)
       updateOptions();
     } catch (e) {
       const errorMsg = e.response?.data?.error;
@@ -278,14 +159,13 @@ export function RotationOptionStepper({
   };
 
   const handleEdition = (index) => {
-    setSavedOptions(false)
     options[index].edition = !options[index].edition;
     options[index].rotationId = redefineRotationId ?? rotationId;
     updateOptions();
+    setIndexEdit(index)
   };
 
   const handleDeleteOption = async (index) => {
-//paramsRotationUsers
     const option = options[index];
     const deleteRotationUserId = paramsRotationUsers.filter(e => e.userId === option.userId).map(e => e.id)
 
@@ -318,44 +198,72 @@ export function RotationOptionStepper({
   };
 
   const renderUserId = (index) => {
-
     const option = options[index];
     if (option.edition) {
       return (
         <>
-          <Select
+          {/* <Select
             style={{width: '70%'}}
             value={option.userId}
             onChange={(event) => handleOptionChangeUserId(event, index)}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: 250, // Altura máxima da lista para ativar o scroll
+                  overflowY: "auto", // Habilita o scroll vertical
+                },
+              },
+            }}
           >
             { users.map((user, index) => {
               return <MenuItem value={user.id} key={index}>{ user.name }</MenuItem>
             })}
-          </Select>
-          {option.edition && (
-            <>
-              <IconButton
-                color="primary"
-                variant="outlined"
-                size="small"
-                className={classes.button}
-                onClick={() => {
-                  handleSave(option)
-                }}
-              >
-                <SaveIcon />
-              </IconButton>
-              <IconButton
-                variant="outlined"
-                color="secondary"
-                size="small"
-                className={classes.button}
-                onClick={() => handleDeleteOption(index)}
-              >
-                <DeleteOutlineIcon />
-              </IconButton>
-            </>
-          )}
+          </Select> */}
+          <Box display={'flex'}>
+            <Autocomplete
+              debug
+              style={{ width: "70%" }}
+              options={users} // Lista de usuários
+              getOptionLabel={(user) => user.name} // Define o texto exibido
+              value={users.find((user) => user.id === option.userId) || null} // Mantém o valor selecionado
+              onChange={(event, newValue) => {
+                const fakeEvent = { target: { value: newValue ? newValue.id : "" } };
+                handleOptionChangeUserId(fakeEvent, index);
+              }}
+              renderInput={(params) => (
+                <TextField {...params} label="Selecione um usuário" margin="normal" />
+              )}
+              renderOption={(user) => (
+                <MenuItem key={user.id} value={user.id}>
+                  {user.name}
+                </MenuItem>
+              )}
+            />
+            {option.edition && (
+              <>
+                <IconButton
+                  color="primary"
+                  variant="outlined"
+                  size="small"
+                  className={classes.button}
+                  onClick={() => {
+                    handleSave(option)
+                  }}
+                >
+                  <SaveIcon />
+                </IconButton>
+                <IconButton
+                  variant="outlined"
+                  color="secondary"
+                  size="small"
+                  className={classes.button}
+                  onClick={() => handleDeleteOption(index)}
+                >
+                  <DeleteOutlineIcon />
+                </IconButton>
+              </>
+            )}
+          </Box>
         </>
       );
     }
@@ -378,19 +286,30 @@ export function RotationOptionStepper({
 
   const renderSequence = (index) => {
     const option = options[index];
+    console.log('options', options.length)
     if (option.edition) {
       return (
         <>
           <Field
             as={TextField}
             type="number"
-            style={{ width: "90%" }}
+            style={{ width: "72%" }}
             // multiline
             value={option.sequence}
-            onChange={(event) => handleOptionChangeSequence(event, index)}
+            onChange={(event) => {
+              const value = Number(event.target.value);
+              // Verifica se o valor é um número válido e se está dentro do intervalo
+              if (!isNaN(value) && value >= 0 && value < options.length) {
+                handleOptionChangeSequence(event, index);
+              }
+            }}
             size="small"
             className={classes.input}
             placeholder="Sequência"
+            inputProps={{
+              max: options.length,
+              min: 0
+            }}
           />
         </>
       );
@@ -469,4 +388,126 @@ export function RotationOptionStepper({
   };
 
   return renderStepper();
+}
+
+export function RotationOptions({ rotationId, setRotationUser, queueId }) {
+
+  const { users } = useUsers(999999);
+  const classes = useStyles();
+  const [options, setOptions] = useState([]);
+  const [paramsRotationUsers, setParamsRotationUsers] = useState([]);
+  const [user, setUser] = useState([]);
+  const [userRotaion, setUsersRotation] = useState([]);
+
+  const [redefineRotationId, setRedefineRotationId] = useState(null);
+  const [indexEdit, setIndexEdit] = useState(null);
+
+  // const [roule, setOptions] = useState([]);
+
+  useEffect(() => {
+
+    if (rotationId) {
+      const fetchOptions = async () => {
+        try {
+          let optionsList = []
+          const { data } = await api.get(`/rotations/${rotationId}`);
+          const rotationUsers = await api.get(`/rotationUsers`, {
+            params: {
+              rotationId
+            }
+          });
+
+          for (let i=0; i < rotationUsers.data.rotationUsers.length; i++) {
+            const user = await handleGetUser(rotationUsers.data.rotationUsers[i])
+            const params = {
+              ...data,
+              userId: user.id,
+              user: user.name,
+              sequence: rotationUsers.data.rotationUsers[i].sequence,
+              edition: false,
+              option: options.length + 1,
+              rotationId,
+              parentId: null,
+              children: [],
+            }
+            optionsList.push(params)
+          }
+
+          setOptions(optionsList);
+          setParamsRotationUsers(rotationUsers.data.rotationUsers);
+        } catch (e) {
+          toastError(e);
+        }
+      };
+      fetchOptions();
+    }
+  }, []);
+
+  useEffect(() => {
+    setUser(users)
+  }, [users]);
+
+  const renderStepper = () => {
+    if (options.length > 0) {
+      return (
+        <RotationOptionStepper
+          rotationId={rotationId}
+          updateOptions={updateOptions}
+          options={options}
+          users={user}
+          setRotationUser={setRotationUser}
+          setRedefineRotationId={setRedefineRotationId}
+          redefineRotationId={redefineRotationId}
+          queueId={queueId}
+          paramsRotationUsers={paramsRotationUsers}
+          setIndexEdit={setIndexEdit}
+          indexEdit={indexEdit}
+        />
+      );
+    }
+  };
+
+  const updateOptions = () => {
+    setOptions([...options]);
+  };
+
+  const addOption = () => {
+    const validOptions = options.find((value) => {
+      return value.user.length === 0
+    })
+
+    if (validOptions) return toast(`${i18n.t("queueModal.rotation.rotationOptions.toasts.warningOption")}`)
+    const newOption = {
+      user: "",
+      userId: "",
+      sequence: "",
+      edition: false,
+      option: options.length + 1,
+      rotationId,
+      parentId: null,
+      children: [],
+    };
+
+    setOptions([...options, newOption]);
+  };
+
+  return (
+    <div className={classes.root}>
+      <br />
+      <Typography>
+        Usuário
+        <Button
+          color="primary"
+          size="small"
+          onClick={addOption}
+          startIcon={<AddIcon />}
+          style={{ marginLeft: 10 }}
+          variant="outlined"
+        >
+          Adicionar
+        </Button>
+      </Typography>
+      {renderStepper()}
+    </div>
+  );
 }

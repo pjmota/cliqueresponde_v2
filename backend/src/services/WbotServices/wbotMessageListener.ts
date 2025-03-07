@@ -1401,7 +1401,7 @@ const verifyQueue = async (
   let randomUserId;
 
   if (choosenQueue) {
-    await handleRandomUser(choosenQueue)
+    await handleRandomUser(choosenQueue, ticket.id)
     try {
       const userQueue = await ListUserQueueServices(choosenQueue.id);
 

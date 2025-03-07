@@ -184,7 +184,6 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
   const [rotationId, setRotationId] = useState(null);
   const [lastSequenceId, setLastSequenceId] = useState(null);
   const [totationUser, setRotationUser] = useState();
-  const [savedOptions, setSavedOptions] = useState(false)
 
   const initialStateSchedule = [
     { weekday: i18n.t("queueModal.serviceHours.monday"), weekdayEn: "monday", startTimeA: "08:00", endTimeA: "12:00", startTimeB: "13:00", endTimeB: "18:00" },
@@ -467,6 +466,11 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
   //     </Dialog>
   //   )
   // }
+  
+  const activateRotation = (isActivated) => {
+    setQueue({...queue, ativarRoteador: isActivated})
+  };
+
   return (
     <div className={classes.root}>
       <ConfirmationModal
@@ -516,7 +520,9 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                   aria-label="disabled tabs example"
                 >
                   <Tab label={i18n.t("queueModal.title.queueData")} />
-                  <Tab label={i18n.t("queueModal.rotation.title.rotation")} />
+                  {queue.ativarRoteador && (
+                    <Tab label={i18n.t("queueModal.rotation.title.rotation")} />
+                  )}
                   {schedulesEnabled && (
                     <Tab label={i18n.t("queueModal.title.text")} />
                   )}
@@ -609,6 +615,10 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                             color="primary"
                             name="ativarRoteador"
                             checked={values.ativarRoteador}
+                            onChange={(e) => {
+                              setFieldValue("ativarRoteador", e.target.checked); // Atualiza o Formik com o novo valor
+                              activateRotation(e.target.checked); // Chama a função desejada
+                            }}
                           />
                         }
                         label={i18n.t("queueModal.form.rotate")}
@@ -620,6 +630,7 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                         id="tempoRoteador"
                         variant="outlined"
                         margin="dense"
+                        disabled={!queue.ativarRoteador}
                         className={classes.selectField}
                       >
                         <MenuItem value="0" selected disabled>
@@ -1522,7 +1533,6 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                             <RotationOptions
                               rotationId={rotationId}
                               setRotationUser={setRotationUser}
-                              setSavedOptions={setSavedOptions}
                               queueId={queueId}
                             />
                           </Grid>

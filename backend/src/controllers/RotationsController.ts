@@ -45,7 +45,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     if(rotation.id) {
       const searchParam = {
         sequence: Number(sequence),
-        rotationId: rotation.id
+        rotationId: rotation.id,
+        userId: userId
       }
       const rotationId = rotation.id;
       const {rotationUsers} = await ListRotationUsersService({searchParam, rotationId});
@@ -68,10 +69,10 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 };
 
 export const show = async (req: Request, res: Response): Promise<Response> => {
-  const { rotationId } = req.params;
+  const { id } = req.params;
   const { companyId } = req.user;
 
-  const rotation = await ShowService(rotationId);
+  const rotation = await ShowService(id);
 
   return res.status(200).json(rotation);
 };
@@ -88,19 +89,31 @@ export const update = async (
   const rotationData = req.body;
   const { option } = req.body;
   const rotation = await UpdateService({rotationData, id: Number(id) });
-
+  
   const searchParam = {
-    userId: option.userId
-  }
-
-  const { rotationUsers } = await ListRotationUsersService({searchParam, rotationId: Number(id)});
-  const rotationUserData = {
-    sequence: Number(option.sequence),
-    rotationId: Number(option.rotationId),
-    userId: Number(option.userId),
+    //sequence: rotationData.sequence,
+    rotationId: rotation.id,
+    //userId: rotationData.userId
   };
 
-  await UpdateUserService({rotationUserData, id: rotationUsers[0].id})
+  const {rotationUsers} = await ListRotationUsersService({searchParam, rotationId: Number(id)});
+
+  if (rotationUsers.some(user => user.sequence === rotationData.sequence)) {
+    throw new AppError("ERR_CONFLICT_ROTATIONUSERS_FOUND", 409);
+  };
+
+  const rotationUserData = {
+    sequence: Number(rotationData.sequence),
+    rotationId: Number(rotationData.rotationId),
+    userId: Number(rotationData.userId),
+  };
+
+  await UpdateUserService(
+    {
+      rotationUserData, 
+      id: Number(rotationUsers.filter(e => e.userId === rotationData.userId && e.rotationId === rotationData.rotationId).map(e => e.id))
+    }
+  );
 
   return res.status(200).json(rotation);
 };

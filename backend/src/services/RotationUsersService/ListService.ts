@@ -22,7 +22,6 @@ const ListRotationUsersService = async ({
 }: Request): Promise<Response> => {
   let whereCondition = {};
   const limit = 20;
-console.log('searchParam', searchParam)
 
   whereCondition = {
     ...whereCondition,
@@ -49,13 +48,22 @@ console.log('searchParam', searchParam)
         }
       }
     }
+
+    if(searchParam.userId) {
+      whereCondition = {
+        ...whereCondition,
+        userId: {
+          [Op.eq]: searchParam.userId
+        }
+      }
+    }
   }
 
   const { count, rows: rotationUsers } = await RotationUsers.findAndCountAll({
     where: whereCondition,
     limit,
     order: [["createdAt", "ASC"]],
-    //logging: console.log
+    logging: console.log
   });
 
   const hasMore = count > 100 + rotationUsers.length;
