@@ -3,7 +3,7 @@ import toastError from "../../errors/toastError";
 
 import api from "../../services/api";
 
-const useUsers = () => {
+const useUsers = (limitNull) => {
     const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(false);
     const [users, setUsers] = useState([]);
@@ -15,7 +15,9 @@ const useUsers = () => {
             const fetchUsers = async () => {
                 try {
                     const { data } = await api.get("/users", {
-                        params: {},
+                        params: {
+                            ...(limitNull === true && { limitNull })
+                        },
                     });
                     setUsers(data.users);
                     setHasMore(data.hasMore);

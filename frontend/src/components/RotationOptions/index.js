@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
 export const handleGetUser = async (option) => {
   if (!option.userId) return
   const userId = Number(option.userId)
+
   const { data } = await api.request({
     url: `/users/${userId}`,
     method: "GET",
@@ -286,7 +287,8 @@ export function RotationOptionStepper({
 
   const renderSequence = (index) => {
     const option = options[index];
-    console.log('options', options.length)
+    //const userLength = users.length;
+    //console.log('options', users.length)
     if (option.edition) {
       return (
         <>
@@ -297,30 +299,23 @@ export function RotationOptionStepper({
             // multiline
             value={option.sequence}
             onChange={(event) => {
-              const value = Number(event.target.value);
+              /* const value = Number(event.target.value); */
               // Verifica se o valor é um número válido e se está dentro do intervalo
-              if (!isNaN(value) && value >= 0 && value < options.length) {
-                handleOptionChangeSequence(event, index);
-              }
+              /* if (!isNaN(value) && value >= 0 && value < userLength) {
+              } */
+              handleOptionChangeSequence(event, index);
             }}
             size="small"
             className={classes.input}
             placeholder="Sequência"
-            inputProps={{
-              max: options.length,
-              min: 0
-            }}
+            /* inputProps={{
+              max: userLength,
+              min: 1
+            }} */
           />
         </>
       );
     }
-    // return (
-    //   <>
-    //     <Typography onClick={() => handleEdition(index)}>
-    //       {'teste'}
-    //     </Typography>
-    //   </>
-    // );
   };
 
   const handleAddOption = (index) => {
@@ -391,8 +386,7 @@ export function RotationOptionStepper({
 }
 
 export function RotationOptions({ rotationId, setRotationUser, queueId }) {
-
-  const { users } = useUsers(999999);
+  const { users } = useUsers(true);
   const classes = useStyles();
   const [options, setOptions] = useState([]);
   const [paramsRotationUsers, setParamsRotationUsers] = useState([]);

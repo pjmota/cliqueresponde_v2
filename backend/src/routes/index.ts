@@ -38,6 +38,10 @@ import apiContactRoutes from "./api/apiContactRoutes";
 import apiMessageRoutes from "./api/apiMessageRoutes";
 import companySettingsRoutes from "./companySettingsRoutes";
 
+import contactCustomFieldRoutes from "./contactCustomFieldRoutes";
+import afterSalesRoutes from "./afterSalesRoutes";
+import afterSalesDetailsRoutes from "./afterSalesDetailsRoutes";
+
 import promptRoutes from "./promptRouter";
 import statisticsRoutes from "./statisticsRoutes";
 import scheduleMessageRoutes from "./ScheduledMessagesRoutes";
@@ -83,6 +87,10 @@ routes.use(ticketTagRoutes);
 routes.use("/api", apiCompanyRoutes);
 routes.use("/api", apiContactRoutes);
 routes.use("/api", apiMessageRoutes);
+
+routes.use(contactCustomFieldRoutes);
+routes.use(afterSalesRoutes);
+routes.use(afterSalesDetailsRoutes);
 
 routes.use(promptRoutes);
 routes.use(statisticsRoutes);

@@ -1403,9 +1403,7 @@ const executing = async (queue, ticketId?) => {
             }
           };
 
-          
-
-          if (count > 0) {
+          if (count > 0 && q.ativarRoteador) {
             for (const ticket of tickets.filter(e => e.id === ticketId)) {
               const { queueId, userId } = ticket;
               const tempoRoteador = q.tempoRoteador;

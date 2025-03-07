@@ -26,18 +26,20 @@ import APIShowEmailUserService from "../services/UserServices/APIShowEmailUserSe
 type IndexQuery = {
   searchParam: string;
   pageNumber: string;
+  limitNull?: string;
 };
 
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const { searchParam, pageNumber } = req.query as IndexQuery;
+  const { searchParam, pageNumber, limitNull } = req.query as IndexQuery;
   const { companyId, profile } = req.user;
 
   const { users, count, hasMore } = await ListUsersService({
     searchParam,
     pageNumber,
     companyId,
-    profile
+    profile,
+    limitNull: limitNull === 'true' ? true : false
   });
 
   return res.json({ users, count, hasMore });

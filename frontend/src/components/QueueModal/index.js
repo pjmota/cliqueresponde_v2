@@ -316,6 +316,7 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
       //setLoading(true);
       const fetchUsers = async () => {
         try {
+          console.log('consulta de usuários 1')
           const { data } = await api.get("/users/");
           setUserOptions(data.users);
           setLoading(false);

@@ -89,6 +89,17 @@ class User extends Model<User> {
   @Column
   allowGroup: boolean;
 
+  @Default(false)
+  @Column
+  allowAfterSales: boolean;
+
+  @Default(false)
+  @Column
+  isAfterSalesManager: boolean;
+
+  @Column
+  contactCustomFields: string;
+
   @Default("light")
   @Column
   defaultTheme: string;

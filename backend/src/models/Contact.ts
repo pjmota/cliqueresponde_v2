@@ -52,6 +52,10 @@ class Contact extends Model<Contact> {
   @Column
   isGroup: boolean;
 
+  @ForeignKey(() => User)
+  @Column
+  createdBy: Number;
+
   @Default(false)
   @Column
   disableBot: boolean;

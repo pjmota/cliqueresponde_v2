@@ -33,6 +33,7 @@ import Contact from "../models/Contact";
 import Tag from "../models/Tag";
 import ContactTag from "../models/ContactTag";
 import logger from "../utils/logger";
+import UpsertContactCustomFieldBasedOnUserService from "../services/ContactCustomFieldService/UpsertContactCustomFieldBasedOnUserService";
 
 type IndexQuery = {
   searchParam: string;
@@ -276,6 +277,16 @@ export const update = async (
 
   return res.status(200).json(contact);
 };
+
+export const updateCustomFields = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { contactId } = req.params;
+  const { companyId, id } = req.user;
+  const contact = await UpsertContactCustomFieldBasedOnUserService(id, contactId, companyId);
+  return res.status(200).json(contact);
+}
 
 export const remove = async (
   req: Request,

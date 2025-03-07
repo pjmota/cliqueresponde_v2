@@ -4,12 +4,14 @@ import Company from "../../models/Company";
 import User from "../../models/User";
 import Plan from "../../models/Plan";
 import Ticket from "../../models/Ticket";
+import logger from "../../utils/logger";
 
 interface Request {
   searchParam?: string;
   pageNumber?: string | number;
   profile?: string;
   companyId?: number;
+  limitNull?: boolean;
 }
 
 interface Response {
@@ -21,7 +23,8 @@ interface Response {
 const ListUsersService = async ({
   searchParam = "",
   pageNumber = "1",
-  companyId
+  companyId,
+  limitNull
 }: Request): Promise<Response> => {
   const whereCondition = {
     [Op.or]: [
@@ -55,7 +58,7 @@ const ListUsersService = async ({
       "endWork",
       "profileImage"
     ],
-    limit,
+    limit: limitNull ? null : limit,
     offset,
     order: [["name", "ASC"]],
     include: [
@@ -84,11 +87,12 @@ const ListUsersService = async ({
         //   },
         // ]
       }
-    ]
+    ],
+    //logging: console.log
   });
 
   const hasMore = count > offset + users.length;
-  console.log(hasMore, count)
+  //console.log(hasMore, count)
   return {
     users,
     count,

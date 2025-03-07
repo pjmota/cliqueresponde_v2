@@ -4,7 +4,7 @@ import Queue from "../../models/Queue";
 import Company from "../../models/Company";
 import Plan from "../../models/Plan";
 
-const ShowUserService = async (id: string | number, companyId: string | number): Promise<User> => {
+const ShowUserService = async (id: string | number, companyId?: string | number): Promise<User> => {
   const user = await User.findOne(
     {
       where: {
