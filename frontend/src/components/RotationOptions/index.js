@@ -234,11 +234,11 @@ export function RotationOptionStepper({
               renderInput={(params) => (
                 <TextField {...params} label="Selecione um usuário" margin="normal" />
               )}
-              renderOption={(user) => (
+              renderOption={(user) => user.profile === "user" ? (
                 <MenuItem key={user.id} value={user.id}>
                   {user.name}
                 </MenuItem>
-              )}
+              ) : null}
             />
             {option.edition && (
               <>

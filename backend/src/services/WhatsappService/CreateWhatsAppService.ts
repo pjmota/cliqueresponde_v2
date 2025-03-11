@@ -27,6 +27,7 @@ interface Request {
   timeUseBotQueues?: string;
   expiresTicket?: number;
   allowGroup?: boolean;
+  allowCampaign?: boolean;
   sendIdQueue?: number;
   timeSendQueue?: number;
   timeInactiveMessage?: string;
@@ -81,6 +82,7 @@ const CreateWhatsAppService = async ({
   timeUseBotQueues,
   expiresTicket,
   allowGroup = false,
+  allowCampaign = false,
   timeSendQueue,
   sendIdQueue,
   timeInactiveMessage,
@@ -221,6 +223,7 @@ const CreateWhatsAppService = async ({
       timeUseBotQueues,
       expiresTicket,
       allowGroup,
+      allowCampaign,
       timeSendQueue,
       sendIdQueue,
       timeInactiveMessage,

@@ -42,6 +42,7 @@ interface WhatsappData {
   timeUseBotQueues?: string;
   expiresTicket?: number;
   allowGroup?: false;
+  allowCampaign?: false;
   sendIdQueue?: number;
   timeSendQueue?: number;
   timeInactiveMessage?: string;
@@ -108,6 +109,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     timeUseBotQueues,
     expiresTicket,
     allowGroup,
+    allowCampaign,
     timeSendQueue,
     sendIdQueue,
     timeInactiveMessage,
@@ -162,6 +164,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     timeUseBotQueues,
     expiresTicket,
     allowGroup,
+    allowCampaign,
     timeSendQueue,
     sendIdQueue,
     timeInactiveMessage,

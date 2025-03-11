@@ -63,7 +63,7 @@ const ListRotationUsersService = async ({
     where: whereCondition,
     limit,
     order: [["createdAt", "ASC"]],
-    logging: console.log
+    //logging: console.log
   });
 
   const hasMore = count > 100 + rotationUsers.length;

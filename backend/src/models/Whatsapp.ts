@@ -87,6 +87,11 @@ class Whatsapp extends Model<Whatsapp> {
   @Column
   allowGroup: boolean;
 
+  @Default(false)
+  @AllowNull
+  @Column
+  allowCampaign: boolean;
+
   @CreatedAt
   createdAt: Date;
 

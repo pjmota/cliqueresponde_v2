@@ -1,11 +1,14 @@
 const rules = {
 	user: {
-		static: [],
+		static: [
+			"campaigns:view",
+		],
 	},
 
 	admin: {
 		static: [
 			"dashboard:view",
+			"campaigns:view",
 			"drawer-admin-items:view",
 			"tickets-manager:showall",
 			"user-modal:editProfile",

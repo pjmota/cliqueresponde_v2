@@ -308,6 +308,7 @@ const messages = {
             "Selecione uma fila para os contatos que não possuem fila serem redirecionados",
           default: "Padrão",
           group: "Permitir grupos",
+          campaign: "Permitir campanhas",
           timeSendQueue: "Tempo em minutos para redirecionar para fila",
           importAlert:
             "ATENÇÃO: Ao salvar, sua conexão será encerrada, será necessário ler novamente o QR Code para importar as mensagens",

@@ -131,7 +131,7 @@ function ListItemLink(props) {
                   <Avatar className={`${classes.iconHoverActive} ${isActive ? "active" : ""}`}>{icon}</Avatar>
                 </Badge>
               ) : (
-                <Avatar className={`${classes.iconHoverActive} ${isActive ? "active" : ""}`}>{icon}</Avatar>
+                <Avatar className={`${classes.iconHoverActive} ${isActive ? "inative" : ""}`}>{icon}</Avatar>
               )}
             </ListItemIcon>
           ) : null}
@@ -208,6 +208,7 @@ const MainListItems = ({ collapsed, drawerClose }) => {
 
   const [connectionWarning, setConnectionWarning] = useState(false);
   const [openCampaignSubmenu, setOpenCampaignSubmenu] = useState(false);
+  const [openCampaignSubmenuUser, setOpenCampaignSubmenuUser] = useState(false);
   const [openDashboardSubmenu, setOpenDashboardSubmenu] = useState(false);
   const [showCampaigns, setShowCampaigns] = useState(false);
   const [showKanban, setShowKanban] = useState(false);
@@ -226,6 +227,7 @@ const MainListItems = ({ collapsed, drawerClose }) => {
   const [version, setVersion] = useState(false);
   const [managementHover, setManagementHover] = useState(false);
   const [campaignHover, setCampaignHover] = useState(false);
+  const [campaignHoverUser, setCampaignHoverUser] = useState(false);
   const { list } = useHelps();  // INSERIR
   const [hasHelps, setHasHelps] = useState(false);
 
@@ -522,6 +524,72 @@ const MainListItems = ({ collapsed, drawerClose }) => {
         </>
       )}
 
+
+      <Can
+        role={user.profile}
+        perform="campaigns:view"
+        yes={() => (
+          <>
+            <Tooltip title={collapsed ? i18n.t("mainDrawer.listItems.campaigns") : ""} placement="right">
+              <ListItem
+                dense
+                button
+                onClick={() => setOpenCampaignSubmenuUser((prev) => !prev)}
+                onMouseEnter={() => setCampaignHoverUser(true)}
+                onMouseLeave={() => setCampaignHoverUser(false)}
+              >
+                <ListItemIcon>
+                  <Avatar
+                    className={`${classes.iconHoverActive} ${isCampaignRouteActive || campaignHoverUser ? "" : ""
+                      }`}
+                  >
+                    <EventAvailableIcon />
+                  </Avatar>
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography className={classes.listItemText}>
+                      {i18n.t("mainDrawer.listItems.campaigns")}
+                    </Typography>
+                  }
+                />
+                {openCampaignSubmenuUser ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+            </Tooltip>
+            <Collapse
+              in={openCampaignSubmenuUser}
+              timeout="auto"
+              unmountOnExit
+              style={{
+                backgroundColor: theme.mode === "light" ? "rgba(120,120,120,0.1)" : "rgba(120,120,120,0.5)",
+              }}
+            >
+              <List dense component="div" disablePadding style={{ paddingLeft: "20px" }}>
+                <ListItemLink
+                  to="/campaigns"
+                  primary={i18n.t("campaigns.subMenus.list")}
+                  icon={<ListIcon />}
+                  tooltip={collapsed}
+                />
+                <ListItemLink
+                  to="/contact-lists"
+                  primary={i18n.t("campaigns.subMenus.listContacts")}
+                  icon={<PeopleIcon />}
+                  tooltip={collapsed}
+                />
+                <ListItemLink
+                  to="/campaigns-config"
+                  primary={i18n.t("campaigns.subMenus.settings")}
+                  icon={<SettingsOutlinedIcon />}
+                  tooltip={collapsed}
+                />
+              </List>
+            </Collapse>
+          </>
+        )}
+      />
+
+
       {/* <ListItemLink
         to="/todolist"
         primary={i18n.t("ToDoList")}
@@ -582,7 +650,7 @@ const MainListItems = ({ collapsed, drawerClose }) => {
                         backgroundColor: theme.mode === "light" ? "rgba(120,120,120,0.1)" : "rgba(120,120,120,0.5)",
                       }}
                     >
-                      <List dense component="div" disablePadding>
+                      <List dense component="div" disablePadding style={{ paddingLeft: "20px" }}>
                         <ListItemLink
                           to="/campaigns"
                           primary={i18n.t("campaigns.subMenus.list")}

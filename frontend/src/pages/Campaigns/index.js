@@ -287,9 +287,9 @@ const Campaigns = () => {
         />
       )}
       {
-        user.profile === "user"?
+/*         user.profile === "user"?
           <ForbiddenPage />
-          :
+          : */
           <>
             <MainHeader>
               <Grid style={{ width: "99.6%" }} container>

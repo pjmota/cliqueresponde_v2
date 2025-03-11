@@ -24,6 +24,8 @@ import CreateMessageService from "../MessageServices/CreateMessageService";
 import FindOrCreateTicketService from "./FindOrCreateTicketService";
 import formatBody from "../../helpers/Mustache";
 import { Mutex } from "async-mutex";
+import logger from "../../utils/logger";
+import handleRandomUser from "../../queues";
 
 interface TicketData {
   status?: string;
@@ -516,7 +518,6 @@ const UpdateTicketService = async ({
         return { ticket: newTicketTransfer, oldStatus, oldUserId };
 
       } else {
-
         if (settings.sendMsgTransfTicket === "enabled") {
           // Mensagem de transferencia da FILA
           if (oldQueueId !== queueId || oldUserId !== userId && !isNil(oldQueueId) && !isNil(queueId) && ticket.whatsapp.status === 'CONNECTED') {
@@ -690,6 +691,16 @@ const UpdateTicketService = async ({
       typebotStatus: useIntegration,
       unreadMessages
     });
+
+    if(!userId && queueId) {
+      const params: any = {
+        WhatsappQueue: {
+          queueId: queueId
+        }
+      }
+      await handleRandomUser( params, ticket.id )
+    }
+
 
     ticketTraking.queuedAt = moment().toDate();
     ticketTraking.queueId = queueId;
