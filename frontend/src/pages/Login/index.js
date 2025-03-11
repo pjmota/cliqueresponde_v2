@@ -101,7 +101,7 @@ const Login = () => {
 	return (
 		<>
 			<Helmet>
-				<title>{appName || "Multi100"}</title>
+				<title>{appName || "CRM Clique Responde"}</title>
 				<link rel="icon" href={appLogoFavicon || "/default-favicon.ico"} />
 			</Helmet>
 			<div className={classes.root}>

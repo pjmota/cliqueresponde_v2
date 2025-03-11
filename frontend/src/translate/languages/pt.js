@@ -668,6 +668,9 @@ const messages = {
           showDashboard: "Ver Dashboard",
           allowRealTime: "Ver Painel de Atendimentos",
           allowConnections: "Permitir ações nas conexões",
+          allTicketsQueuesWaiting: "Visualiza Todos [Fila]",
+          allTicketsQueuesWaitingEnable: "Habilitado",
+          allTicketsQueuesWaitingDisable: "Desabilitado"
         },
         tabs: {
           general: "Geral",

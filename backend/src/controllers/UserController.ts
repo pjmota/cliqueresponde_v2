@@ -69,7 +69,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     showDashboard,
     defaultTicketsManagerWidth = 550,
     allowRealTime,
-    allowConnections
+    allowConnections,
+    allTicketsQueuesWaiting
   } = req.body;
   let userCompanyId: number | null = null;
 
@@ -124,7 +125,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       showDashboard: 'disabled',
       defaultTicketsManagerWidth: 550,
       allowRealTime: 'disabled',
-      allowConnections: 'disabled'
+      allowConnections: 'disabled',
+      allTicketsQueuesWaiting: 'disabled'
     };
 
     const user = await CreateCompanyService(companyData);
@@ -182,7 +184,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       showDashboard,
       defaultTicketsManagerWidth,
       allowRealTime,
-      allowConnections
+      allowConnections,
+      allTicketsQueuesWaiting
     });
 
     const io = getIO();

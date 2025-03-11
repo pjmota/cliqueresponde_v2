@@ -138,6 +138,7 @@ const UserModal = ({ open, onClose, userId }) => {
 		showDashboard: "disabled",
 		allowRealTime: "disabled",
 		allowConnections: "disabled",
+		allTicketsQueuesWaiting: "disable",
 	};
 
 	const { user: loggedInUser } = useContext(AuthContext);
@@ -775,6 +776,58 @@ const UserModal = ({ open, onClose, userId }) => {
 																</>
 															</FormControl>
 														</Grid>
+													</Grid>
+													<Grid container spacing={1}>
+														<Grid item xs={12} md={6} xl={6}>
+															<FormControl
+																variant="outlined"
+																className={classes.maxWidth}
+																margin="dense"
+																fullWidth
+															>
+																<>
+																	<InputLabel >
+																		{i18n.t("userModal.form.allTicketsQueuesWaiting")}
+																	</InputLabel>
+
+																	<Field
+																		as={Select}
+																		label={i18n.t("userModal.form.allTicketsQueuesWaiting")}
+																		name="allTicketsQueuesWaiting"
+																		type="allTicketsQueuesWaiting"
+																		required
+																	>
+																		<MenuItem value={"enable"}>{i18n.t("userModal.form.allTicketsQueuesWaitingEnable")}</MenuItem>
+																		<MenuItem value={"disable"}>{i18n.t("userModal.form.allTicketsQueuesWaitingDisable")}</MenuItem>
+																	</Field>
+																</>
+															</FormControl>
+														</Grid>
+														{/* <Grid item xs={12} md={6} xl={6}>
+															<FormControl
+																variant="outlined"
+																className={classes.maxWidth}
+																margin="dense"
+																fullWidth
+															>
+																<>
+																	<InputLabel >
+																		{i18n.t("userModal.form.allowRealTime")}
+																	</InputLabel>
+
+																	<Field
+																		as={Select}
+																		label={i18n.t("userModal.form.allowRealTime")}
+																		name="allowRealTime"
+																		type="allowRealTime"
+																		required
+																	>
+																		<MenuItem value="disabled">{i18n.t("userModal.form.allHistoricDisabled")}</MenuItem>
+																		<MenuItem value="enabled">{i18n.t("userModal.form.allHistoricEnabled")}</MenuItem>
+																	</Field>
+																</>
+															</FormControl>
+														</Grid> */}
 													</Grid>
 												</>
 											}

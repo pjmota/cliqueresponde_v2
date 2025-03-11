@@ -28,6 +28,7 @@ interface UserData {
   allowRealTime?: string;
   allowConnections?: string;
   profileImage?: string;
+  allTicketsQueuesWaiting?: string;
 }
 
 interface Request {
@@ -89,7 +90,8 @@ const UpdateUserService = async ({
     allowConnections,
     defaultTicketsManagerWidth = 550,
     allowRealTime,
-    profileImage
+    profileImage,
+    allTicketsQueuesWaiting
   } = userData;
 
   try {
@@ -118,7 +120,8 @@ const UpdateUserService = async ({
     defaultTicketsManagerWidth,
     allowRealTime,
     profileImage,
-    allowConnections
+    allowConnections,
+    allTicketsQueuesWaiting
   });
 
   await user.$set("queues", queueIds);
@@ -155,7 +158,8 @@ const UpdateUserService = async ({
     defaultTicketsManagerWidth: user.defaultTicketsManagerWidth,
     allowRealTime: user.allowRealTime,
     allowConnections: user.allowConnections,
-    profileImage: user.profileImage
+    profileImage: user.profileImage,
+    allTicketsQueuesWaiting: user.allTicketsQueuesWaiting
   };
 
   return serializedUser;
