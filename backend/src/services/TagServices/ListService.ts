@@ -12,6 +12,7 @@ interface Request {
   pageNumber?: string | number;
   kanban?: number;
   tagId?: number;
+  whatsappId?: number;
 }
 
 interface Response {
@@ -25,7 +26,8 @@ const ListService = async ({
   searchParam = "",
   pageNumber = "1",
   kanban = 0,
-  tagId = 0
+  tagId = 0,
+  whatsappId = null
 }: Request): Promise<Response> => {
   let whereCondition = {};
 
@@ -73,6 +75,7 @@ const ListService = async ({
       ],
       offset,
       order: [["name", "ASC"]],
+      //logging: console.log
     });
 
 

@@ -26,24 +26,40 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
-  const { type, name, projectName, jsonContent, language, urlN8N,
+  const { 
+    type, 
+    name, 
+    projectName, 
+    jsonContent, 
+    language, 
+    urlN8N,
     typebotExpires,
     typebotKeywordFinish,
     typebotSlug,
     typebotUnknownMessage,
     typebotDelayMessage,
     typebotKeywordRestart,
-    typebotRestartMessage } = req.body;
+    typebotRestartMessage,
+    whatsappId
+  } = req.body;
+
   const { companyId } = req.user;
   const queueIntegration = await CreateQueueIntegrationService({
-    type, name, projectName, jsonContent, language, urlN8N, companyId,
+    type, 
+    name, 
+    projectName, 
+    jsonContent, 
+    language, 
+    urlN8N, 
+    companyId,
     typebotExpires,
     typebotKeywordFinish,
     typebotSlug,
     typebotUnknownMessage,
     typebotDelayMessage,
     typebotKeywordRestart,
-    typebotRestartMessage 
+    typebotRestartMessage,
+    whatsappId
   });
 
   const io = getIO();

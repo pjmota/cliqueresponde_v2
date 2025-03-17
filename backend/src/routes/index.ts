@@ -48,6 +48,8 @@ import scheduleMessageRoutes from "./ScheduledMessagesRoutes";
 import rotationsRoutes from "./rotationsRoutes";
 import rotationUsersRoutes from "./rotationUsersRoute";
 
+import scheduleTagIntegrationRoutes from "./scheduleTagIntegrationRoutes";
+
 const routes = Router();
 
 routes.use(userRoutes);
@@ -91,6 +93,8 @@ routes.use("/api", apiMessageRoutes);
 routes.use(contactCustomFieldRoutes);
 routes.use(afterSalesRoutes);
 routes.use(afterSalesDetailsRoutes);
+
+routes.use(scheduleTagIntegrationRoutes);
 
 routes.use(promptRoutes);
 routes.use(statisticsRoutes);

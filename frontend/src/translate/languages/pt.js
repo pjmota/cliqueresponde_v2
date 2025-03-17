@@ -735,10 +735,12 @@ const messages = {
         form: {
           name: "Nome",
           color: "Cor",
-          timeLane: "Tempo em horas para redirecionar para lane",
+          timeLane: "Tempo em min. para redirecionar lane",
           nextLaneId: "Lane",
           greetingMessageLane: "Mensagem de saudação da lane",
-          rollbackLaneId: "Voltar para Lane após retomar atendimento"
+          rollbackLaneId: "Voltar para Lane após retomar atendimento",
+          conection: "Conexão",
+          integration: "Integração"
         },
         buttons: {
           okAdd: "Adicionar",
@@ -1541,6 +1543,7 @@ const messages = {
           color: "Cor",
           tickets: "Tickets",
           actions: "Ações",
+          id: "Id da tag",
         },
         buttons: {
           add: "Nova Lane",

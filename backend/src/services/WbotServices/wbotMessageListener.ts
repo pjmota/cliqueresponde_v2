@@ -145,7 +145,7 @@ const multVecardGet = function (param: any) {
   let fim = param.split("\n")[4].indexOf(':')
   let contact = param.split("\n")[4].substring(inicio + 1, fim).replace(";", "")
   let contactSemWhats = param.split("\n")[4].replace("item1.TEL:", "")
-  //console.log(contact);
+
   if (contact != "item1.TEL") {
     output = output + name + ": 📞" + contact + "" + "\n"
   } else
@@ -154,7 +154,7 @@ const multVecardGet = function (param: any) {
 }
 
 const contactsArrayMessageGet = (msg: any,) => {
-  let contactsArray = msg.message?.contactsArrayMessage?.contacts
+  let contactsArray = msg?.message?.contactsArrayMessage?.contacts
   let vcardMulti = contactsArray.map(function (item, indice) {
     return item.vcard;
   });
@@ -176,17 +176,18 @@ const contactsArrayMessageGet = (msg: any,) => {
 }
 
 const getTypeMessage = (msg: proto.IWebMessageInfo): string => {
-  const msgType = getContentType(msg.message);
-  if (msg.message?.viewOnceMessageV2) {
+  const msgType = getContentType(msg?.message);
+  if (msg?.message?.viewOnceMessageV2) {
     return "viewOnceMessageV2"
   }
   return msgType
 };
-const getAd = (msg: any): string => {
-  if (msg.key.fromMe && msg.message?.listResponseMessage?.contextInfo?.externalAdReply) {
-    let bodyMessage = `*${msg.message?.listResponseMessage?.contextInfo?.externalAdReply?.title}*`;
 
-    bodyMessage += `\n\n${msg.message?.listResponseMessage?.contextInfo?.externalAdReply?.body}`;
+const getAd = (msg: any): string => {
+  if (msg?.key.fromMe && msg?.message?.listResponseMessage?.contextInfo?.externalAdReply) {
+    let bodyMessage = `*${msg?.message?.listResponseMessage?.contextInfo?.externalAdReply?.title}*`;
+
+    bodyMessage += `\n\n${msg?.message?.listResponseMessage?.contextInfo?.externalAdReply?.body}`;
 
     return bodyMessage;
   }
@@ -198,7 +199,7 @@ const getBodyButton = (msg: any): string => {
 
       let bodyMessage = `[BUTTON]\n\n*${msg?.message?.buttonsMessage?.contentText}*\n\n`;
       // eslint-disable-next-line no-restricted-syntax
-      for (const button of msg.message?.buttonsMessage?.buttons) {
+      for (const button of msg?.message?.buttonsMessage?.buttons) {
         bodyMessage += `*${button.buttonId}* - ${button.buttonText.displayText}\n`;
       }
 
@@ -207,7 +208,7 @@ const getBodyButton = (msg: any): string => {
     if (msg?.messageType === "listMessage" || msg?.message?.listMessage?.description) {
       let bodyMessage = `[LIST]\n\n*${msg?.message?.listMessage?.description}*\n\n`;
       // eslint-disable-next-line no-restricted-syntax
-      for (const button of msg.message?.listMessage?.sections[0]?.rows) {
+      for (const button of msg?.message?.listMessage?.sections[0]?.rows) {
         bodyMessage += `${button.title}\n`;
       }
 
@@ -232,60 +233,60 @@ export const getBodyMessage = (msg: proto.IWebMessageInfo): string | null => {
     let type = getTypeMessage(msg);
 
     if (type === undefined) console.log(JSON.stringify(msg))
-
     const types = {
-      conversation: msg.message?.conversation,
-      imageMessage: msg.message?.imageMessage?.caption,
-      videoMessage: msg.message?.videoMessage?.caption,
+      conversation: msg?.message?.conversation,
+      imageMessage: msg?.message?.imageMessage?.caption,
+      videoMessage: msg?.message?.videoMessage?.caption,
       extendedTextMessage: msg?.message?.extendedTextMessage?.text,
-      buttonsResponseMessage: msg.message?.buttonsResponseMessage?.selectedDisplayText,
-      listResponseMessage: msg.message?.listResponseMessage?.title || msg.message?.listResponseMessage?.singleSelectReply?.selectedRowId,
-      templateButtonReplyMessage: msg.message?.templateButtonReplyMessage?.selectedId,
-      messageContextInfo: msg.message?.buttonsResponseMessage?.selectedButtonId || msg.message?.listResponseMessage?.title,
-      buttonsMessage: getBodyButton(msg) || msg.message?.listResponseMessage?.title,
+      buttonsResponseMessage: msg?.message?.buttonsResponseMessage?.selectedDisplayText,
+      listResponseMessage: msg?.message?.listResponseMessage?.title || msg?.message?.listResponseMessage?.singleSelectReply?.selectedRowId,
+      templateButtonReplyMessage: msg?.message?.templateButtonReplyMessage?.selectedId,
+      messageContextInfo: msg?.message?.buttonsResponseMessage?.selectedButtonId || msg?.message?.listResponseMessage?.title,
+      buttonsMessage: getBodyButton(msg) || msg?.message?.listResponseMessage?.title,
       stickerMessage: "sticker",
-      contactMessage: msg.message?.contactMessage?.vcard,
-      contactsArrayMessage: (msg.message?.contactsArrayMessage?.contacts) && contactsArrayMessageGet(msg),
-      //locationMessage: `Latitude: ${msg.message.locationMessage?.degreesLatitude} - Longitude: ${msg.message.locationMessage?.degreesLongitude}`,
-      locationMessage: msgLocation(msg.message?.locationMessage?.jpegThumbnail, msg.message?.locationMessage?.degreesLatitude, msg.message?.locationMessage?.degreesLongitude),
-      liveLocationMessage: `Latitude: ${msg.message?.liveLocationMessage?.degreesLatitude} - Longitude: ${msg.message?.liveLocationMessage?.degreesLongitude}`,
-      documentMessage: msg.message?.documentMessage?.caption,
+      contactMessage: msg?.message?.contactMessage?.vcard,
+      contactsArrayMessage: (msg?.message?.contactsArrayMessage?.contacts) && contactsArrayMessageGet(msg),
+      //locationMessage: `Latitude: ${msg?.message.locationMessage?.degreesLatitude} - Longitude: ${msg?.message.locationMessage?.degreesLongitude}`,
+      locationMessage: msgLocation(msg?.message?.locationMessage?.jpegThumbnail, msg?.message?.locationMessage?.degreesLatitude, msg?.message?.locationMessage?.degreesLongitude),
+      liveLocationMessage: `Latitude: ${msg?.message?.liveLocationMessage?.degreesLatitude} - Longitude: ${msg?.message?.liveLocationMessage?.degreesLongitude}`,
+      documentMessage: msg?.message?.documentMessage?.caption,
       audioMessage: "Áudio",
-      listMessage: getBodyButton(msg) || msg.message?.listResponseMessage?.title,
+      listMessage: getBodyButton(msg) || msg?.message?.listResponseMessage?.title,
       viewOnceMessage: getBodyButton(msg),
-      reactionMessage: msg.message?.reactionMessage?.text || "reaction",
+      reactionMessage: msg?.message?.reactionMessage?.text || "reaction",
       senderKeyDistributionMessage: msg?.message?.senderKeyDistributionMessage?.axolotlSenderKeyDistributionMessage,
-      documentWithCaptionMessage: msg.message?.documentWithCaptionMessage?.message?.documentMessage?.caption,
-      viewOnceMessageV2: msg.message?.viewOnceMessageV2?.message?.imageMessage?.caption,
+      documentWithCaptionMessage: msg?.message?.documentWithCaptionMessage?.message?.documentMessage?.caption,
+      viewOnceMessageV2: msg?.message?.viewOnceMessageV2?.message?.imageMessage?.caption,
       editedMessage:
         msg?.message?.protocolMessage?.editedMessage?.conversation ||
         msg?.message?.editedMessage?.message?.protocolMessage?.editedMessage?.conversation,
-      ephemeralMessage: msg.message?.ephemeralMessage?.message?.extendedTextMessage?.text,
+      ephemeralMessage: msg?.message?.ephemeralMessage?.message?.extendedTextMessage?.text,
       imageWhitCaptionMessage: msg?.message?.ephemeralMessage?.message?.imageMessage,
-      highlyStructuredMessage: msg.message?.highlyStructuredMessage,
+      highlyStructuredMessage: msg?.message?.highlyStructuredMessage,
       protocolMessage: msg?.message?.protocolMessage?.editedMessage?.conversation,
-      advertising: getAd(msg) || msg.message?.listResponseMessage?.contextInfo?.externalAdReply?.title,
+      advertising: getAd(msg) || msg?.message?.listResponseMessage?.contextInfo?.externalAdReply?.title,
     };
 
     const objKey = Object.keys(types).find(key => key === type);
 
     if (!objKey) {
-      logger.warn(`#### Nao achou o type 152: ${type} ${JSON.stringify(msg.message)}`);
-      Sentry.setExtra("Mensagem", { BodyMsg: msg.message, msg, type });
+      logger.warn(`#### Nao achou o type 152: ${type} ${JSON.stringify(msg?.message)}`);
+      Sentry.setExtra("Mensagem", { BodyMsg: msg?.message, msg, type });
       Sentry.captureException(
         new Error("Novo Tipo de Mensagem em getTypeMessage")
       );
     }
+
     return types[type];
   } catch (error) {
-    Sentry.setExtra("Error getTypeMessage", { msg, BodyMsg: msg.message });
+    Sentry.setExtra("Error getTypeMessage", { msg, BodyMsg: msg?.message });
     Sentry.captureException(error);
     console.log(error);
   }
 };
 
 export const getQuotedMessage = (msg: proto.IWebMessageInfo) => {
-  const body = extractMessageContent(msg.message)[
+  const body = extractMessageContent(msg?.message)[
     Object.keys(msg?.message).values().next().value
   ];
 
@@ -300,7 +301,7 @@ export const getQuotedMessage = (msg: proto.IWebMessageInfo) => {
 };
 
 export const getQuotedMessageId = (msg: proto.IWebMessageInfo) => {
-  const body = extractMessageContent(msg.message)[
+  const body = extractMessageContent(msg?.message)[
     Object.keys(msg?.message).values().next().value
   ];
   let reaction = msg?.message?.reactionMessage
@@ -322,25 +323,25 @@ const getSenderMessage = (
   wbot: Session
 ): string => {
   const me = getMeSocket(wbot);
-  if (msg.key.fromMe) return me.id;
+  if (msg?.key.fromMe) return me.id;
 
   const senderId =
-    msg.participant || msg.key.participant || msg.key.remoteJid || undefined;
+    msg?.participant || msg?.key.participant || msg?.key.remoteJid || undefined;
 
   return senderId && jidNormalizedUser(senderId);
 };
 
 const getContactMessage = async (msg: proto.IWebMessageInfo, wbot: Session) => {
-  const isGroup = msg.key.remoteJid.includes("g.us");
-  const rawNumber = msg.key.remoteJid.replace(/\D/g, "");
+  const isGroup = msg?.key.remoteJid.includes("g.us");
+  const rawNumber = msg?.key.remoteJid.replace(/\D/g, "");
   return isGroup
     ? {
       id: getSenderMessage(msg, wbot),
-      name: msg.pushName
+      name: msg?.pushName
     }
     : {
-      id: msg.key.remoteJid,
-      name: msg.key.fromMe ? rawNumber : msg.pushName
+      id: msg?.key.remoteJid,
+      name: msg?.key.fromMe ? rawNumber : msg?.pushName
     };
 };
 
@@ -365,41 +366,41 @@ function findCaption(obj) {
 
 // const downloadMedia = async (msg: proto.IWebMessageInfo, companyId: number, whatsappId: number) => {
 //   const mineType =
-//     msg.message?.imageMessage ||
-//     msg.message?.audioMessage ||
-//     msg.message?.videoMessage ||
-//     msg.message?.stickerMessage ||
-//     msg.message?.documentMessage ||
-//     msg.message?.documentWithCaptionMessage?.message?.documentMessage ||
-//     // msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.imageMessage ||
-//     // msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.videoMessage ||
-//     // msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.audioMessage ||
-//     msg.message?.ephemeralMessage?.message?.audioMessage ||
-//     msg.message?.ephemeralMessage?.message?.documentMessage ||
-//     msg.message?.ephemeralMessage?.message?.videoMessage ||
-//     msg.message?.ephemeralMessage?.message?.stickerMessage ||
-//     msg.message?.ephemeralMessage?.message?.imageMessage ||
-//     msg.message?.viewOnceMessage?.message?.imageMessage ||
-//     msg.message?.viewOnceMessage?.message?.videoMessage ||
-//     msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.imageMessage ||
-//     msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.videoMessage ||
-//     msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.audioMessage ||
-//     msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.documentMessage ||
-//     msg.message?.templateMessage?.hydratedTemplate?.imageMessage ||
-//     msg.message?.templateMessage?.hydratedTemplate?.documentMessage ||
-//     msg.message?.templateMessage?.hydratedTemplate?.videoMessage ||
-//     msg.message?.templateMessage?.hydratedFourRowTemplate?.imageMessage ||
-//     msg.message?.templateMessage?.hydratedFourRowTemplate?.documentMessage ||
-//     msg.message?.templateMessage?.hydratedFourRowTemplate?.videoMessage ||
-//     msg.message?.templateMessage?.fourRowTemplate?.imageMessage ||
-//     msg.message?.templateMessage?.fourRowTemplate?.documentMessage ||
-//     msg.message?.templateMessage?.fourRowTemplate?.videoMessage ||
-//     msg.message?.interactiveMessage?.header?.imageMessage ||
-//     msg.message?.interactiveMessage?.header?.documentMessage ||
-//     msg.message?.interactiveMessage?.header?.videoMessage;
+//     msg?.message?.imageMessage ||
+//     msg?.message?.audioMessage ||
+//     msg?.message?.videoMessage ||
+//     msg?.message?.stickerMessage ||
+//     msg?.message?.documentMessage ||
+//     msg?.message?.documentWithCaptionMessage?.message?.documentMessage ||
+//     // msg?.message?.extendedTextMessage?.contextInfo?.quotedMessage?.imageMessage ||
+//     // msg?.message?.extendedTextMessage?.contextInfo?.quotedMessage?.videoMessage ||
+//     // msg?.message?.extendedTextMessage?.contextInfo?.quotedMessage?.audioMessage ||
+//     msg?.message?.ephemeralMessage?.message?.audioMessage ||
+//     msg?.message?.ephemeralMessage?.message?.documentMessage ||
+//     msg?.message?.ephemeralMessage?.message?.videoMessage ||
+//     msg?.message?.ephemeralMessage?.message?.stickerMessage ||
+//     msg?.message?.ephemeralMessage?.message?.imageMessage ||
+//     msg?.message?.viewOnceMessage?.message?.imageMessage ||
+//     msg?.message?.viewOnceMessage?.message?.videoMessage ||
+//     msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.imageMessage ||
+//     msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.videoMessage ||
+//     msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.audioMessage ||
+//     msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.documentMessage ||
+//     msg?.message?.templateMessage?.hydratedTemplate?.imageMessage ||
+//     msg?.message?.templateMessage?.hydratedTemplate?.documentMessage ||
+//     msg?.message?.templateMessage?.hydratedTemplate?.videoMessage ||
+//     msg?.message?.templateMessage?.hydratedFourRowTemplate?.imageMessage ||
+//     msg?.message?.templateMessage?.hydratedFourRowTemplate?.documentMessage ||
+//     msg?.message?.templateMessage?.hydratedFourRowTemplate?.videoMessage ||
+//     msg?.message?.templateMessage?.fourRowTemplate?.imageMessage ||
+//     msg?.message?.templateMessage?.fourRowTemplate?.documentMessage ||
+//     msg?.message?.templateMessage?.fourRowTemplate?.videoMessage ||
+//     msg?.message?.interactiveMessage?.header?.imageMessage ||
+//     msg?.message?.interactiveMessage?.header?.documentMessage ||
+//     msg?.message?.interactiveMessage?.header?.videoMessage;
 
 //   // eslint-disable-next-line no-nested-ternary
-//   const messageType = msg.message?.documentMessage
+//   const messageType = msg?.message?.documentMessage
 //     ? "document"
 //     : mineType.mimetype.split("/")[0].replace("application", "document")
 //       ? (mineType.mimetype
@@ -413,35 +414,35 @@ function findCaption(obj) {
 //   while (contDownload < 10 && !stream) {
 //     try {
 //       const { mediaKey, directPath, url } =
-//         msg.message?.imageMessage ||
-//         msg.message?.audioMessage ||
-//         msg.message?.videoMessage ||
-//         msg.message?.stickerMessage ||
-//         msg.message?.documentMessage ||
-//         msg.message?.documentWithCaptionMessage?.message?.documentMessage ||
-//         msg.message?.ephemeralMessage?.message?.audioMessage ||
-//         msg.message?.ephemeralMessage?.message?.documentMessage ||
-//         msg.message?.ephemeralMessage?.message?.videoMessage ||
-//         msg.message?.ephemeralMessage?.message?.stickerMessage ||
-//         msg.message?.ephemeralMessage?.message?.imageMessage ||
-//         msg.message?.viewOnceMessage?.message?.imageMessage ||
-//         msg.message?.viewOnceMessage?.message?.videoMessage ||
-//         msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.imageMessage ||
-//         msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.videoMessage ||
-//         msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.audioMessage ||
-//         msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.documentMessage ||
-//         msg.message?.templateMessage?.hydratedTemplate?.imageMessage ||
-//         msg.message?.templateMessage?.hydratedTemplate?.documentMessage ||
-//         msg.message?.templateMessage?.hydratedTemplate?.videoMessage ||
-//         msg.message?.templateMessage?.hydratedFourRowTemplate?.imageMessage ||
-//         msg.message?.templateMessage?.hydratedFourRowTemplate?.documentMessage ||
-//         msg.message?.templateMessage?.hydratedFourRowTemplate?.videoMessage ||
-//         msg.message?.templateMessage?.fourRowTemplate?.imageMessage ||
-//         msg.message?.templateMessage?.fourRowTemplate?.documentMessage ||
-//         msg.message?.templateMessage?.fourRowTemplate?.videoMessage ||
-//         msg.message?.interactiveMessage?.header?.imageMessage ||
-//         msg.message?.interactiveMessage?.header?.documentMessage ||
-//         msg.message?.interactiveMessage?.header?.videoMessage ||
+//         msg?.message?.imageMessage ||
+//         msg?.message?.audioMessage ||
+//         msg?.message?.videoMessage ||
+//         msg?.message?.stickerMessage ||
+//         msg?.message?.documentMessage ||
+//         msg?.message?.documentWithCaptionMessage?.message?.documentMessage ||
+//         msg?.message?.ephemeralMessage?.message?.audioMessage ||
+//         msg?.message?.ephemeralMessage?.message?.documentMessage ||
+//         msg?.message?.ephemeralMessage?.message?.videoMessage ||
+//         msg?.message?.ephemeralMessage?.message?.stickerMessage ||
+//         msg?.message?.ephemeralMessage?.message?.imageMessage ||
+//         msg?.message?.viewOnceMessage?.message?.imageMessage ||
+//         msg?.message?.viewOnceMessage?.message?.videoMessage ||
+//         msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.imageMessage ||
+//         msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.videoMessage ||
+//         msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.audioMessage ||
+//         msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.documentMessage ||
+//         msg?.message?.templateMessage?.hydratedTemplate?.imageMessage ||
+//         msg?.message?.templateMessage?.hydratedTemplate?.documentMessage ||
+//         msg?.message?.templateMessage?.hydratedTemplate?.videoMessage ||
+//         msg?.message?.templateMessage?.hydratedFourRowTemplate?.imageMessage ||
+//         msg?.message?.templateMessage?.hydratedFourRowTemplate?.documentMessage ||
+//         msg?.message?.templateMessage?.hydratedFourRowTemplate?.videoMessage ||
+//         msg?.message?.templateMessage?.fourRowTemplate?.imageMessage ||
+//         msg?.message?.templateMessage?.fourRowTemplate?.documentMessage ||
+//         msg?.message?.templateMessage?.fourRowTemplate?.videoMessage ||
+//         msg?.message?.interactiveMessage?.header?.imageMessage ||
+//         msg?.message?.interactiveMessage?.header?.documentMessage ||
+//         msg?.message?.interactiveMessage?.header?.videoMessage ||
 //         { mediakey: undefined, directPath: undefined, url: undefined };
 //       // eslint-disable-next-line no-await-in-loop
 //       stream = await downloadContentFromMessage(
@@ -483,7 +484,7 @@ function findCaption(obj) {
 //     Sentry.captureException(new Error("ERR_WAPP_DOWNLOAD_MEDIA"));
 //     throw new Error("ERR_WAPP_DOWNLOAD_MEDIA");
 //   }
-//   let filename = msg.message?.documentMessage?.fileName || "";
+//   let filename = msg?.message?.documentMessage?.fileName || "";
 
 //   if (!filename) {
 //     const ext = mineType.mimetype.split("/")[1].split(";")[0];
@@ -499,13 +500,13 @@ function findCaption(obj) {
 
 const downloadMedia = async (msg: proto.IWebMessageInfo, isImported: Date = null, wbot: Session) => {
 
-  if (msg.message?.stickerMessage) {
+  if (msg?.message?.stickerMessage) {
     const urlAnt = "https://web.whatsapp.net";
-    const directPath = msg.message?.stickerMessage?.directPath;
+    const directPath = msg?.message?.stickerMessage?.directPath;
     const newUrl = "https://mmg.whatsapp.net";
     const final = newUrl + directPath;
-    if (msg.message?.stickerMessage?.url?.includes(urlAnt)) {
-      msg.message.stickerMessage.url = msg.message?.stickerMessage.url.replace(urlAnt, final);
+    if (msg?.message?.stickerMessage?.url?.includes(urlAnt)) {
+      msg.message.stickerMessage.url = msg?.message?.stickerMessage.url.replace(urlAnt, final);
     }
   }
 
@@ -528,38 +529,38 @@ const downloadMedia = async (msg: proto.IWebMessageInfo, isImported: Date = null
     }
   }
 
-  let filename = msg.message?.documentMessage?.fileName || "";
+  let filename = msg?.message?.documentMessage?.fileName || "";
 
   const mineType =
-    msg.message?.imageMessage ||
-    msg.message?.audioMessage ||
-    msg.message?.videoMessage ||
-    msg.message?.stickerMessage ||
-    msg.message?.ephemeralMessage?.message?.stickerMessage ||
-    msg.message?.documentMessage ||
-    msg.message?.documentWithCaptionMessage?.message?.documentMessage ||
-    msg.message?.ephemeralMessage?.message?.audioMessage ||
-    msg.message?.ephemeralMessage?.message?.documentMessage ||
-    msg.message?.ephemeralMessage?.message?.videoMessage ||
-    msg.message?.ephemeralMessage?.message?.imageMessage ||
-    msg.message?.viewOnceMessage?.message?.imageMessage ||
-    msg.message?.viewOnceMessage?.message?.videoMessage ||
-    msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.imageMessage ||
-    msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.videoMessage ||
-    msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.audioMessage ||
-    msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.documentMessage ||
-    msg.message?.templateMessage?.hydratedTemplate?.imageMessage ||
-    msg.message?.templateMessage?.hydratedTemplate?.documentMessage ||
-    msg.message?.templateMessage?.hydratedTemplate?.videoMessage ||
-    msg.message?.templateMessage?.hydratedFourRowTemplate?.imageMessage ||
-    msg.message?.templateMessage?.hydratedFourRowTemplate?.documentMessage ||
-    msg.message?.templateMessage?.hydratedFourRowTemplate?.videoMessage ||
-    msg.message?.templateMessage?.fourRowTemplate?.imageMessage ||
-    msg.message?.templateMessage?.fourRowTemplate?.documentMessage ||
-    msg.message?.templateMessage?.fourRowTemplate?.videoMessage ||
-    msg.message?.interactiveMessage?.header?.imageMessage ||
-    msg.message?.interactiveMessage?.header?.documentMessage ||
-    msg.message?.interactiveMessage?.header?.videoMessage;
+    msg?.message?.imageMessage ||
+    msg?.message?.audioMessage ||
+    msg?.message?.videoMessage ||
+    msg?.message?.stickerMessage ||
+    msg?.message?.ephemeralMessage?.message?.stickerMessage ||
+    msg?.message?.documentMessage ||
+    msg?.message?.documentWithCaptionMessage?.message?.documentMessage ||
+    msg?.message?.ephemeralMessage?.message?.audioMessage ||
+    msg?.message?.ephemeralMessage?.message?.documentMessage ||
+    msg?.message?.ephemeralMessage?.message?.videoMessage ||
+    msg?.message?.ephemeralMessage?.message?.imageMessage ||
+    msg?.message?.viewOnceMessage?.message?.imageMessage ||
+    msg?.message?.viewOnceMessage?.message?.videoMessage ||
+    msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.imageMessage ||
+    msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.videoMessage ||
+    msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.audioMessage ||
+    msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.documentMessage ||
+    msg?.message?.templateMessage?.hydratedTemplate?.imageMessage ||
+    msg?.message?.templateMessage?.hydratedTemplate?.documentMessage ||
+    msg?.message?.templateMessage?.hydratedTemplate?.videoMessage ||
+    msg?.message?.templateMessage?.hydratedFourRowTemplate?.imageMessage ||
+    msg?.message?.templateMessage?.hydratedFourRowTemplate?.documentMessage ||
+    msg?.message?.templateMessage?.hydratedFourRowTemplate?.videoMessage ||
+    msg?.message?.templateMessage?.fourRowTemplate?.imageMessage ||
+    msg?.message?.templateMessage?.fourRowTemplate?.documentMessage ||
+    msg?.message?.templateMessage?.fourRowTemplate?.videoMessage ||
+    msg?.message?.interactiveMessage?.header?.imageMessage ||
+    msg?.message?.interactiveMessage?.header?.documentMessage ||
+    msg?.message?.interactiveMessage?.header?.videoMessage;
 
   if (!filename) {
     const ext = mineType.mimetype.split("/")[1].split(";")[0];
@@ -649,22 +650,22 @@ export const verifyMediaMessage = async (
         "*System:* \nFalha no download da mídia verifique no dispositivo";
       const messageData = {
         //mensagem de texto
-        wid: msg.key.id,
+        wid: msg?.key.id,
         ticketId: ticket.id,
-        contactId: msg.key.fromMe ? undefined : ticket.contactId,
+        contactId: msg?.key.fromMe ? undefined : ticket.contactId,
         body,
-        reactionMessage: msg.message?.reactionMessage,
-        fromMe: msg.key.fromMe,
+        reactionMessage: msg?.message?.reactionMessage,
+        fromMe: msg?.key.fromMe,
         mediaType: getTypeMessage(msg),
-        read: msg.key.fromMe,
-        quotedMsgId: quotedMsg?.id || msg.message?.reactionMessage?.key?.id,
-        ack: msg.status,
+        read: msg?.key.fromMe,
+        quotedMsgId: quotedMsg?.id || msg?.message?.reactionMessage?.key?.id,
+        ack: msg?.status,
         companyId: companyId,
-        remoteJid: msg.key.remoteJid,
-        participant: msg.key.participant,
-        timestamp: getTimestampMessage(msg.messageTimestamp),
+        remoteJid: msg?.key.remoteJid,
+        participant: msg?.key.participant,
+        timestamp: getTimestampMessage(msg?.messageTimestamp),
         createdAt: new Date(
-          Math.floor(getTimestampMessage(msg.messageTimestamp) * 1000)
+          Math.floor(getTimestampMessage(msg?.messageTimestamp) * 1000)
         ).toISOString(),
         dataJson: JSON.stringify(msg),
         ticketImported: ticket.imported,
@@ -767,22 +768,22 @@ export const verifyMediaMessage = async (
     const body = getBodyMessage(msg);
 
     const messageData = {
-      wid: msg.key.id,
+      wid: msg?.key.id,
       ticketId: ticket.id,
-      contactId: msg.key.fromMe ? undefined : contact.id,
+      contactId: msg?.key.fromMe ? undefined : contact.id,
       body: body || media.filename,
-      fromMe: msg.key.fromMe,
-      read: msg.key.fromMe,
+      fromMe: msg?.key.fromMe,
+      read: msg?.key.fromMe,
       mediaUrl: media.filename,
       mediaType: media.mimetype.split("/")[0],
       quotedMsgId: quotedMsg?.id,
-      ack: Number(String(msg.status).replace('PENDING', '2').replace('NaN', '1')) || 2,
-      remoteJid: msg.key.remoteJid,
-      participant: msg.key.participant,
+      ack: Number(String(msg?.status).replace('PENDING', '2').replace('NaN', '1')) || 2,
+      remoteJid: msg?.key.remoteJid,
+      participant: msg?.key.participant,
       dataJson: JSON.stringify(msg),
       ticketTrakingId: ticketTraking?.id,
       createdAt: new Date(
-        Math.floor(getTimestampMessage(msg.messageTimestamp) * 1000)
+        Math.floor(getTimestampMessage(msg?.messageTimestamp) * 1000)
       ).toISOString(),
       ticketImported: ticket.imported,
       isForwarded,
@@ -798,7 +799,7 @@ export const verifyMediaMessage = async (
       companyId: companyId
     });
 
-    if (!msg.key.fromMe && ticket.status === "closed") {
+    if (!msg?.key.fromMe && ticket.status === "closed") {
       await ticket.update({ status: "pending" });
       await ticket.reload({
         attributes: [
@@ -872,22 +873,22 @@ export const verifyMessage = async (
   const companyId = ticket.companyId;
 
   const messageData = {
-    wid: msg.key.id,
+    wid: msg?.key.id,
     ticketId: ticket.id,
-    contactId: msg.key.fromMe ? undefined : contact.id,
+    contactId: msg?.key.fromMe ? undefined : contact.id,
     body,
-    fromMe: msg.key.fromMe,
+    fromMe: msg?.key.fromMe,
     mediaType: getTypeMessage(msg),
-    read: msg.key.fromMe,
+    read: msg?.key.fromMe,
     quotedMsgId: quotedMsg?.id,
-    ack: Number(String(msg.status).replace('PENDING', '2').replace('NaN', '1')) || 2,
-    remoteJid: msg.key.remoteJid,
-    participant: msg.key.participant,
+    ack: Number(String(msg?.status).replace('PENDING', '2').replace('NaN', '1')) || 2,
+    remoteJid: msg?.key.remoteJid,
+    participant: msg?.key.participant,
     dataJson: JSON.stringify(msg),
     ticketTrakingId: ticketTraking?.id,
     isPrivate,
     createdAt: new Date(
-      Math.floor(getTimestampMessage(msg.messageTimestamp) * 1000)
+      Math.floor(getTimestampMessage(msg?.messageTimestamp) * 1000)
     ).toISOString(),
     ticketImported: ticket.imported,
     isForwarded
@@ -899,7 +900,7 @@ export const verifyMessage = async (
 
   await CreateMessageService({ messageData, companyId: companyId });
 
-  if (!msg.key.fromMe && ticket.status === "closed") {
+  if (!msg?.key.fromMe && ticket.status === "closed") {
     await ticket.update({ status: "pending" });
     await ticket.reload({
       include: [
@@ -932,7 +933,7 @@ export const verifyMessage = async (
 };
 
 const isValidMsg = (msg: proto.IWebMessageInfo): boolean => {
-  if (msg.key.remoteJid === "status@broadcast") return false;
+  if (msg?.key.remoteJid === "status@broadcast") return false;
   try {
     const msgType = getTypeMessage(msg);
     if (!msgType) {
@@ -972,7 +973,7 @@ const isValidMsg = (msg: proto.IWebMessageInfo): boolean => {
     if (!ifType) {
       logger.warn(`#### Nao achou o type em isValidMsg: ${msgType}
 ${JSON.stringify(msg?.message)}`);
-      Sentry.setExtra("Mensagem", { BodyMsg: msg.message, msg, msgType });
+      Sentry.setExtra("Mensagem", { BodyMsg: msg?.message, msg, msgType });
       Sentry.captureException(new Error("Novo Tipo de Mensagem em isValidMsg"));
     }
 
@@ -1093,7 +1094,7 @@ async function sendDelayedMessages(
   //       react
   //     );
   //   if (test) {
-  //     msg.react(react);
+  //     msg?.react(react);
   //     await delay(1000);
   //   }
   // }
@@ -1187,7 +1188,7 @@ const verifyQueue = async (
 
     //inicia integração dialogflow/n8n
     if (
-      !msg.key.fromMe &&
+      !msg?.key.fromMe &&
       !ticket.isGroup &&
       queues[0].integrationId
     ) {
@@ -1195,7 +1196,7 @@ const verifyQueue = async (
 
       await handleMessageIntegration(msg, wbot, companyId, integrations, ticket)
 
-      if (msg.key.fromMe) {
+      if (msg?.key.fromMe) {
         await ticket.update({
           typebotSessionTime: moment().toDate(),
           useIntegration: true,
@@ -1563,7 +1564,7 @@ const verifyQueue = async (
 
       //inicia integração dialogflow/n8n/typebot
       if (
-        !msg.key.fromMe &&
+        !msg?.key.fromMe &&
         !ticket.isGroup &&
         choosenQueue?.integrationId
       ) {
@@ -1572,7 +1573,7 @@ const verifyQueue = async (
 
         await handleMessageIntegration(msg, wbot, companyId, integrations, ticket)
 
-        if (msg.key.fromMe) {
+        if (msg?.key.fromMe) {
           await ticket.update({
             typebotSessionTime: moment().toDate(),
             useIntegration: true,
@@ -1865,8 +1866,8 @@ const verifyQueue = async (
   //       }
   //     }
   //   }, { userJid: ticket.contact.remoteJid })
-  //   await wbot.relayMessage(msg.key.remoteJid, msg.message, {
-  //     messageId: msg.key.id
+  //   await wbot.relayMessage(msg?.key.remoteJid, msg?.message, {
+  //     messageId: msg?.key.id
   //   })
 
   //   const buttons = [];
@@ -1884,7 +1885,7 @@ const verifyQueue = async (
   //     description: "Voltar Menu Inicial",
   //     header: "#"
   //   });
-  //   // await wbot.relayMessage(msg.key.remoteJid, msg.message, { messageId: msg.key.id })
+  //   // await wbot.relayMessage(msg?.key.remoteJid, msg?.message, { messageId: msg?.key.id })
   //   // await wbot.relayMessage(ticket.contact.remoteJid, {
   //   //   interactiveMessage: {
   //   //     body: {
@@ -2190,7 +2191,7 @@ const handleOpenAi = async (
 
   if (!prompt) return;
 
-  if (msg.messageStubType) return;
+  if (msg?.messageStubType) return;
 
   const publicFolder: string = path.resolve(
     __dirname,
@@ -2229,7 +2230,7 @@ const handleOpenAi = async (
 
   let messagesOpenAi = [];
 
-  if (msg.message?.conversation || msg.message?.extendedTextMessage?.text) {
+  if (msg?.message?.conversation || msg?.message?.extendedTextMessage?.text) {
     messagesOpenAi = [];
     messagesOpenAi.push({ role: "system", content: promptSystem });
     for (
@@ -2265,7 +2266,7 @@ const handleOpenAi = async (
     }
 
     if (prompt.voice === "texto") {
-      const sentMessage = await wbot.sendMessage(msg.key.remoteJid!, {
+      const sentMessage = await wbot.sendMessage(msg?.key.remoteJid!, {
         text: `\u200e ${response!}`
       });
       await verifyMessage(sentMessage!, ticket, contact);
@@ -2280,7 +2281,7 @@ const handleOpenAi = async (
         "mp3"
       ).then(async () => {
         try {
-          const sendMessage = await wbot.sendMessage(msg.key.remoteJid!, {
+          const sendMessage = await wbot.sendMessage(msg?.key.remoteJid!, {
             audio: { url: `${publicFolder}/${fileNameWithOutExtension}.mp3` },
             mimetype: "audio/mpeg",
             ptt: true
@@ -2293,7 +2294,7 @@ const handleOpenAi = async (
         }
       });
     }
-  } else if (msg.message?.audioMessage) {
+  } else if (msg?.message?.audioMessage) {
     const mediaUrl = mediaSent!.mediaUrl!.split("/").pop();
     const file = fs.createReadStream(`${publicFolder}/${mediaUrl}`) as any;
 
@@ -2334,7 +2335,7 @@ const handleOpenAi = async (
         .trim();
     }
     if (prompt.voice === "texto") {
-      const sentMessage = await wbot.sendMessage(msg.key.remoteJid!, {
+      const sentMessage = await wbot.sendMessage(msg?.key.remoteJid!, {
         text: `\u200e ${response!}`
       });
       await verifyMessage(sentMessage!, ticket, contact);
@@ -2349,7 +2350,7 @@ const handleOpenAi = async (
         "mp3"
       ).then(async () => {
         try {
-          const sendMessage = await wbot.sendMessage(msg.key.remoteJid!, {
+          const sendMessage = await wbot.sendMessage(msg?.key.remoteJid!, {
             audio: { url: `${publicFolder}/${fileNameWithOutExtension}.mp3` },
             mimetype: "audio/mpeg",
             ptt: true
@@ -2420,7 +2421,7 @@ export const handleMessageIntegration = async (
     let inputAudio: string | undefined;
 
     if (msgType === "audioMessage") {
-      let filename = `${msg.messageTimestamp}.ogg`;
+      let filename = `${msg?.messageTimestamp}.ogg`;
       readFile(
         join(__dirname, "..", "..", "..", "public", `company${companyId}`, filename),
         "base64",
@@ -2468,7 +2469,7 @@ const handleMessage = async (
   if (isImported) {
     addLogs({ fileName: `processImportMessagesWppId${wbot.id}.txt`, text: `Importando Mensagem: ${JSON.stringify(msg, null, 2)}>>>>>>>>>>>>>>>>>>>` })
 
-    let wid = msg.key.id
+    let wid = msg?.key.id
     let existMessage = await Message.findOne({
       where: { wid }
     })
@@ -2501,48 +2502,48 @@ const handleMessage = async (
     //if (msgType === "protocolMessage") return; // Tratar isso no futuro para excluir msgs se vor REVOKE
 
     const hasMedia =
-      msg.message?.imageMessage ||
-      msg.message?.audioMessage ||
-      msg.message?.videoMessage ||
-      msg.message?.stickerMessage ||
-      msg.message?.documentMessage ||
-      msg.message?.documentWithCaptionMessage?.message?.documentMessage ||
-      // msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.imageMessage ||
-      // msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.videoMessage ||
-      // msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.audioMessage ||
-      msg.message?.ephemeralMessage?.message?.audioMessage ||
-      msg.message?.ephemeralMessage?.message?.documentMessage ||
-      msg.message?.ephemeralMessage?.message?.videoMessage ||
-      msg.message?.ephemeralMessage?.message?.stickerMessage ||
-      msg.message?.ephemeralMessage?.message?.imageMessage ||
-      msg.message?.viewOnceMessage?.message?.imageMessage ||
-      msg.message?.viewOnceMessage?.message?.videoMessage ||
-      msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.imageMessage ||
-      msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.videoMessage ||
-      msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.audioMessage ||
-      msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.documentMessage ||
-      msg.message?.documentWithCaptionMessage?.message?.documentMessage ||
-      msg.message?.templateMessage?.hydratedTemplate?.imageMessage ||
-      msg.message?.templateMessage?.hydratedTemplate?.documentMessage ||
-      msg.message?.templateMessage?.hydratedTemplate?.videoMessage ||
-      msg.message?.templateMessage?.hydratedFourRowTemplate?.imageMessage ||
-      msg.message?.templateMessage?.hydratedFourRowTemplate?.documentMessage ||
-      msg.message?.templateMessage?.hydratedFourRowTemplate?.videoMessage ||
-      msg.message?.templateMessage?.fourRowTemplate?.imageMessage ||
-      msg.message?.templateMessage?.fourRowTemplate?.documentMessage ||
-      msg.message?.templateMessage?.fourRowTemplate?.videoMessage ||
-      msg.message?.interactiveMessage?.header?.imageMessage ||
-      msg.message?.interactiveMessage?.header?.documentMessage ||
-      msg.message?.interactiveMessage?.header?.videoMessage ||
-      msg.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.documentMessage ||
-      msg.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.videoMessage ||
-      msg.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.imageMessage ||
-      msg.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.locationMessage
+      msg?.message?.imageMessage ||
+      msg?.message?.audioMessage ||
+      msg?.message?.videoMessage ||
+      msg?.message?.stickerMessage ||
+      msg?.message?.documentMessage ||
+      msg?.message?.documentWithCaptionMessage?.message?.documentMessage ||
+      // msg?.message?.extendedTextMessage?.contextInfo?.quotedMessage?.imageMessage ||
+      // msg?.message?.extendedTextMessage?.contextInfo?.quotedMessage?.videoMessage ||
+      // msg?.message?.extendedTextMessage?.contextInfo?.quotedMessage?.audioMessage ||
+      msg?.message?.ephemeralMessage?.message?.audioMessage ||
+      msg?.message?.ephemeralMessage?.message?.documentMessage ||
+      msg?.message?.ephemeralMessage?.message?.videoMessage ||
+      msg?.message?.ephemeralMessage?.message?.stickerMessage ||
+      msg?.message?.ephemeralMessage?.message?.imageMessage ||
+      msg?.message?.viewOnceMessage?.message?.imageMessage ||
+      msg?.message?.viewOnceMessage?.message?.videoMessage ||
+      msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.imageMessage ||
+      msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.videoMessage ||
+      msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.audioMessage ||
+      msg?.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.documentMessage ||
+      msg?.message?.documentWithCaptionMessage?.message?.documentMessage ||
+      msg?.message?.templateMessage?.hydratedTemplate?.imageMessage ||
+      msg?.message?.templateMessage?.hydratedTemplate?.documentMessage ||
+      msg?.message?.templateMessage?.hydratedTemplate?.videoMessage ||
+      msg?.message?.templateMessage?.hydratedFourRowTemplate?.imageMessage ||
+      msg?.message?.templateMessage?.hydratedFourRowTemplate?.documentMessage ||
+      msg?.message?.templateMessage?.hydratedFourRowTemplate?.videoMessage ||
+      msg?.message?.templateMessage?.fourRowTemplate?.imageMessage ||
+      msg?.message?.templateMessage?.fourRowTemplate?.documentMessage ||
+      msg?.message?.templateMessage?.fourRowTemplate?.videoMessage ||
+      msg?.message?.interactiveMessage?.header?.imageMessage ||
+      msg?.message?.interactiveMessage?.header?.documentMessage ||
+      msg?.message?.interactiveMessage?.header?.videoMessage ||
+      msg?.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.documentMessage ||
+      msg?.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.videoMessage ||
+      msg?.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.imageMessage ||
+      msg?.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.locationMessage
     // const isPrivate = /\u200d/.test(bodyMessage);
 
     // if (isPrivate) return;
 
-    if (msg.key.fromMe) {
+    if (msg?.key.fromMe) {
       if (/\u200e/.test(bodyMessage)) return;
 
       if (
@@ -2563,7 +2564,7 @@ const handleMessage = async (
       msgContact = await getContactMessage(msg, wbot);
     }
 
-    const isGroup = msg.key.remoteJid?.endsWith("@g.us");
+    const isGroup = msg?.key.remoteJid?.endsWith("@g.us");
 
     // IGNORAR MENSAGENS DE GRUPO
     // const msgIsGroupBlock = await Settings.findOne({
@@ -2576,7 +2577,7 @@ const handleMessage = async (
     if (!whatsapp.allowGroup && isGroup) return;
 
     if (isGroup) {
-      const grupoMeta = await wbot.groupMetadata(msg.key.remoteJid);
+      const grupoMeta = await wbot.groupMetadata(msg?.key.remoteJid);
       const msgGroupContact = {
         id: grupoMeta.id,
         name: grupoMeta.subject
@@ -2588,7 +2589,7 @@ const handleMessage = async (
 
     let unreadMessages = 0;
 
-    if (msg.key.fromMe) {
+    if (msg?.key.fromMe) {
       await cacheLayer.set(`contacts:${contact.id}:unreads`, "0");
     } else {
       const unreads = await cacheLayer.get(`contacts:${contact.id}:unreads`);
@@ -2606,8 +2607,8 @@ const handleMessage = async (
     const enableLGPD = settings.enableLGPD === "enabled";
 
     // contador
-    // if (msg.key.fromMe && count?.unreadCount > 0) {
-    //   let remoteJid = msg.key.remoteJid;
+    // if (msg?.key.fromMe && count?.unreadCount > 0) {
+    //   let remoteJid = msg?.key.remoteJid;
     //   SendAckBYRemoteJid({ remoteJid, companyId });
     // }
     const mutex = new Mutex();
@@ -2670,7 +2671,7 @@ const handleMessage = async (
       await TicketTag.create({ ticketId: ticket.id, tagId: rollbackTag.id });
     }
 
-    // if (!msg.key.fromMe && whatsapp?.integrationId > 0) {
+    // if (!msg?.key.fromMe && whatsapp?.integrationId > 0) {
 
     //   const integration = await ShowQueueIntegrationService(whatsapp.integrationId, companyId);
 
@@ -2688,11 +2689,11 @@ const handleMessage = async (
         queueId: whatsapp.queueIdImportMessages
       })
     }
-    // console.log(msg.message?.editedMessage)
+    // console.log(msg?.message?.editedMessage)
     // console.log(ticket)
     if (msgType === "editedMessage" || msgType === "protocolMessage") {
-      const msgKeyIdEdited = msgType === "editedMessage" ? msg.message.editedMessage.message.protocolMessage.key.id : msg.message?.protocolMessage.key.id;
-      let bodyEdited = findCaption(msg.message)
+      const msgKeyIdEdited = msgType === "editedMessage" ? msg?.message.editedMessage.message.protocolMessage.key.id : msg?.message?.protocolMessage.key.id;
+      let bodyEdited = findCaption(msg?.message)
 
       // console.log("bodyEdited", bodyEdited)
       const io = getIO();
@@ -2744,7 +2745,7 @@ const handleMessage = async (
     let useLGPD = false;
 
     try {
-      if (!msg.key.fromMe) {
+      if (!msg?.key.fromMe) {
         //MENSAGEM DE FÉRIAS COLETIVAS
 
         if (!isNil(whatsapp.collectiveVacationMessage && !isGroup)) {
@@ -2821,7 +2822,7 @@ const handleMessage = async (
 
 
         //TRATAMENTO LGPD 
-        if (enableLGPD && ticket.status === "lgpd" && !isImported && !msg.key.fromMe) {
+        if (enableLGPD && ticket.status === "lgpd" && !isImported && !msg?.key.fromMe) {
           if (hasMedia) {
             await verifyMediaMessage(msg, ticket, contact, ticketTraking, false, false, wbot);
           } else {
@@ -2966,11 +2967,11 @@ const handleMessage = async (
       Sentry.captureException(e);
       console.log(e);
     }
-    const isMsgForwarded = msg.message?.extendedTextMessage?.contextInfo?.isForwarded ||
-      msg.message?.imageMessage?.contextInfo?.isForwarded ||
-      msg.message?.audioMessage?.contextInfo?.isForwarded ||
-      msg.message?.videoMessage?.contextInfo?.isForwarded ||
-      msg.message?.documentMessage?.contextInfo?.isForwarded
+    const isMsgForwarded = msg?.message?.extendedTextMessage?.contextInfo?.isForwarded ||
+      msg?.message?.imageMessage?.contextInfo?.isForwarded ||
+      msg?.message?.audioMessage?.contextInfo?.isForwarded ||
+      msg?.message?.videoMessage?.contextInfo?.isForwarded ||
+      msg?.message?.documentMessage?.contextInfo?.isForwarded
 
     let mediaSent: Message | undefined;
 
@@ -2987,7 +2988,7 @@ const handleMessage = async (
     // Atualiza o ticket se a ultima mensagem foi enviada por mim, para que possa ser finalizado. 
     try {
       await ticket.update({
-        fromMe: msg.key.fromMe,
+        fromMe: msg?.key.fromMe,
       });
     } catch (e) {
       Sentry.captureException(e);
@@ -3003,7 +3004,7 @@ const handleMessage = async (
     }
 
     try {
-      if (!msg.key.fromMe && settings.scheduleType && (!ticket.isGroup || whatsapp.groupAsTicket === "enabled") && !["open", "group"].includes(ticket.status)) {
+      if (!msg?.key.fromMe && settings.scheduleType && (!ticket.isGroup || whatsapp.groupAsTicket === "enabled") && !["open", "group"].includes(ticket.status)) {
         /**
          * Tratamento para envio de mensagem quando a empresa está fora do expediente
          */
@@ -3089,7 +3090,7 @@ const handleMessage = async (
       !ticket.imported &&
       !ticket.queue &&
       !isGroup &&
-      !msg.key.fromMe &&
+      !msg?.key.fromMe &&
       !ticket.userId &&
       !isNil(whatsapp.promptId)
     ) {
@@ -3099,7 +3100,7 @@ const handleMessage = async (
     //integraçao na conexao
     if (
       !ticket.imported &&
-      !msg.key.fromMe &&
+      !msg?.key.fromMe &&
       !ticket.isGroup &&
       !ticket.queue &&
       !ticket.user &&
@@ -3117,7 +3118,7 @@ const handleMessage = async (
 
     if (
       !ticket.imported &&
-      !msg.key.fromMe &&
+      !msg?.key.fromMe &&
       !ticket.isGroup &&
       !ticket.userId &&
       ticket.integrationId
@@ -3126,7 +3127,7 @@ const handleMessage = async (
       const integrations = await ShowQueueIntegrationService(ticket.integrationId, companyId);
 
       await handleMessageIntegration(msg, wbot, companyId, integrations, ticket)
-      if (msg.key.fromMe) {
+      if (msg?.key.fromMe) {
         await ticket.update({
           typebotSessionTime: moment().toDate(),
         })
@@ -3137,7 +3138,7 @@ const handleMessage = async (
       !ticket.imported &&
       !ticket.queue &&
       (!ticket.isGroup || whatsapp.groupAsTicket === "enabled") &&
-      !msg.key.fromMe &&
+      !msg?.key.fromMe &&
       !ticket.userId &&
       whatsapp.queues.length >= 1 &&
       !ticket.useIntegration
@@ -3161,7 +3162,7 @@ const handleMessage = async (
     // Verificação se aceita audio do contato
     if (
       getTypeMessage(msg) === "audioMessage" &&
-      !msg.key.fromMe &&
+      !msg?.key.fromMe &&
       (!ticket.isGroup || whatsapp.groupAsTicket === "enabled") &&
       (!contact?.acceptAudioMessage ||
         settings?.acceptAudioMessageContact === "disabled")
@@ -3173,9 +3174,9 @@ const handleMessage = async (
         },
         {
           quoted: {
-            key: msg.key,
+            key: msg?.key,
             message: {
-              extendedTextMessage: msg.message.extendedTextMessage
+              extendedTextMessage: msg?.message.extendedTextMessage
             }
           }
         }
@@ -3185,7 +3186,7 @@ const handleMessage = async (
 
 
     try {
-      if (!msg.key.fromMe && settings?.scheduleType && ticket.queueId !== null && (!ticket.isGroup || whatsapp.groupAsTicket === "enabled") && ticket.status !== "open") {
+      if (!msg?.key.fromMe && settings?.scheduleType && ticket.queueId !== null && (!ticket.isGroup || whatsapp.groupAsTicket === "enabled") && ticket.status !== "open") {
         /**
          * Tratamento para envio de mensagem quando a empresa/fila está fora do expediente
          */
@@ -3266,7 +3267,7 @@ const handleMessage = async (
       console.log(e);
     }
 
-    if (ticket.queue && ticket.queueId && !msg.key.fromMe && !ticket.useIntegration && !ticket.integrationId) {
+    if (ticket.queue && ticket.queueId && !msg?.key.fromMe && !ticket.useIntegration && !ticket.integrationId) {
       if (!ticket.user || ticket.queue?.chatbots?.length > 0) {
         await sayChatbot(ticket.queueId, wbot, ticket, contact, msg, ticketTraking);
       }
@@ -3296,7 +3297,7 @@ const handleMsgAck = async (
   try {
     const messageToUpdate = await Message.findOne({
       where: {
-        wid: msg.key.id,
+        wid: msg?.key.id,
       },
       include: [
         "contact",
@@ -3444,8 +3445,8 @@ const verifyCampaignMessageAndCloseTicket = async (message: proto.IWebMessageInf
 const filterMessages = (msg: WAMessage): boolean => {
   msgDB.save(msg);
 
-  if (msg.message?.protocolMessage?.editedMessage) return true;
-  if (msg.message?.protocolMessage) return false;
+  if (msg?.message?.protocolMessage?.editedMessage) return true;
+  if (msg?.message?.protocolMessage) return false;
 
   if (
     [
@@ -3453,7 +3454,7 @@ const filterMessages = (msg: WAMessage): boolean => {
       WAMessageStubType.E2E_DEVICE_CHANGED,
       WAMessageStubType.E2E_IDENTITY_CHANGED,
       WAMessageStubType.CIPHERTEXT
-    ].includes(msg.messageStubType as WAMessageStubType)
+    ].includes(msg?.messageStubType as WAMessageStubType)
   )
     return false;
 

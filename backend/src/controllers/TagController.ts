@@ -12,6 +12,8 @@ import SimpleListService from "../services/TagServices/SimpleListService";
 import SyncTagService from "../services/TagServices/SyncTagsService";
 import KanbanListService from "../services/TagServices/KanbanListService";
 import ContactTag from "../models/ContactTag";
+import logger from "../utils/logger";
+import SyncTagLanesService from "../services/TagServices/SyncTagLaneService";
 
 type IndexQuery = {
   searchParam?: string;
@@ -23,7 +25,6 @@ type IndexQuery = {
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { pageNumber, searchParam, kanban, tagId } = req.query as IndexQuery;
   const { companyId } = req.user;
-
   const { tags, count, hasMore } = await ListService({
     searchParam,
     pageNumber,
@@ -36,11 +37,17 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
-  const { name, color, kanban,
+  const {
+    name,
+    color,
+    kanban,
     timeLane,
     nextLaneId,
     greetingMessageLane,
-    rollbackLaneId } = req.body;
+    rollbackLaneId,
+    whatsappId,
+    queueIntegrationId
+  } = req.body;
   const { companyId } = req.user;
 
   const tag = await CreateService({
@@ -51,15 +58,16 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     timeLane,
     nextLaneId,
     greetingMessageLane,
-    rollbackLaneId
+    rollbackLaneId,
+    whatsappId,
+    queueIntegrationId: queueIntegrationId ?? null
   });
 
   const io = getIO();
-  io.of(String(companyId))
-    .emit(`company${companyId}-tag`, {
-      action: "create",
-      tag
-    });
+  io.of(String(companyId)).emit(`company${companyId}-tag`, {
+    action: "create",
+    tag
+  });
 
   return res.status(200).json(tag);
 };
@@ -78,7 +86,6 @@ export const update = async (
 ): Promise<Response> => {
   const { kanban } = req.body;
 
-  //console.log(kanban)
   if (req.user.profile !== "admin" && kanban === 1) {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
@@ -90,11 +97,10 @@ export const update = async (
   const tag = await UpdateService({ tagData, id: tagId });
 
   const io = getIO();
-  io.of(String(companyId))
-    .emit(`company${companyId}-tag`, {
-      action: "update",
-      tag
-    });
+  io.of(String(companyId)).emit(`company${companyId}-tag`, {
+    action: "update",
+    tag
+  });
 
   return res.status(200).json(tag);
 };
@@ -106,14 +112,13 @@ export const remove = async (
   const { tagId } = req.params;
   const { companyId } = req.user;
 
-  await DeleteService(tagId);
+  await DeleteService(tagId, companyId);
 
   const io = getIO();
-  io.of(String(companyId))
-    .emit(`company${companyId}-tag`, {
-      action: "delete",
-      tagId
-    });
+  io.of(String(companyId)).emit(`company${companyId}-tag`, {
+    action: "delete",
+    tagId
+  });
 
   return res.status(200).json({ message: "Tag deleted" });
 };
@@ -127,7 +132,10 @@ export const list = async (req: Request, res: Response): Promise<Response> => {
   return res.json(tags);
 };
 
-export const kanban = async (req: Request, res: Response): Promise<Response> => {
+export const kanban = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   const { companyId } = req.user;
 
   const tags = await KanbanListService({ companyId });
@@ -147,14 +155,24 @@ export const syncTags = async (
   return res.json(tags);
 };
 
+export const syncTagsLane = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const data = req.body;
+  const { companyId } = req.user;
+
+  const tags = await SyncTagLanesService({ ...data, companyId });
+
+  return res.json(tags);
+};
+
 export const removeContactTag = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   const { tagId, contactId } = req.params;
   const { companyId } = req.user;
-
-  console.log(tagId, contactId)
 
   await ContactTag.destroy({
     where: {
@@ -166,11 +184,10 @@ export const removeContactTag = async (
   const tag = await ShowService(tagId);
 
   const io = getIO();
-  io.of(String(companyId))
-    .emit(`company${companyId}-tag`, {
-      action: "update",
-      tag
-    });
+  io.of(String(companyId)).emit(`company${companyId}-tag`, {
+    action: "update",
+    tag
+  });
 
   return res.status(200).json({ message: "Tag deleted" });
 };

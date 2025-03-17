@@ -5,6 +5,20 @@ import Tag from '../models/Tag'
 import { getIO } from "../libs/socket";
 import Ticket from "../models/Ticket";
 import ShowTicketService from "../services/TicketServices/ShowTicketService";
+import logger from "../utils/logger";
+
+type IndexQuery = {
+  ticketId?: number;
+  tagId?: number;
+};
+
+export const index = async (req: Request, res: Response): Promise<Response> => {
+  const { ticketId, tagId } = req.query as IndexQuery;
+  
+  const ticketTags = await TicketTag.findAll({ where: { ticketId, tagId} });
+  
+  return res.json({ ticketTags});
+};
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId, tagId } = req.params;

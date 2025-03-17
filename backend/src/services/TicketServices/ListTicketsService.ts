@@ -35,11 +35,11 @@ interface Request {
   dateEnd?: string;
   updatedAt?: string;
   showAll?: string;
-  userId: number;
+  userId?: number;
   withUnreadMessages?: string;
-  queueIds: number[];
-  tags: number[];
-  users: number[];
+  queueIds?: number[];
+  tags?: number[];
+  users?: number[];
   contacts?: string[];
   updatedStart?: string;
   updatedEnd?: string;

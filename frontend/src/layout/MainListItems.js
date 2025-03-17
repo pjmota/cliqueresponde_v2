@@ -37,6 +37,7 @@ import ForumIcon from "@material-ui/icons/Forum";
 import LocalAtmIcon from "@material-ui/icons/LocalAtm";
 import BusinessIcon from "@material-ui/icons/Business";
 import {
+  Alarm,
   AllInclusive,
   AttachFile,
   Dashboard,
@@ -58,6 +59,7 @@ import toastError from "../errors/toastError";
 import usePlans from "../hooks/usePlans";
 import useVersion from "../hooks/useVersion";
 import { i18n } from "../translate/i18n";
+import { Box } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
@@ -421,40 +423,42 @@ const MainListItems = ({ collapsed, drawerClose }) => {
                 backgroundColor: theme.mode === "light" ? "rgba(120,120,120,0.1)" : "rgba(120,120,120,0.5)",
               }}
             >
-              <Can
-                role={user.profile === "user" && user.showDashboard === "enabled" ? "admin" : user.profile}
-                perform={"drawer-admin-items:view"}
-                yes={() => (
-                  <>
+              <Box style={{ paddingLeft: "20px" }}>
+                <Can
+                  role={user.profile === "user" && user.showDashboard === "enabled" ? "admin" : user.profile}
+                  perform={"drawer-admin-items:view"}
+                  yes={() => (
+                    <>
+                      <ListItemLink
+                        small
+                        to="/"
+                        primary="Dashboard"
+                        icon={<DashboardOutlinedIcon />}
+                        tooltip={collapsed}
+                      />
+                      <ListItemLink
+                        small
+                        to="/reports"
+                        primary={i18n.t("mainDrawer.listItems.reports")}
+                        icon={<Description />}
+                        tooltip={collapsed}
+                      />
+                    </>
+                  )}
+                />
+                <Can
+                  role={user.profile === "user" && user.allowRealTime === "enabled" ? "admin" : user.profile}
+                  perform={"drawer-admin-items:view"}
+                  yes={() => (
                     <ListItemLink
-                      small
-                      to="/"
-                      primary="Dashboard"
-                      icon={<DashboardOutlinedIcon />}
+                      to="/moments"
+                      primary={i18n.t("mainDrawer.listItems.chatsTempoReal")}
+                      icon={<GridOn />}
                       tooltip={collapsed}
                     />
-                    <ListItemLink
-                      small
-                      to="/reports"
-                      primary={i18n.t("mainDrawer.listItems.reports")}
-                      icon={<Description />}
-                      tooltip={collapsed}
-                    />
-                  </>
-                )}
-              />
-              <Can
-                role={user.profile === "user" && user.allowRealTime === "enabled" ? "admin" : user.profile}
-                perform={"drawer-admin-items:view"}
-                yes={() => (
-                  <ListItemLink
-                    to="/moments"
-                    primary={i18n.t("mainDrawer.listItems.chatsTempoReal")}
-                    icon={<GridOn />}
-                    tooltip={collapsed}
-                  />
-                )}
-              />
+                  )}
+                />
+              </Box>
             </Collapse>
           </>
         )}
@@ -788,6 +792,18 @@ const MainListItems = ({ collapsed, drawerClose }) => {
                 />
               )}
             />
+            {/* <Can
+              role={user.profile}
+              perform="dashboard:view"
+              yes={() => (
+                <ListItemLink
+                  to="/schedule-tag-integrations"
+                  primary={i18n.t("Autom. de integrações")}
+                  icon={<Alarm />}
+                  tooltip={collapsed}
+                />
+              )}
+            /> */}
             <Can
               role={user.profile}
               perform="dashboard:view"

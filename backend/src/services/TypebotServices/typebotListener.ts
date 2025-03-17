@@ -56,7 +56,8 @@ const typebotListener = async ({
         prefilledVariables: {
           number: number,
           pushName: msg.pushName || "",
-          remoteJid: ticket?.contact?.remoteJid
+          remoteJid: ticket?.contact?.remoteJid,
+          ticketId: ticket.id
         }
       });
 
@@ -71,9 +72,35 @@ const typebotListener = async ({
         data: reqData
       };
 
-      const request = await axios.request(config);
+      let requestResult;
 
-      return request.data;
+      if (!config?.url) {
+        logger.error("Erro: URL da requisição está indefinida ou vazia.");
+        return
+      } else {
+        try {
+          requestResult = await axios.request(config);
+          logger.info(`Sucesso no axios request - start:", ${JSON.stringify(requestResult.data)}`);
+        } catch (error) {
+          if (error.response?.status === 404) {
+            logger.warn(`Aviso: A URL retornou 404. Requisição não realizada. ${JSON.stringify(config)}`);
+            return
+          } else {
+            logger.error(`Erro inesperado:", ${JSON.stringify(error)}`);
+            return
+          }
+        }
+      };
+      
+      const request = requestResult
+
+      /* if (!ticket.typebotResultId) {
+        await ticket.update({
+          typebotResultId: request.data.resultId
+        });
+      } */
+
+      return request ? request.data : null;
     } catch (err) {
       logger.info("Erro ao criar sessão do typebot: ", err);
       throw err;
@@ -119,10 +146,7 @@ const typebotListener = async ({
     //let body = getConversationMessage(msg);
 
     if (
-      body.toLocaleLowerCase().trim() !==
-        typebotKeywordFinish.toLocaleLowerCase().trim() &&
-      body.toLocaleLowerCase().trim() !==
-        typebotKeywordRestart.toLocaleLowerCase().trim()
+      body !== typebotKeywordFinish && body !== typebotKeywordRestart
     ) {
       let requestContinue;
       let messages;
@@ -131,7 +155,12 @@ const typebotListener = async ({
 
       if (dataStart?.messages.length === 0 || dataStart === undefined) {
         const reqData = JSON.stringify({
-          message: body
+          message: body,
+          prefilledVariables: {
+            number: number,
+            pushName: msg.pushName || "",
+            ticketId: ticket.id
+          }
         });
 
         let config = {
@@ -144,7 +173,27 @@ const typebotListener = async ({
           },
           data: reqData
         };
-        requestContinue = await axios.request(config);
+
+        let requestContinue;
+
+        if (!config?.url) {
+          logger.error("Erro: URL da requisição está indefinida ou vazia.");
+          return
+        } else {
+          try {
+            requestContinue = await axios.request(config);
+            logger.info(`Sucesso no axios request: - continue", ${JSON.stringify(requestContinue.data)}`);
+          } catch (error) {
+            if (error.response?.status === 404) {
+              logger.warn(`Aviso: A URL retornou 404. Requisição não realizada. ${JSON.stringify(config)}`);
+              return
+            } else {
+              logger.error(`Erro inesperado:", ${JSON.stringify(error)}`);
+              return
+            }
+          }
+        }
+
         messages = requestContinue.data?.messages;
         input = requestContinue.data?.input;
         clientSideActions = requestContinue.data?.clientSideActions;
@@ -155,9 +204,9 @@ const typebotListener = async ({
       }
 
       if (messages?.length === 0) {
-        await wbot.sendMessage(`${number}@c.us`, {
+        /* await wbot.sendMessage(`${number}@c.us`, {
           text: typebotUnknownMessage
-        });
+        }); */
       } else {
         for (const message of messages) {
           if (message.type === "text") {
@@ -421,8 +470,7 @@ const typebotListener = async ({
       }
     }
     if (
-      body.toLocaleLowerCase().trim() ===
-      typebotKeywordRestart.toLocaleLowerCase().trim()
+      body === typebotKeywordRestart
     ) {
       await ticket.update({
         isBot: true,
@@ -434,8 +482,7 @@ const typebotListener = async ({
       await wbot.sendMessage(`${number}@c.us`, { text: typebotRestartMessage });
     }
     if (
-      body.toLocaleLowerCase().trim() ===
-      typebotKeywordFinish.toLocaleLowerCase().trim()
+      body === typebotKeywordFinish
     ) {
       await UpdateTicketService({
         ticketData: {

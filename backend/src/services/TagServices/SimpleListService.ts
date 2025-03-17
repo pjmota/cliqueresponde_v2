@@ -6,6 +6,7 @@ interface Request {
   companyId: number;
   searchParam?: string;
   kanban?: number;
+  whatsappId?: number;
 }
 
 const ListService = async ({

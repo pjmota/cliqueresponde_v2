@@ -69,8 +69,12 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 	const { user } = useContext(AuthContext);
 	const [colorPickerModalOpen, setColorPickerModalOpen] = useState(false);
 	const [lanes, setLanes] = useState([]);
+	const [whatsapps, setWhatsapps] = useState([]);
+	const [queueIntegrations, setQueueIntegrations] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [selectedLane, setSelectedLane] = useState([]);
+	const [selectedWhatsapps, setSelectedWhatsapps] = useState([]);
+	const [selectedQueueIntegrations, setSelectedQueueIntegrations] = useState([]);
 	const [selectedRollbackLane, setSelectedRollbackLane] = useState([]);
 
 
@@ -87,6 +91,7 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 	const [tag, setTag] = useState(initialState);
 
 	useEffect(() => {
+		setTag({...initialState});
 		setLoading(true);
 		const delayDebounceFn = setTimeout(() => {
 			const fetchTags = async () => {
@@ -102,9 +107,42 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 			fetchTags();
 		}, 500);
 		return () => clearTimeout(delayDebounceFn);
+	}, [open]);
+
+	useEffect(() => {
+		setLoading(true);
+		const delayDebounceFn = setTimeout(() => {
+			const fetchWhatsapps = async () => {
+				try {
+					const { data } = await api.get("/whatsapp/");
+					setWhatsapps(data);
+				} catch (err) {
+					toastError(err);
+				}
+			};
+			fetchWhatsapps();
+		}, 500);
+		return () => clearTimeout(delayDebounceFn);
 	}, []);
 
 	useEffect(() => {
+		setLoading(true);
+		const delayDebounceFn = setTimeout(() => {
+			const fetchQueueIntegration = async () => {
+				try {
+					const { data } = await api.get("/queueIntegration/");
+					setQueueIntegrations(data.queueIntegrations);
+				} catch (err) {
+					toastError(err);
+				}
+			};
+			fetchQueueIntegration();
+		}, 500);
+		return () => clearTimeout(delayDebounceFn);
+	}, []);
+
+	useEffect(() => {
+		setTag(initialState);
 		try {
 			(async () => {
 				if (!tagId) return;
@@ -119,6 +157,12 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 				if (data.rollbackLaneId) {
 					setSelectedRollbackLane(data.rollbackLaneId);
 				}
+				if (data.whatsappId) {
+					setSelectedWhatsapps(data.whatsappId);
+				}
+				if (data.queueIntegrationId) {
+					setSelectedQueueIntegrations(data.queueIntegrationId);
+				}
 			})()
 		} catch (err) {
 			toastError(err);
@@ -126,13 +170,34 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 	}, [tagId, open]);
 
 	const handleClose = () => {
-		setTag(initialState);
+		//setTag({...initialState});
 		setColorPickerModalOpen(false);
 		onClose();
 	};
 
 	const handleSaveTag = async values => {
-		const tagData = { ...values, userId: user?.id, kanban: kanban, nextLaneId: selectedLane || null, rollbackLaneId: selectedRollbackLane || null };
+		const lane =  kanban === 1 ? Array.isArray(selectedLane) && selectedLane.length === 0 ? "" : selectedLane : selectedLane[0];
+		const whatsapp =  kanban === 1 ? Array.isArray(selectedWhatsapps) && selectedWhatsapps.length === 0 ? "" : selectedWhatsapps : selectedWhatsapps[0];
+		const queueIntegration =  kanban === 1 ? Array.isArray(selectedQueueIntegrations) && selectedQueueIntegrations.length === 0 ? "" : selectedQueueIntegrations : selectedQueueIntegrations[0];
+		const rollbackLane =  kanban === 1 ? Array.isArray(selectedRollbackLane) && selectedRollbackLane.length === 0 ? "" : selectedRollbackLane : selectedRollbackLane[0];
+		
+		const tagData = { 
+			...values, 
+			userId: user?.id, 
+			kanban: kanban, 
+			nextLaneId: lane, 
+			whatsappId: whatsapp,
+			queueIntegrationId: queueIntegration || null, 
+			rollbackLaneId: rollbackLane || null 
+		};
+
+		/* const tagData = { 
+			...values, 
+			userId: user?.id, 
+			kanban: kanban, 
+			nextLaneId: selectedLane, 
+			whatsappId: selectedWhatsapps,
+			queueIntegrationId: selectedQueueIntegrations || null, rollbackLaneId: selectedRollbackLane || null }; */
 
 		try {
 			if (tagId) {
@@ -159,6 +224,10 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 
 		return hexColor;
 	}
+
+	useEffect(() => {
+    console.log("Novo valor de tag antes de renderizar Formik:", tag);
+}, [tag]);
 
 	return (
 		<div className={classes.root}>
@@ -198,7 +267,10 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 											helperText={touched.name && errors.name}
 											variant="outlined"
 											margin="dense"
-											onChange={(e) => setTag(prev => ({ ...prev, name: e.target.value }))}
+											onChange={(e) => {
+												const value = e.target.value; // Pegamos o valor antes de chamar setTag
+												setTag(prev => ({ ...prev, name: value }));
+											}}
 											fullWidth
 											autoFocus
 										/>
@@ -233,6 +305,7 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 											}}
 											variant="outlined"
 											margin="dense"
+											value=''
 										/>
 
 										{colorPickerModalOpen && (
@@ -292,6 +365,72 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 															lanes.map((lane) => (
 																<MenuItem key={lane.id} value={lane.id}>
 																	{lane.name}
+																</MenuItem>
+															))}
+													</Field>
+												</FormControl>
+											</Grid>
+											<Grid item xs={12} md={6} xl={6}>
+												<FormControl
+													variant="outlined"
+													margin="dense"
+													fullWidth
+													className={classes.formControl}
+												>
+													<InputLabel id="whatsapp-selection-label">
+														{i18n.t("tagModal.form.conection")}
+													</InputLabel>
+													<Field
+														as={Select}
+														label={i18n.t("tagModal.form.conection")}
+														placeholder={i18n.t("tagModal.form.conection")}
+														labelId="whatsapp-selection-label"
+														id="whatsappId"
+														name="whatsappId"
+														style={{ left: "-7px" }}
+														error={touched.whatsappId && Boolean(errors.whatsappId)}
+														value={selectedWhatsapps}
+														onChange={(e) => setSelectedWhatsapps(e.target.value || null)}
+													>
+														<MenuItem value={null}>&nbsp;</MenuItem>
+														{whatsapps &&
+															whatsapps.map((whatsapp) => (
+																<MenuItem key={whatsapp.id} value={whatsapp.id}>
+																	{whatsapp.name}
+																</MenuItem>
+															))}
+													</Field>
+												</FormControl>
+											</Grid>
+											<Grid item xs={12} md={6} xl={6}>
+												<FormControl
+													variant="outlined"
+													margin="dense"
+													fullWidth
+													className={classes.formControl}
+												>
+													<InputLabel id="whatsapp-selection-label">
+														{i18n.t("tagModal.form.integration")}
+													</InputLabel>
+													<Field
+														as={Select}
+														label={i18n.t("tagModal.form.integration")}
+														placeholder={i18n.t("tagModal.form.integration")}
+														labelId="whatsapp-selection-label"
+														id="queueIntegrationId"
+														name="queueIntegrationId"
+														style={{ left: "-7px" }}
+														error={touched.queueIntegrationId && Boolean(errors.queueIntegrationId)}
+														value={selectedQueueIntegrations}
+														onChange={(e) => {
+															console.log('e.target', e.target)
+															setSelectedQueueIntegrations(e.target.value || null)}}
+													>
+														<MenuItem value={null}>&nbsp;</MenuItem>
+														{queueIntegrations &&
+															queueIntegrations.map((queue) => (
+																<MenuItem key={queue.id} value={queue.id}>
+																	{queue.name}
 																</MenuItem>
 															))}
 													</Field>

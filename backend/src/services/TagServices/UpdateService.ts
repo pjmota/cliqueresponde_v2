@@ -3,6 +3,8 @@ import * as Yup from "yup";
 import AppError from "../../errors/AppError";
 import Tag from "../../models/Tag";
 import ShowService from "./ShowService";
+import ScheduleTagIntegration from "../../models/ScheduleTagIntegration";
+import logger from "../../utils/logger";
 
 interface TagData {
   id?: number;
@@ -13,6 +15,8 @@ interface TagData {
   nextLaneId?: number;
   greetingMessageLane: string;
   rollbackLaneId?: number;
+  whatsappId?: number;
+  queueIntegrationId?: number;
 }
 
 interface Request {
@@ -34,7 +38,10 @@ const UpdateUserService = async ({
     timeLane,
     nextLaneId = null,
     greetingMessageLane,
-    rollbackLaneId = null} = tagData;
+    rollbackLaneId = null,
+    whatsappId = null,
+    queueIntegrationId = null,
+  } = tagData;
 
   try {
     await schema.validate({ name });
@@ -50,7 +57,33 @@ const UpdateUserService = async ({
     nextLaneId: String(nextLaneId) === "" ? null : nextLaneId,
     greetingMessageLane,
     rollbackLaneId: String(rollbackLaneId) === "" ? null : rollbackLaneId,
+    whatsappId,
+    queueIntegrationId
   });
+
+  if(kanban) {
+    const params = {
+      tagId: tag.id ,	
+      nextTagId: tag.nextLaneId,	
+      queueIntegrationId: tag.queueIntegrationId,	
+      companyId: tag.companyId,	
+      delay: tag.timeLane 
+    }
+
+    const scheduleTagIntegration = await ScheduleTagIntegration.findOne({
+      where: { tagId: tag.id , companyId: tag.companyId }
+    });
+
+    if(scheduleTagIntegration) {
+      const record = await ScheduleTagIntegration.findByPk(scheduleTagIntegration.id);
+      await record.update(params);
+    } else {
+      await ScheduleTagIntegration.findOrCreate({
+        where: {...params },
+        defaults:{ ...params}
+      })
+    }
+  }
 
   await tag.reload();
   return tag;

@@ -45,6 +45,9 @@ import Tag from "./models/Tag";
 import { delay } from "@whiskeysockets/baileys";
 import Plan from "./models/Plan";
 import UpdateUserService from "./services/RotationsService/UpdateService";
+import ShowQueueIntegrationService from "./services/QueueIntegrationServices/ShowQueueIntegrationService";
+import { getWbot } from "./libs/wbot";
+import typebotListener from "./services/TypebotServices/typebotListener";
 
 const connection = process.env.REDIS_URI || "";
 const limiterMax = process.env.REDIS_OPT_LIMITER_MAX || 1;
@@ -1472,7 +1475,6 @@ export default async function handleRandomUser(param?, ticketId?) {
 }
 
 const executing = async (queue, ticketId?) => {
-  logger.info(`Iniciando a randomização dos atendimentos parte 2...`);
   let getNextUserId: () => number | undefined = undefined;
   try {
     const companies = await Company.findAll({
@@ -1774,6 +1776,7 @@ const executing = async (queue, ticketId?) => {
 
 async function handleProcessLanes() {
   const job = new CronJob("*/1 * * * *", async () => {
+    logger.info('INICIANDO PROCESSO DE INTEGRAÇÃO DAS TAGS')
     const companies = await Company.findAll({
       include: [
         {
@@ -1786,10 +1789,10 @@ async function handleProcessLanes() {
         }
       ]
     });
+
     companies.map(async c => {
       try {
         const companyId = c.id;
-
         const ticketTags = await TicketTag.findAll({
           include: [
             {
@@ -1797,7 +1800,7 @@ async function handleProcessLanes() {
               as: "ticket",
               where: {
                 status: "open",
-                fromMe: true,
+                //fromMe: true,
                 companyId
               },
               attributes: ["id", "contactId", "updatedAt", "whatsappId"]
@@ -1815,7 +1818,8 @@ async function handleProcessLanes() {
                 companyId
               }
             }
-          ]
+          ],
+          //logging: console.log
         });
 
         if (ticketTags.length > 0) {
@@ -1826,11 +1830,19 @@ async function handleProcessLanes() {
               t?.tag.timeLane > 0
             ) {
               const nextTag = await Tag.findByPk(t?.tag.nextLaneId);
-
-              const dataLimite = new Date();
+              const currentTag = await Tag.findByPk(t?.tag.id);
+              /* TRATATIVA DE HORAS */
+              /* const dataLimite = new Date();
               dataLimite.setHours(
                 dataLimite.getHours() - Number(t.tag.timeLane)
+              ); */
+
+              /* TRATATIVA DE MINUTOS */
+              const dataLimite = new Date();
+              dataLimite.setMinutes(
+                dataLimite.getMinutes() - Number(t.tag.timeLane)
               );
+
               const dataUltimaInteracaoChamado = new Date(t.ticket.updatedAt);
 
               if (dataUltimaInteracaoChamado < dataLimite) {
@@ -1842,7 +1854,7 @@ async function handleProcessLanes() {
                   tagId: nextTag.id
                 });
 
-                const whatsapp = await Whatsapp.findByPk(t.ticket.whatsappId);
+                const whatsapp = await Whatsapp.findByPk(nextTag.whatsappId);
 
                 if (
                   !isNil(nextTag.greetingMessageLane) &&
@@ -1866,6 +1878,31 @@ async function handleProcessLanes() {
                     },
                     contact.isGroup
                   );
+                }
+
+                if(currentTag.queueIntegrationId) {
+                  const ticket = await ShowTicketService(currentTag.whatsappId, companyId);
+                  const queueIntegration = await ShowQueueIntegrationService(
+                    currentTag.queueIntegrationId,
+                    companyId
+                  );
+
+                  const whatsappId = currentTag.whatsappId ?? t?.ticket.whatsappId;
+
+                  const wbot = getWbot(whatsappId);
+
+                  const remoteJid = `${ticket.contact.number}@s.whatsapp.net`;
+
+                  const msg = {
+                    key: {
+                      remoteJid
+                    },
+                    message: {
+                      extendedTextMessage: {}
+                    }
+                  };
+
+                  await typebotListener({ wbot, msg, ticket, typebot: queueIntegration });
                 }
               }
             }
@@ -1902,7 +1939,7 @@ async function handleCloseTicketsAutomatic() {
   job.start();
 }
 
-handleProcessLanes();
+//handleProcessLanes();
 handleCloseTicketsAutomatic();
 handleRandomUser();
 

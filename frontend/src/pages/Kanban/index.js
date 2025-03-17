@@ -10,6 +10,7 @@ import { Facebook, Instagram, WhatsApp } from "@material-ui/icons";
 import { Badge, Tooltip, Typography, Button, TextField, Box } from "@material-ui/core";
 import { format, isSameDay, parseISO } from "date-fns";
 import { Can } from "../../components/Can";
+import toastError from "../../errors/toastError";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -250,16 +251,29 @@ const Kanban = () => {
     popularCards(jsonString);
   }, [tags, tickets]);
 
-  const handleCardMove = async (cardId, sourceLaneId, targetLaneId) => {
+  const handleCardMove = async (cardId, sourceLaneId, targetLaneId, event) => {
     try {
       await api.delete(`/ticket-tags/${targetLaneId}`);
       toast.success('Ticket Tag Removido!');
       await api.put(`/ticket-tags/${targetLaneId}/${sourceLaneId}`);
       toast.success('Ticket Tag Adicionado com Sucesso!');
       await fetchTickets(jsonString);
+      const { data } = await api.get(`/tags/list`, { params: { kanban: 1 } });
+
       popularCards(jsonString);
+
+      await syncTags({ ticketId: targetLaneId, tags: data.filter(e => e.id === Number(sourceLaneId)) });
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const syncTags = async (data) => {
+    try {
+      const { data: responseData } = await api.post(`/tags/syncLane`, data);
+      return responseData;
+    } catch (err) {
+      toastError(err);
     }
   };
 

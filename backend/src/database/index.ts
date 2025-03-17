@@ -49,6 +49,8 @@ import Versions from "../models/Versions";
 import QuickMessageComponent from "../models/QuickMessageComponent";
 import Rotations from "../models/Rotations"
 import RotationUsers from "../models/RotationUsers"
+import ScheduleTagIntegration from "../models/ScheduleTagIntegration";
+import ScheduleTagIntegrationWhatsapp from "../models/ScheduleTagIntegrationWhatsapp";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -105,7 +107,9 @@ const models = [
   Versions,
   QuickMessageComponent,
   Rotations,
-  RotationUsers
+  RotationUsers,
+  ScheduleTagIntegration,
+  ScheduleTagIntegrationWhatsapp
 ];
 
 sequelize.addModels(models);

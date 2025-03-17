@@ -14,6 +14,7 @@ import {
 } from "sequelize-typescript";
 import Queue from "./Queue";
 import Company from "./Company";
+import Whatsapp from "./Whatsapp";
 
 @Table
 class QueueIntegrations extends Model<QueueIntegrations> {
@@ -77,6 +78,13 @@ class QueueIntegrations extends Model<QueueIntegrations> {
 
     @Column
     typebotRestartMessage: string;
+
+    @ForeignKey(() => Whatsapp)
+    @Column
+    whatsappId: number;
+
+    @BelongsTo(() => Whatsapp)
+    whatsapp: Whatsapp;
 }
 
 export default QueueIntegrations;

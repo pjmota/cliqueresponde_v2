@@ -5,6 +5,7 @@ import * as TicketTagController from "../controllers/TicketTagController";
 
 const ticketTagRoutes = express.Router();
 
+ticketTagRoutes.get("/ticket-tags/", isAuth, TicketTagController.index);
 ticketTagRoutes.put("/ticket-tags/:ticketId/:tagId", isAuth, TicketTagController.store);
 ticketTagRoutes.delete("/ticket-tags/:ticketId", isAuth, TicketTagController.remove);
 
