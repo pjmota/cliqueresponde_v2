@@ -5,7 +5,8 @@ import {
   col,
   Filterable,
   Includeable,
-  literal
+  literal,
+  Sequelize
 } from "sequelize";
 import { startOfDay, endOfDay, parseISO } from "date-fns";
 
@@ -587,39 +588,57 @@ const ListTicketsService = async ({
 
   whereCondition = {
     ...whereCondition,
-    companyId
+    companyId,
+    //queueId: [118,119,120,121,198]
   };
 
-  const limit = 40;
-  const offset = limit * (+pageNumber - 1);
+  const limitBase = 40;
+  let limit = limitBase;
+  let offset = limit * (+pageNumber - 1);
+  let tickets = [];
+  let count = 0;
 
-  const { count, rows: tickets } = await Ticket.findAndCountAll({
-    where: whereCondition,
-    include: includeCondition,
-    attributes: [
-      "id",
-      "uuid",
-      "userId",
-      "queueId",
-      "isGroup",
-      "channel",
-      "status",
-      "contactId",
-      "useIntegration",
-      "lastMessage",
-      "updatedAt",
-      "unreadMessages"
-    ],
-    distinct: true,
-    limit,
-    offset,
-    order: [["updatedAt", sortTickets]],
-    subQuery: false,
-    //logging:console.log
-  });
+  do {
+    const result = await Ticket.findAndCountAll({
+      where: whereCondition,
+      include: includeCondition,
+      attributes: [
+        "id",
+        "uuid",
+        "userId",
+        "queueId",
+        "isGroup",
+        "channel",
+        "status",
+        "contactId",
+        "useIntegration",
+        "lastMessage",
+        "updatedAt",
+        "unreadMessages"
+      ],
+      distinct: true,
+      limit,
+      offset,
+      order: [["updatedAt", sortTickets]],
+      subQuery: false
+    });
+
+    count = result.count;
+    tickets = [...tickets, ...result.rows]; // Acumulamos os registros ao invés de sobrescrever
+    tickets = Array.from(new Map(tickets.map(t => [t.id, t])).values()); // Removemos duplicatas se necessário
+
+    //logger.warn(`Consulta retornou ${result.rows.length} novos registros, total acumulado: ${tickets.length}`);
+
+    // Se ainda não temos registros suficientes, aumentamos o limit e repetimos
+    if (status === 'open' && count > limit && tickets.length < limitBase) {
+      limit += 10;
+      offset += limit; // Ajustar offset para não trazer os mesmos registros
+    } else {
+      break;
+    }
+  } while (tickets.length < limitBase);
 
   const hasMore = count > offset + tickets.length;
-
   return {
     tickets,
     count,

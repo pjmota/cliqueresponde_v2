@@ -81,8 +81,9 @@ import TicketTag from "../../models/TicketTag";
 import pino from "pino";
 import BullQueues from "../../libs/queue";
 import { Transform } from "stream";
-import { msgDB } from "../../libs/wbot";
+import { getWbot, msgDB } from "../../libs/wbot";
 import { title } from "process";
+import { handleGetAndSendMessageIntegration } from "../../functions/CreateSession";
 
 const os = require("os");
 
@@ -1193,8 +1194,7 @@ const verifyQueue = async (
       queues[0].integrationId
     ) {
       const integrations = await ShowQueueIntegrationService(queues[0].integrationId, companyId);
-
-      await handleMessageIntegration(msg, wbot, companyId, integrations, ticket)
+      await handleMessageIntegration(msg, wbot, integrations, ticket, companyId)
 
       if (msg?.key.fromMe) {
         await ticket.update({
@@ -1570,8 +1570,8 @@ const verifyQueue = async (
       ) {
 
         const integrations = await ShowQueueIntegrationService(choosenQueue.integrationId, companyId);
-
-        await handleMessageIntegration(msg, wbot, companyId, integrations, ticket)
+        
+        await handleMessageIntegration(msg, wbot, integrations, ticket, companyId)
 
         if (msg?.key.fromMe) {
           await ticket.update({
@@ -2382,14 +2382,13 @@ const transferQueue = async (
 export const handleMessageIntegration = async (
   msg: proto.IWebMessageInfo,
   wbot: Session,
-  companyId: number,
   queueIntegration: QueueIntegrations,
-  ticket: Ticket
+  ticket: Ticket,
+  companyId?: number,
 ): Promise<void> => {
   const msgType = getTypeMessage(msg);
-
   // REGRA PARA DESABILITAR O BOT PARA ALGUM CONTATO
-  if (ticket?.contact?.disableBot) {
+  if (ticket?.contact?.disableBot && !msg) {
     return;
   }
 
@@ -2419,7 +2418,6 @@ export const handleMessageIntegration = async (
 
   } else if (queueIntegration.type === "dialogflow") {
     let inputAudio: string | undefined;
-
     if (msgType === "audioMessage") {
       let filename = `${msg?.messageTimestamp}.ogg`;
       readFile(
@@ -2453,8 +2451,17 @@ export const handleMessageIntegration = async (
     );
     debouncedSentMessage();
   } else if (queueIntegration.type === "typebot") {
-    // await typebots(ticket, msg, wbot, queueIntegration);
-    await typebotListener({ ticket, msg, wbot, typebot: queueIntegration });
+    if (queueIntegration.whatsappId) {
+      const _wbot = getWbot(queueIntegration.whatsappId);
+      await typebotListener({
+        ticket,
+        msg,
+        wbot: _wbot,
+        typebot: queueIntegration
+      });
+    } else {
+      await typebotListener({ ticket, msg, wbot, typebot: queueIntegration });
+    }
 
   }
 }
@@ -2629,6 +2636,15 @@ const handleMessage = async (
       );
       return result;
     });
+
+    await handleGetAndSendMessageIntegration(
+      msg,
+      wbot,
+      ticket,
+      companyId,
+      bodyMessage
+    );
+
 
     let bodyRollbackTag = "";
     let bodyNextTag = "";
@@ -3110,8 +3126,7 @@ const handleMessage = async (
     ) {
 
       const integrations = await ShowQueueIntegrationService(whatsapp.integrationId, companyId);
-
-      await handleMessageIntegration(msg, wbot, companyId, integrations, ticket)
+      await handleMessageIntegration(msg, wbot, integrations, ticket, companyId)
 
       return
     }
@@ -3125,8 +3140,7 @@ const handleMessage = async (
       && ticket.useIntegration
     ) {
       const integrations = await ShowQueueIntegrationService(ticket.integrationId, companyId);
-
-      await handleMessageIntegration(msg, wbot, companyId, integrations, ticket)
+      await handleMessageIntegration(msg, wbot, integrations, ticket, companyId)
       if (msg?.key.fromMe) {
         await ticket.update({
           typebotSessionTime: moment().toDate(),

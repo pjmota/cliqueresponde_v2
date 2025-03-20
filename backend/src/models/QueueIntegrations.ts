@@ -85,6 +85,15 @@ class QueueIntegrations extends Model<QueueIntegrations> {
 
     @BelongsTo(() => Whatsapp)
     whatsapp: Whatsapp;
+
+    @Column
+    typebotToken: string;
+
+    @Column
+    typebotUrlServer: string;
+
+    @Column
+    typebotKeywordStart: string;
 }
 
 export default QueueIntegrations;

@@ -4,6 +4,7 @@ import QueueIntegrations from "../../models/QueueIntegrations";
 interface Request {
   searchParam?: string;
   pageNumber?: string | number;
+  typebotKeywordStart?: string;
   companyId: number;
 }
 
@@ -16,7 +17,8 @@ interface Response {
 const ListQueueIntegrationService = async ({
   searchParam = "",
   pageNumber = "1",
-  companyId
+  companyId,
+  typebotKeywordStart
 }: Request): Promise<Response> => {
   let whereCondition: Filterable["where"] = {
     [Op.or]: [

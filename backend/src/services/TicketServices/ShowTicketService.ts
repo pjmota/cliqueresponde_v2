@@ -48,7 +48,13 @@ const ShowTicketService = async (
       "fromMe",
       "isOutOfHour",
       "isActiveDemand",
-      "typebotSessionTime"
+      "typebotSessionTime",
+      "promptId",
+      "chatbot",
+      "typebotToken",
+      "typebotId",
+      "typebotResultId",
+      "typebotUrl"
     ],
     include: [
       {

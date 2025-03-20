@@ -1,4 +1,5 @@
 import { getWbot } from "../../libs/wbot";
+import logger from "../../utils/logger";
 import ShowQueueIntegrationService from "../QueueIntegrationServices/ShowQueueIntegrationService";
 import typebotListener from "../TypebotServices/typebotListener";
 import ShowTicketService from "./ShowTicketService";

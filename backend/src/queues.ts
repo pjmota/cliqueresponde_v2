@@ -1328,13 +1328,11 @@ async function handleVerifyQueue(job) {
       c.whatsapps.map(async w => {
         if (w.status === "CONNECTED") {
           var companyId = c.id;
-
           const moveQueue = w.timeSendQueue ? w.timeSendQueue : 0;
           const moveQueueId = w.sendIdQueue;
           const moveQueueTime = moveQueue;
           const idQueue = moveQueueId;
           const timeQueue = moveQueueTime;
-
           if (moveQueue > 0) {
             if (
               !isNaN(idQueue) &&
@@ -1425,7 +1423,25 @@ async function handleVerifyQueue(job) {
                   logger.info(
                     `Atendimento Perdido: ${ticket.id} - Empresa: ${companyId}`
                   );
+
+
+                  const queue = await Queue.findOne({
+                    where: {
+                      id: idQueue
+                    }
+                  })
+  
+                  if(queue.ativarRoteador) {
+                    const params: any = {
+                      WhatsappQueue: {
+                        queueId: idQueue
+                      }
+                    };
+  
+                    await handleRandomUser(params, ticket.id)
+                  }
                 });
+
               }
             } else {
               logger.info(`Condição não respeitada - Empresa: ${companyId}`);

@@ -27,6 +27,7 @@ import Tag from "./Tag";
 import TicketTag from "./TicketTag";
 import QueueIntegrations from "./QueueIntegrations";
 import { format } from "date-fns";
+import Prompt from "./Prompt";
 
 
 @Table
@@ -170,6 +171,28 @@ class Ticket extends Model<Ticket> {
 
   @Column
   typebotSessionTime: Date
+
+  @Column
+  typebotId: string;
+
+  @Column
+  typebotToken: string;
+
+  @Column
+  typebotResultId: string;
+
+  @Column
+  typebotUrl: string;
+
+  @ForeignKey(() => Prompt)
+  @Column
+  promptId: number;
+
+  @BelongsTo(() => Prompt)
+  prompt: Prompt;
+
+  @Column
+  chatbot: boolean;
 }
 
 export default Ticket;
