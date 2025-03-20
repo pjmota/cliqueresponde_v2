@@ -148,7 +148,16 @@ const Kanban = () => {
   };
 
   const popularCards = (jsonString) => {
-    const filteredTickets = tickets.filter(ticket => ticket.tags.length === 0);
+    const filteredTickets = tickets.filter(ticket => {
+      const hasNoQueues = ticket.tags.length === 0;
+      
+      if (user.allTicketsQueuesWaiting === "disable" && user.profile !== 'admin') {
+        const userQueueIds = user.queues.map(queue => queue.id); // Obtém os IDs das filas do usuário
+        return hasNoQueues && userQueueIds.includes(ticket.queueId); // Filtra apenas os tickets com queueId permitido
+      }
+    
+      return hasNoQueues; // Se não estiver "disable", mantém todos os sem fila
+    });
 
     const lanes = [
       {

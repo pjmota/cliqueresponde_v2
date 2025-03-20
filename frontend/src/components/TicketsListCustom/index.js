@@ -424,16 +424,16 @@ const TicketsListCustom = (props) => {
                         </div>
                     ) : (
                         <>
-                            {ticketsList.map((ticket) => (
+                            {ticketsList.map((ticket) => {
                                 // <List key={ticket.id}>
-                                //     {console.log(ticket)}
-                                <TicketListItem
+                                console.log(ticketsList.length)
+                                return (<TicketListItem
                                     ticket={ticket}
                                     key={ticket.id}
                                     setTabOpen={setTabOpen}
-                                />
+                                />)
                                 // </List>
-                            ))}
+})}
                         </>
                     )}
                     {loading && <TicketsListSkeleton />}
