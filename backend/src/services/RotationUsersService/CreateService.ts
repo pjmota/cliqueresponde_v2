@@ -9,7 +9,7 @@ interface Request {
   rotationId: number;
 }
 
-const CreateServiceUser = async ({
+const CreateServiceRotationUser = async ({
   sequence,
   userId,
   rotationId
@@ -43,4 +43,4 @@ const CreateServiceUser = async ({
   return rotationUser;
 };
 
-export default CreateServiceUser;
+export default CreateServiceRotationUser;

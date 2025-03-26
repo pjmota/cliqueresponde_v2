@@ -275,10 +275,11 @@ const ContactListItems = () => {
           </>
         )}
       </ConfirmationModal>
-      {
+      {/* {
         user.profile === "user" ?
           <ForbiddenPage />
           :
+          } */}
           <>
             <MainHeader>
               <Grid style={{ width: "99.6%" }} container>
@@ -428,7 +429,7 @@ const ContactListItems = () => {
                 </TableBody>
               </Table>
             </Paper>
-          </>}
+          </>
     </MainContainer>
   );
 };

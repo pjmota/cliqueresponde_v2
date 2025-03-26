@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 import Button from "@material-ui/core/Button";
@@ -25,6 +25,8 @@ import toastError from "../../errors/toastError";
 import useQueues from "../../hooks/useQueues";
 import UserStatusIcon from "../UserModal/statusIcon";
 import { isNil } from "lodash";
+import { AuthContext } from "../../context/Auth/AuthContext";
+import { Field } from "formik";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -36,7 +38,13 @@ const filterOptions = createFilterOptions({
   trim: true,
 });
 
-const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid, ticket }) => {
+const TransferTicketModalCustom = ({
+  modalOpen,
+  onClose,
+  ticketid,
+  ticket,
+}) => {
+  const { user } = useContext(AuthContext);
   const history = useHistory();
   const [options, setOptions] = useState([]);
   const [queues, setQueues] = useState([]);
@@ -48,7 +56,10 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid, ticket }) => 
   const classes = useStyles();
   const { findAll: findAllQueues } = useQueues();
   const isMounted = useRef(true);
-  const [msgTransfer, setMsgTransfer] = useState('');
+  const [msgTransfer, setMsgTransfer] = useState("");
+
+  const [whatsapps, setWhatsapps] = useState([]);
+  const [whatsappId, setWhatsappId] = useState(null);
 
   useEffect(() => {
     return () => {
@@ -62,13 +73,11 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid, ticket }) => 
         const list = await findAllQueues();
         setAllQueues(list);
         setQueues(list);
-
       };
       loadQueues();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   useEffect(() => {
     if (!modalOpen || searchParam.length < 3) {
@@ -96,6 +105,26 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid, ticket }) => 
     return () => clearTimeout(delayDebounceFn);
   }, [searchParam, modalOpen]);
 
+  useEffect(() => {
+    api
+      .get(`/whatsapp`, { params: { companyId: user.companyId, session: 0 } })
+      .then(({ data }) => {
+        // Mapear os dados recebidos da API para adicionar a propriedade 'selected'
+        const mappedWhatsapps = data
+          .filter((e) => e.status === "CONNECTED")
+          .map((whatsapp) => ({
+            ...whatsapp,
+            selected: false,
+          }));
+
+        setWhatsapps(mappedWhatsapps);
+
+        if (user.profile === "admin") {
+          setWhatsappId(ticket.whatsapp.id);
+        }
+      });
+  }, []);
+
   const handleMsgTransferChange = (event) => {
     setMsgTransfer(event.target.value);
   };
@@ -114,11 +143,16 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid, ticket }) => 
     try {
       let data = {};
 
-        data.userId = !selectedUser ? null : selectedUser.id;
-        data.status = !selectedUser ? "pending" : ticket.isGroup ? "group" : "open";
-        data.queueId = selectedQueue;
-        data.msgTransfer = msgTransfer ? msgTransfer : null;
-        data.isTransfered = true;
+      data.userId = !selectedUser ? null : selectedUser.id;
+      data.status = !selectedUser
+        ? "pending"
+        : ticket.isGroup
+        ? "group"
+        : "open";
+      data.queueId = selectedQueue;
+      data.msgTransfer = msgTransfer ? msgTransfer : null;
+      data.isTransfered = true;
+      data.whatsappId = whatsappId ?? ticket.whatsapp.id;
 
       await api.put(`/tickets/${ticketid}`, data);
       setLoading(false);
@@ -130,9 +164,14 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid, ticket }) => 
     }
   };
 
-
   return (
-    <Dialog open={modalOpen} onClose={handleClose} maxWidth="md" fullWidth scroll="paper">
+    <Dialog
+      open={modalOpen}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      scroll="paper"
+    >
       {/* <form onSubmit={handleSaveTicket}> */}
       <DialogTitle id="form-dialog-title">
         {i18n.t("transferTicketModal.title")}
@@ -150,7 +189,6 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid, ticket }) => 
                     setSelectedQueue(newValue.queues[0].id);
                   }
                   setQueues(newValue.queues);
-
                 } else {
                   setQueues(allQueues);
                   setSelectedQueue("");
@@ -162,7 +200,12 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid, ticket }) => 
               autoHighlight
               noOptionsText={i18n.t("transferTicketModal.noOptions")}
               loading={loading}
-              renderOption={option => (<span> <UserStatusIcon user={option} /> {option.name}</span>)}
+              renderOption={(option) => (
+                <span>
+                  {" "}
+                  <UserStatusIcon user={option} /> {option.name}
+                </span>
+              )}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -185,7 +228,7 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid, ticket }) => 
               )}
             />
           </Grid>
-          <Grid xs={12} sm={6} xl={6} item >
+          <Grid xs={12} sm={6} xl={6} item>
             <FormControl variant="outlined" fullWidth>
               <InputLabel>
                 {i18n.t("transferTicketModal.fieldQueueLabel")}
@@ -205,7 +248,7 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid, ticket }) => 
           </Grid>
         </Grid>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} xl={12} >
+          <Grid item xs={12} sm={12} xl={12}>
             <TextField
               label={i18n.t("transferTicketModal.msgTransfer")}
               value={msgTransfer}
@@ -218,6 +261,34 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid, ticket }) => 
             />
           </Grid>
         </Grid>
+        {user.profile === "admin" && (
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={12} xl={12}>
+              <FormControl
+                variant="outlined"
+                margin="dense"
+                fullWidth
+                focused={Boolean(whatsappId)} // Garante o notch apenas quando há valor
+              >
+                <InputLabel id="whatsapp-selection-label">
+                  {i18n.t("campaigns.dialog.form.whatsapp")}
+                </InputLabel>
+                <Select
+                  labelId="whatsapp-selection-label"
+                  value={whatsappId}
+                  onChange={(e) => setWhatsappId(e.target.value)}
+                  label={i18n.t("campaigns.dialog.form.whatsapp")}
+                >
+                  {whatsapps.map((w) => (
+                    <MenuItem key={w.id} value={w.id}>
+                      {w.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        )}
       </DialogContent>
       <DialogActions>
         <Button
@@ -235,7 +306,6 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid, ticket }) => 
           loading={loading}
           disabled={selectedQueue === ""}
           onClick={() => handleSaveTicket(selectedQueue)}
-
         >
           {i18n.t("transferTicketModal.buttons.ok")}
         </ButtonWithSpinner>

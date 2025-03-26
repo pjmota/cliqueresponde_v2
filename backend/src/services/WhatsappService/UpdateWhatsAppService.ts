@@ -49,6 +49,7 @@ interface WhatsappData {
   send_token?: string;
   business_id?: string;
   phone_number?: string;
+  ignoreQueue?: boolean;
 }
 
 interface Request {
@@ -115,7 +116,8 @@ const UpdateWhatsAppService = async ({
     waba_id,
     send_token,
     business_id,
-    phone_number
+    phone_number,
+    ignoreQueue,
   } = whatsappData;
 
   try {
@@ -187,7 +189,8 @@ const UpdateWhatsAppService = async ({
     waba_id,
     send_token,
     business_id,
-    phone_number
+    phone_number,
+    ignoreQueue,
   });
 
   if (!requestQR) {

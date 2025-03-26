@@ -215,7 +215,7 @@ const ListTicketsService = async ({
       ticketsIds = await Ticket.findAll({
         where: {
           companyId,
-          ...(user.allTicketsQueuesWaiting === "disable" ? {userId: { [Op.or]: [user.id, null] }} : ''),
+          ...(user.allTicketsQueuesWaiting === "disable" ? {userId: { [Op.or]: [user.id, null] }} : {}),
           status: "pending",
           queueId: { [Op.in]: queueIds }
         }
@@ -293,12 +293,14 @@ const ListTicketsService = async ({
           userId
         };
       } else {
+
         whereCondition2 = {
           ...whereCondition2,
           queueId:
             showAll === "true" || showTicketWithoutQueue
               ? { [Op.or]: [queueIds, null] }
-              : queueIds
+              : queueIds,
+          ...(user.allTicketsQueuesWaiting === "disable" ? {userId: user.id } : {}),
         };
       }
 
@@ -313,6 +315,7 @@ const ListTicketsService = async ({
         group: ["companyId", "contactId", "whatsappId"]
       });
     } else {
+      logger.warn(`entrou no else`)
       let whereCondition2: Filterable["where"] = {
         companyId,
         status: "closed"
@@ -620,7 +623,8 @@ const ListTicketsService = async ({
       limit,
       offset,
       order: [["updatedAt", sortTickets]],
-      subQuery: false
+      subQuery: false,
+      //...(status === 'closed' ? {logging: console.log} : {})
     });
 
     count = result.count;

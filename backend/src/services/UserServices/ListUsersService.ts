@@ -5,6 +5,7 @@ import User from "../../models/User";
 import Plan from "../../models/Plan";
 import Ticket from "../../models/Ticket";
 import logger from "../../utils/logger";
+import Tag from "../../models/Tag";
 
 interface Request {
   searchParam?: string;
@@ -63,6 +64,7 @@ const ListUsersService = async ({
     order: [["name", "ASC"]],
     include: [
       { model: Queue, as: "queues", attributes: ["id", "name", "color"] },
+      { model: Tag, as: "tags", attributes: ["id", "name", "color"] },
       {
         model: Company,
         as: "company",
@@ -92,7 +94,7 @@ const ListUsersService = async ({
   });
 
   const hasMore = count > offset + users.length;
-  //console.log(hasMore, count)
+
   return {
     users,
     count,

@@ -98,6 +98,10 @@ class Whatsapp extends Model<Whatsapp> {
   @UpdatedAt
   updatedAt: Date;
 
+  @Default(false)
+  @Column
+  ignoreQueue: boolean;
+
   @HasMany(() => Ticket)
   tickets: Ticket[];
 

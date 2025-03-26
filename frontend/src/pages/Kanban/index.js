@@ -83,7 +83,10 @@ const Kanban = () => {
     try {
       const response = await api.get("/tag/kanban/");
       const fetchedTags = response.data.lista || [];
-      setTags(fetchedTags);
+
+      const userTagIds = user.tags.map(tag => tag.id);
+      const filteredTags = fetchedTags.filter(tag => userTagIds.includes(tag.id));
+      setTags(filteredTags);
       fetchTickets();
     } catch (error) {
       console.log(error);

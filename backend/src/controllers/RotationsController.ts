@@ -7,9 +7,9 @@ import ShowService from "../services/RotationsService/ShowService";
 import UpdateService from "../services/RotationsService/UpdateService";
 
 import logger from "../utils/logger";
-import CreateServiceUser from "../services/RotationUsersService/CreateService";
+import CreateServiceRotationUser from "../services/RotationUsersService/CreateService";
 import ListRotationUsersService from "../services/RotationUsersService/ListService";
-import UpdateUserService from "../services/RotationUsersService/UpdateService";
+import UpdateUserRotationService from "../services/RotationUsersService/UpdateService";
 
 
 type IndexQuery = {
@@ -55,7 +55,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
         throw new AppError("ERR_CONFLICT_ROTATIONUSERS_FOUND", 409);
       }
   
-      await CreateServiceUser({
+      await CreateServiceRotationUser({
         sequence,
         userId,
         rotationId: rotation.id
@@ -108,7 +108,7 @@ export const update = async (
     userId: Number(rotationData.userId),
   };
 
-  await UpdateUserService(
+  await UpdateUserRotationService(
     {
       rotationUserData, 
       id: Number(rotationUsers.filter(e => e.userId === rotationData.userId && e.rotationId === rotationData.rotationId).map(e => e.id))

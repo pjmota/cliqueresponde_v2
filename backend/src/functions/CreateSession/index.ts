@@ -26,11 +26,12 @@ export const handleGetAndSendMessageIntegration = async (
     const vF = validFunction(split, msg.key.fromMe, ticket);
     
     if (vF.valid) {
-      let result = split[2];
+      let result = split[1];
       let word = ''
       let response = [] as any
 
       if (vF.split) word = result.replace(/\n/g,"");
+
       if (word) {
         response = await ListQueueIntegrationService({
           typebotKeywordStart: word, companyId

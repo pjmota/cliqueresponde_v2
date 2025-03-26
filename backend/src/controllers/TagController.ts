@@ -20,17 +20,19 @@ type IndexQuery = {
   pageNumber?: string | number;
   kanban?: number;
   tagId?: number;
+  paramTag?: string;
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const { pageNumber, searchParam, kanban, tagId } = req.query as IndexQuery;
+  const { pageNumber, searchParam, kanban, tagId, paramTag } = req.query as IndexQuery;
   const { companyId } = req.user;
   const { tags, count, hasMore } = await ListService({
     searchParam,
     pageNumber,
     companyId,
     kanban,
-    tagId
+    tagId,
+    ...(paramTag ? {paramTag: JSON.parse(paramTag)} : {})
   });
 
   return res.json({ tags, count, hasMore });

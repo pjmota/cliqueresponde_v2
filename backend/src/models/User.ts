@@ -24,6 +24,8 @@ import Company from "./Company";
 import QuickMessage from "./QuickMessage";
 import Whatsapp from "./Whatsapp";
 import Chatbot from "./Chatbot";
+import Tag from "./Tag";
+import UserTag from "./UserTags";
 
 @Table
 class User extends Model<User> {
@@ -130,6 +132,9 @@ class User extends Model<User> {
 
   @BelongsToMany(() => Queue, () => UserQueue)
   queues: Queue[];
+
+  @BelongsToMany(() => Tag, () => UserTag)
+  tags: Tag[];
 
   @HasMany(() => QuickMessage, {
     onUpdate: "CASCADE",

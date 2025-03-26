@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const TagSelect = ({ selectedTagIds, onChange, multiple = true, title = i18n.t("Tags"), noColor = false, kanbam = 0 }) => {
+const TagSelect = ({ selectedTagIds, onChange, multiple = true, title = i18n.t("Tags"), noColor = false, kanban = 0, paramTag = false}) => {
 	const classes = useStyles();
 	const [tags, setTags] = useState([]);
 
@@ -33,17 +33,31 @@ const TagSelect = ({ selectedTagIds, onChange, multiple = true, title = i18n.t("
 		try {
 			const { data } = await api.get("/tags", {
         params: {
-          kanban: kanbam
+          kanban: kanban,
+					paramTag
         }
       });
-			setTags(data.tags);
+
+			if( paramTag ) {
+				const updatedTags = data.tags.map(tag => ({
+					...tag,
+					name: tag.kanban === 1 ? `${tag.name} - kanban` : tag.name
+				}));
+
+				setTags(updatedTags);
+			} else {
+				setTags(data.tags);
+			}
+
+
 		} catch (err) {
 			toastError(err);
 		}
 	}
 
-	const handleChange = e => {
-		onChange(e.target.value);
+	const handleChange = (event) => {
+		const { value } = event.target;
+		onChange(multiple ? value ?? [] : value ?? '');
 	};
 
 	return (
@@ -54,7 +68,7 @@ const TagSelect = ({ selectedTagIds, onChange, multiple = true, title = i18n.t("
 					label={title}
 					multiple={multiple}
 					labelWidth={60}
-					value={selectedTagIds ?? ''}
+					value={multiple ? Array.isArray(selectedTagIds) ? selectedTagIds : [] : selectedTagIds ?? ''}
 					onChange={handleChange}
 					MenuProps={{
 						anchorOrigin: {

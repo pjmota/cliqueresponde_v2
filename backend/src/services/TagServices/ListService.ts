@@ -13,6 +13,7 @@ interface Request {
   kanban?: number;
   tagId?: number;
   whatsappId?: number;
+  paramTag?: boolean;
 }
 
 interface Response {
@@ -27,7 +28,8 @@ const ListService = async ({
   pageNumber = "1",
   kanban = 0,
   tagId = 0,
-  whatsappId = null
+  whatsappId = null,
+  paramTag = false
 }: Request): Promise<Response> => {
   let whereCondition = {};
 
@@ -54,7 +56,7 @@ const ListService = async ({
     }
 
     const { count, rows: tags } = await Tag.findAndCountAll({
-      where: { ...whereCondition, companyId, kanban },
+      where: { ...whereCondition, companyId, ...(paramTag ? {} : { kanban }) },
       limit,
       include: [
         {
@@ -72,6 +74,7 @@ const ListService = async ({
         'id',
         'name',
         'color',
+        'kanban'
       ],
       offset,
       order: [["name", "ASC"]],

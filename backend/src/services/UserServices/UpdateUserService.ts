@@ -4,6 +4,7 @@ import AppError from "../../errors/AppError";
 import ShowUserService from "./ShowUserService";
 import Company from "../../models/Company";
 import User from "../../models/User";
+import logger from "../../utils/logger";
 
 interface UserData {
   email?: string;
@@ -12,6 +13,7 @@ interface UserData {
   profile?: string;
   companyId?: number;
   queueIds?: number[];
+  tagIds?: number[];
   startWork?: string;
   endWork?: string;
   farewellMessage?: string;
@@ -51,6 +53,7 @@ const UpdateUserService = async ({
   companyId,
   requestUserId
 }: Request): Promise<Response | undefined> => {
+
   const user = await ShowUserService(userId, companyId);
 
   const requestUser = await User.findByPk(requestUserId);
@@ -75,6 +78,7 @@ const UpdateUserService = async ({
     profile,
     name,
     queueIds = [],
+    tagIds = [],
     startWork,
     endWork,
     farewellMessage,
@@ -125,6 +129,7 @@ const UpdateUserService = async ({
   });
 
   await user.$set("queues", queueIds);
+  await user.$set("tags", tagIds);
 
   await user.reload();
 
@@ -145,6 +150,7 @@ const UpdateUserService = async ({
     companyId: user.companyId,
     company,
     queues: user.queues,
+    tags: user.tags,
     startWork: user.startWork,
     endWork: user.endWork,
     greetingMessage: user.farewellMessage,

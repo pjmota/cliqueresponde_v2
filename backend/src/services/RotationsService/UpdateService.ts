@@ -13,7 +13,7 @@ interface Request {
   id: number;
 }
 
-const UpdateUserService = async ({
+const UpdateRotationService = async ({
   rotationData,
   id
 }: Request): Promise<Rotations | undefined> => {
@@ -37,4 +37,4 @@ const UpdateUserService = async ({
   return rotation;
 };
 
-export default UpdateUserService;
+export default UpdateRotationService;

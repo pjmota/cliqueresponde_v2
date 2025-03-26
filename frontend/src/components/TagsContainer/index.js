@@ -1,12 +1,13 @@
 import { Chip, Paper, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { isArray, isString } from "lodash";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
+import { AuthContext } from "../../context/Auth/AuthContext";
 
 export function TagsContainer({ contact }) {
-
+    const { user, socket } = useContext(AuthContext);
     const [tags, setTags] = useState([]);
     const [selecteds, setSelecteds] = useState([]);
     const isMounted = useRef(true);
@@ -41,9 +42,13 @@ export function TagsContainer({ contact }) {
     const loadTags = async () => {
         try {
             const { data } = await api.get(`/tags/list`, 
-            {params: { kanban: 0}
-        });
-            setTags(data);
+                {params: { kanban: 0}
+            });
+
+            const userTagIds = user.tags.map(tag => tag.id);
+            const filteredTags = data.filter(tag => userTagIds.includes(tag.id));
+
+            setTags(filteredTags);
         } catch (err) {
             toastError(err);
         }

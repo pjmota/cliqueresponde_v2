@@ -71,6 +71,7 @@ interface WhatsappData {
   phone_number?: string;
   waba_webhook?: string;
   channel?: string;
+  ignoreQueue?: boolean;
 }
 
 interface QueryParams {
@@ -137,7 +138,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     business_id,
     phone_number,
     waba_webhook,
-    channel
+    channel,
+    ignoreQueue,
   }: WhatsappData = req.body;
   const { companyId } = req.user;
 
@@ -192,7 +194,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     business_id,
     phone_number,
     waba_webhook,
-    channel
+    channel,
+    ignoreQueue,
   });
 
   if (["whatsapp_oficial"].includes(whatsapp.channel)) {

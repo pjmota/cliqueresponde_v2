@@ -193,6 +193,9 @@ class Ticket extends Model<Ticket> {
 
   @Column
   chatbot: boolean;
+
+  @Column
+  startedByPlatform: boolean;
 }
 
 export default Ticket;

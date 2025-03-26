@@ -19,6 +19,7 @@ import UserRating from "../models/UserRating";
 import Schedule from "../models/Schedule";
 import Tag from "../models/Tag";
 import TicketTag from "../models/TicketTag";
+import UserTag from "../models/UserTags";
 import ContactList from "../models/ContactList";
 import ContactListItem from "../models/ContactListItem";
 import Campaign from "../models/Campaign";
@@ -79,6 +80,7 @@ const models = [
   Schedule,
   Tag,
   TicketTag,
+  UserTag,
   ContactList,
   ContactListItem,
   Campaign,

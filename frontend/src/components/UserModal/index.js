@@ -31,6 +31,7 @@ import { Avatar, Grid, Input, Paper, Tab, Tabs } from "@material-ui/core";
 import { getBackendUrl } from "../../config";
 import TabPanel from "../TabPanel";
 import AvatarUploader from "../AvatarUpload";
+import TagSelect from "../TagSelect";
 
 const backendUrl = getBackendUrl();
 
@@ -153,6 +154,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	const [avatar, setAvatar] = useState(null);
 	const startWorkRef = useRef();
 	const endWorkRef = useRef();
+	const [selectedTagIds, setSelectedTagIds] = useState([]);
 
 
 
@@ -170,7 +172,9 @@ const UserModal = ({ open, onClose, userId }) => {
 				setProfileUrl(`${backendUrl}/public/company${data.companyId}/user/${profileImage}`);
 
 				const userQueueIds = data.queues?.map(queue => queue.id);
+				const userTagIds = data.tags?.map(tag => tag.id);
 				setSelectedQueueIds(userQueueIds);
+				setSelectedTagIds(userTagIds)
 				setWhatsappId(data.whatsappId ? data.whatsappId : '');
 			} catch (err) {
 				toastError(err);
@@ -208,9 +212,10 @@ const UserModal = ({ open, onClose, userId }) => {
 		const userData = {
 			...values,
 			whatsappId,
-			queueIds: selectedQueueIds
+			queueIds: selectedQueueIds,
+			tagIds: selectedTagIds
 		};
-		console.log("userData", userData)
+
 		try {
 			if (userId) {
 				const { data } = await api.put(`/users/${userId}`, userData);
@@ -397,6 +402,24 @@ const UserModal = ({ open, onClose, userId }) => {
 															selectedQueueIds={selectedQueueIds}
 															onChange={values => setSelectedQueueIds(values)}
 															fullWidth
+														/>
+													)}
+												/>
+											</Grid>
+										</Grid>
+										<Grid container spacing={1}>
+											<Grid item xs={12} md={12} xl={12}>
+												<Can
+													role={loggedInUser.profile}
+													perform="user-modal:editTags"
+													yes={() => (
+														<TagSelect
+															multiple={true}
+															selectedTagIds={selectedTagIds}
+															onChange={values =>
+																setSelectedTagIds(values)
+															}
+															paramTag={true}
 														/>
 													)}
 												/>

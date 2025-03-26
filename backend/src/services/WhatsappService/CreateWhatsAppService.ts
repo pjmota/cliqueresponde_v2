@@ -55,6 +55,7 @@ interface Request {
   business_id?: string;
   phone_number?: string;
   waba_webhook?: string;
+  ignoreQueue?: boolean;
 }
 
 interface Response {
@@ -111,6 +112,7 @@ const CreateWhatsAppService = async ({
   business_id,
   phone_number,
   waba_webhook,
+  ignoreQueue = false,
 }: Request): Promise<Response> => {
   const company = await Company.findOne({
     where: {
@@ -250,7 +252,8 @@ const CreateWhatsAppService = async ({
       send_token,
       business_id,
       phone_number,
-      waba_webhook
+      waba_webhook,
+      ignoreQueue
     },
     { include: ["queues", "company"] }
   );

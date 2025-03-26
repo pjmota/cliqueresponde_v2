@@ -7,7 +7,7 @@ import {
   InputLabel,
   FormControl,
 } from "@material-ui/core";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { isString } from "lodash";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { makeStyles } from "@material-ui/core/styles";
 import { i18n } from "../../translate/i18n";
 import { Field, Form } from "formik";
+import { AuthContext } from "../../context/Auth/AuthContext";
 const useStyles = makeStyles((theme) => ({
   menuListItem: {
     paddingTop: 0,
@@ -35,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 export function TagsKanbanContainer({ ticket }) {
   const classes = useStyles();
+  const { user, socket } = useContext(AuthContext);
 
   const [tags, setTags] = useState([]);
   const [selected, setSelected] = useState(""); // Alterado de null para ""
@@ -56,7 +58,11 @@ export function TagsKanbanContainer({ ticket }) {
     try {
       const { data } = await api.get(`/tags/list`, { params: { kanban: 1 } });
       if (isMounted) {
-        setTags(data);
+
+        const userTagIds = user.tags.map(tag => tag.id);
+        const filteredTags = data.filter(tag => userTagIds.includes(tag.id));
+
+        setTags(filteredTags);
       }
     } catch (err) {
       toastError(err);

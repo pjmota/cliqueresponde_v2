@@ -43,6 +43,7 @@ interface TicketData {
   isTransfered?: boolean;
   typebotToken?: string;
   typebotUrl?: string;
+  whatsappId?: string;
 }
 
 interface Request {
@@ -76,7 +77,8 @@ const UpdateTicketService = async ({
       isTransfered = false,
       status,
       typebotToken,
-      typebotUrl
+      typebotUrl,
+      whatsappId
     } = ticketData;
     let isBot: boolean | null = ticketData.isBot || false;
     let queueOptionId: number | null = ticketData.queueOptionId || null;
@@ -598,6 +600,7 @@ const UpdateTicketService = async ({
 
         return { ticket: newTicketTransfer, oldStatus, oldUserId };
       } else {
+
         if (settings.sendMsgTransfTicket === "enabled") {
           // Mensagem de transferencia da FILA
           if (
@@ -813,7 +816,8 @@ const UpdateTicketService = async ({
       typebotStatus: useIntegration,
       unreadMessages,
       typebotToken,
-      typebotUrl
+      typebotUrl,
+      ...(whatsappId ? {whatsappId: Number(whatsappId)} : {})
     });
 
     if (!userId && queueId) {
@@ -848,6 +852,7 @@ const UpdateTicketService = async ({
     }
 
     if (status !== undefined && ["open"].indexOf(status) > -1) {
+
       await ticketTraking.update({
         startedAt: moment().toDate(),
         ratingAt: null,

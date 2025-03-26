@@ -316,7 +316,6 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
       //setLoading(true);
       const fetchUsers = async () => {
         try {
-          console.log('consulta de usuários 1')
           const { data } = await api.get("/users/");
           setUserOptions(data.users);
           setLoading(false);
@@ -398,9 +397,10 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
   };
 
   const handleSaveQueue = async (values) => {
+    console.log('instegrations', rotationId)
     try {
       if (queueId) {
-        await api.put(`/queue/${queueId}`, { ...values, schedules });
+        await api.put(`/queue/${queueId}`, { ...values, schedules, rotationId });
       } else {
         await api.post("/queue", { ...values, schedules });
 
@@ -1527,7 +1527,7 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                               name="lastSequence"
                               variant="outlined"
                               margin="dense"
-                              disabled
+                              //disabled
                             />
                           </Grid>
                           <Grid item sm={6}>

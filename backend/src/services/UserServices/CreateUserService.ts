@@ -11,6 +11,7 @@ interface Request {
   password: string;
   name: string;
   queueIds?: number[];
+  tagsIds?: number[];
   companyId?: number;
   profile?: string;
   startWork?: string;
@@ -42,6 +43,7 @@ const CreateUserService = async ({
   password,
   name,
   queueIds = [],
+  tagsIds = [],
   companyId,
   profile = "admin",
   startWork,
@@ -132,10 +134,11 @@ const CreateUserService = async ({
       allowConnections,
       allTicketsQueuesWaiting
     },
-    { include: ["queues", "company"] }
+    { include: ["queues", "company", "tags"] }
   );
 
   await user.$set("queues", queueIds);
+  await user.$set("tags", tagsIds);
 
   await user.reload();
 
