@@ -268,7 +268,11 @@ const LoggedInLayout = ({ children, themeToggle }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const { handleLogout, loading } = useContext(AuthContext);
+<<<<<<< HEAD
   const [drawerOpen, setDrawerOpen] = useState(true);
+=======
+  const [drawerOpen, setDrawerOpen] = useState(false);
+>>>>>>> organizacional/main
   const [drawerVariant, setDrawerVariant] = useState("permanent");
   // const [dueDate, setDueDate] = useState("");
   //   const socketManager = useContext(SocketContext);
@@ -320,7 +324,10 @@ const LoggedInLayout = ({ children, themeToggle }) => {
 
     const companyId = user.companyId;
     const userId = user.id;
+<<<<<<< HEAD
 
+=======
+>>>>>>> organizacional/main
     if (companyId) {
       //    const socket = socketManager.GetSocket();
 
@@ -527,7 +534,11 @@ const LoggedInLayout = ({ children, themeToggle }) => {
               onClick={handleMenu}
             >
               <Avatar
+<<<<<<< HEAD
                 alt={user.name}
+=======
+                alt="Multi100"
+>>>>>>> organizacional/main
                 className={classes.avatar2}
                 src={profileUrl}
               />

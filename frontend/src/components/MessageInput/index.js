@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
+<<<<<<< HEAD
 import { Select, Typography, useMediaQuery, useTheme } from '@material-ui/core';
+=======
+import { useMediaQuery, useTheme } from '@material-ui/core';
+>>>>>>> organizacional/main
 import { isNil } from "lodash";
 import {
   CircularProgress,
@@ -40,7 +44,10 @@ import {
   Duo,
   Timer,
   WhatsApp,
+<<<<<<< HEAD
   AccountTree,
+=======
+>>>>>>> organizacional/main
 } from "@material-ui/icons";
 import AddIcon from "@material-ui/icons/Add";
 import { CameraAlt } from "@material-ui/icons";
@@ -66,7 +73,10 @@ import { EditMessageContext } from "../../context/EditingMessage/EditingMessageC
 import ScheduleModal from "../ScheduleModal";
 import usePlans from "../../hooks/usePlans";
 import TemplateModal from "../TemplateMetaModal";
+<<<<<<< HEAD
 import { toast } from "react-toastify";
+=======
+>>>>>>> organizacional/main
 
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
@@ -342,6 +352,7 @@ const useStyles = makeStyles((theme) => ({
   flexItem: {
     flex: 1,
   },
+<<<<<<< HEAD
   integrationBox: {
     position: "absolute",
     bottom: 70,
@@ -356,6 +367,8 @@ const useStyles = makeStyles((theme) => ({
   integrationText: {
     fontSize: '1rem'
   },
+=======
+>>>>>>> organizacional/main
 }));
 
 const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketChannel }) => {
@@ -392,10 +405,13 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
   const [useWhatsappOfficial, setUseWhatsappOfficial] = useState(false);
   const { list: listQuickMessages } = useQuickMessages();
 
+<<<<<<< HEAD
   const [showIntegration, setShowIntegration] = useState(false);
   const [integration, setIntegration] = useState(0);
   const [integrations, setIntegrations] = useState([]);
 
+=======
+>>>>>>> organizacional/main
 
   const isMobile = useMediaQuery('(max-width: 767px)'); // Ajuste o valor conforme necessário
   const [placeholderText, setPlaceHolderText] = useState("");
@@ -427,7 +443,10 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
       setUseWhatsappOfficial(planConfigs.plan.useWhatsappOfficial);
     }
     fetchData();
+<<<<<<< HEAD
     getIntegration();
+=======
+>>>>>>> organizacional/main
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // Determine o texto do placeholder com base no ticketStatus
@@ -644,7 +663,11 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
 
     // Certifique-se de que a variável medias esteja preenchida antes de continuar
     if (!mediasUpload.length) {
+<<<<<<< HEAD
       //console.log("Nenhuma mídia selecionada.");
+=======
+      console.log("Nenhuma mídia selecionada.");
+>>>>>>> organizacional/main
       setLoading(false);
       return;
     }
@@ -729,7 +752,11 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
       if (editingMessage !== null) {
         await api.post(`/messages/edit/${editingMessage.id}`, message);
       } else {
+<<<<<<< HEAD
         //console.log("ENVIOU PARA TIKCET", ticketId)
+=======
+        console.log("ENVIOU PARA TIKCET", ticketId)
+>>>>>>> organizacional/main
         await api.post(`/messages/${ticketId}`, message);
       }
     } catch (err) {
@@ -950,6 +977,7 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
     setShowModalMedias(false);
   };
 
+<<<<<<< HEAD
 
   const handleSaveIntegration = async (e) => {
  
@@ -986,6 +1014,8 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
     setIntegrations(data.queueIntegrations)
   }
 
+=======
+>>>>>>> organizacional/main
   const renderReplyingMessage = (message) => {
     return (
       <div className={classes.replyginMsgWrapper}>
@@ -1188,6 +1218,7 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
                 )}
               </Menu>
               {/* <IconButton
+<<<<<<< HEAD
                 aria-label="upload"
                 component="span"
                 disabled={disableOption()}
@@ -1223,6 +1254,17 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
                 </div>
               )}
 
+=======
+				  aria-label="upload"
+				  component="span"
+				  disabled={disableOption()}
+				  onMouseOver={() => setOnDragEnter(true)}
+				>
+				  <AttachFile className={classes.sendMessageIcons} />
+				</IconButton> */}
+
+              {/* </label> */}
+>>>>>>> organizacional/main
               {signMessagePar && (
                 <Tooltip title={i18n.t("messageInput.tooltip.signature")}>
                   <IconButton

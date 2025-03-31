@@ -69,12 +69,17 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 	const { user } = useContext(AuthContext);
 	const [colorPickerModalOpen, setColorPickerModalOpen] = useState(false);
 	const [lanes, setLanes] = useState([]);
+<<<<<<< HEAD
 	const [whatsapps, setWhatsapps] = useState([]);
 	const [queueIntegrations, setQueueIntegrations] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [selectedLane, setSelectedLane] = useState([]);
 	const [selectedWhatsapps, setSelectedWhatsapps] = useState([]);
 	const [selectedQueueIntegrations, setSelectedQueueIntegrations] = useState([]);
+=======
+	const [loading, setLoading] = useState(false);
+	const [selectedLane, setSelectedLane] = useState([]);
+>>>>>>> organizacional/main
 	const [selectedRollbackLane, setSelectedRollbackLane] = useState([]);
 
 
@@ -91,7 +96,10 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 	const [tag, setTag] = useState(initialState);
 
 	useEffect(() => {
+<<<<<<< HEAD
 		setTag({...initialState});
+=======
+>>>>>>> organizacional/main
 		setLoading(true);
 		const delayDebounceFn = setTimeout(() => {
 			const fetchTags = async () => {
@@ -107,6 +115,7 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 			fetchTags();
 		}, 500);
 		return () => clearTimeout(delayDebounceFn);
+<<<<<<< HEAD
 	}, [open]);
 
 	useEffect(() => {
@@ -143,6 +152,11 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 
 	useEffect(() => {
 		setTag(initialState);
+=======
+	}, []);
+
+	useEffect(() => {
+>>>>>>> organizacional/main
 		try {
 			(async () => {
 				if (!tagId) return;
@@ -157,12 +171,15 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 				if (data.rollbackLaneId) {
 					setSelectedRollbackLane(data.rollbackLaneId);
 				}
+<<<<<<< HEAD
 				if (data.whatsappId) {
 					setSelectedWhatsapps(data.whatsappId);
 				}
 				if (data.queueIntegrationId) {
 					setSelectedQueueIntegrations(data.queueIntegrationId);
 				}
+=======
+>>>>>>> organizacional/main
 			})()
 		} catch (err) {
 			toastError(err);
@@ -170,12 +187,17 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 	}, [tagId, open]);
 
 	const handleClose = () => {
+<<<<<<< HEAD
 		//setTag({...initialState});
+=======
+		setTag(initialState);
+>>>>>>> organizacional/main
 		setColorPickerModalOpen(false);
 		onClose();
 	};
 
 	const handleSaveTag = async values => {
+<<<<<<< HEAD
 		const lane =  kanban === 1 ? Array.isArray(selectedLane) && selectedLane.length === 0 ? "" : selectedLane : selectedLane[0];
 		const whatsapp =  kanban === 1 ? Array.isArray(selectedWhatsapps) && selectedWhatsapps.length === 0 ? "" : selectedWhatsapps : selectedWhatsapps[0];
 		const queueIntegration =  kanban === 1 ? Array.isArray(selectedQueueIntegrations) && selectedQueueIntegrations.length === 0 ? "" : selectedQueueIntegrations : selectedQueueIntegrations[0];
@@ -198,6 +220,9 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 			nextLaneId: selectedLane, 
 			whatsappId: selectedWhatsapps,
 			queueIntegrationId: selectedQueueIntegrations || null, rollbackLaneId: selectedRollbackLane || null }; */
+=======
+		const tagData = { ...values, userId: user?.id, kanban: kanban, nextLaneId: selectedLane || null, rollbackLaneId: selectedRollbackLane || null };
+>>>>>>> organizacional/main
 
 		try {
 			if (tagId) {
@@ -225,10 +250,13 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 		return hexColor;
 	}
 
+<<<<<<< HEAD
 	useEffect(() => {
     console.log("Novo valor de tag antes de renderizar Formik:", tag);
 }, [tag]);
 
+=======
+>>>>>>> organizacional/main
 	return (
 		<div className={classes.root}>
 			<Dialog
@@ -267,10 +295,14 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 											helperText={touched.name && errors.name}
 											variant="outlined"
 											margin="dense"
+<<<<<<< HEAD
 											onChange={(e) => {
 												const value = e.target.value; // Pegamos o valor antes de chamar setTag
 												setTag(prev => ({ ...prev, name: value }));
 											}}
+=======
+											onChange={(e) => setTag(prev => ({ ...prev, name: e.target.value }))}
+>>>>>>> organizacional/main
 											fullWidth
 											autoFocus
 										/>
@@ -305,7 +337,10 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 											}}
 											variant="outlined"
 											margin="dense"
+<<<<<<< HEAD
 											value=''
+=======
+>>>>>>> organizacional/main
 										/>
 
 										{colorPickerModalOpen && (
@@ -370,6 +405,7 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 													</Field>
 												</FormControl>
 											</Grid>
+<<<<<<< HEAD
 											<Grid item xs={12} md={6} xl={6}>
 												<FormControl
 													variant="outlined"
@@ -436,6 +472,8 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 													</Field>
 												</FormControl>
 											</Grid>
+=======
+>>>>>>> organizacional/main
 											<Grid item xs={12} md={12} xl={12}>
 												<Field
 													as={TextField}

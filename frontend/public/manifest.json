@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
 	"short_name": "CRM Clique Responde",
 	"name": "CRM Clique Responde",
+=======
+	"short_name": "Multi100",
+	"name": "Multi100",
+>>>>>>> organizacional/main
 	"icons": [
 		{
 			"src": "favicon.ico",

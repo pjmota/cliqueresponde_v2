@@ -3,9 +3,14 @@ import AppError from "../../errors/AppError";
 import Queue from "../../models/Queue";
 import Company from "../../models/Company";
 import Plan from "../../models/Plan";
+<<<<<<< HEAD
 import Tag from "../../models/Tag";
 
 const ShowUserService = async (id: string | number, companyId?: string | number): Promise<User> => {
+=======
+
+const ShowUserService = async (id: string | number, companyId: string | number): Promise<User> => {
+>>>>>>> organizacional/main
   const user = await User.findOne(
     {
       where: {
@@ -36,12 +41,19 @@ const ShowUserService = async (id: string | number, companyId?: string | number)
         "allUserChat",
         "allHistoric",
         "allowRealTime",
+<<<<<<< HEAD
         "allowConnections",
         "allTicketsQueuesWaiting"
       ],
       include: [
         { model: Queue, as: "queues", attributes: ["id", "name", "color"] },
         { model: Tag, as: "tags", attributes: ["id", "name", "color"] },
+=======
+        "allowConnections"
+      ],
+      include: [
+        { model: Queue, as: "queues", attributes: ["id", "name", "color"] },
+>>>>>>> organizacional/main
         {
           model: Company,
           as: "company",

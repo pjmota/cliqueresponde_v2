@@ -26,7 +26,10 @@ interface Request {
   extraInfo?: ExtraInfo[];
   remoteJid?: string;
   wallets?: null | number[] | string[];
+<<<<<<< HEAD
   userId?: string,
+=======
+>>>>>>> organizacional/main
 }
 
 const CreateContactService = async ({
@@ -38,8 +41,12 @@ const CreateContactService = async ({
   companyId,
   extraInfo = [],
   remoteJid = "",
+<<<<<<< HEAD
   wallets,
   userId
+=======
+  wallets
+>>>>>>> organizacional/main
 }: Request): Promise<Contact> => {
 
   const numberExists = await Contact.findOne({
@@ -67,8 +74,12 @@ const CreateContactService = async ({
       active,
       extraInfo,
       companyId,
+<<<<<<< HEAD
       remoteJid,
       createdBy: userId
+=======
+      remoteJid
+>>>>>>> organizacional/main
     },
     {
       include: ["extraInfo",

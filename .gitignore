@@ -4,4 +4,7 @@
 .DS_Store
 package-lock.json
 backend/logs/preparingImportMessagesWppId31.txt
+<<<<<<< HEAD
 api_oficial/
+=======
+>>>>>>> organizacional/main

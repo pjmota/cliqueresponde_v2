@@ -275,11 +275,18 @@ const ContactListItems = () => {
           </>
         )}
       </ConfirmationModal>
+<<<<<<< HEAD
       {/* {
         user.profile === "user" ?
           <ForbiddenPage />
           :
           } */}
+=======
+      {
+        user.profile === "user" ?
+          <ForbiddenPage />
+          :
+>>>>>>> organizacional/main
           <>
             <MainHeader>
               <Grid style={{ width: "99.6%" }} container>
@@ -429,7 +436,11 @@ const ContactListItems = () => {
                 </TableBody>
               </Table>
             </Paper>
+<<<<<<< HEAD
           </>
+=======
+          </>}
+>>>>>>> organizacional/main
     </MainContainer>
   );
 };

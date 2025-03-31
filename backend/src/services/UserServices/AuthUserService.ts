@@ -26,7 +26,10 @@ interface SerializedUser {
   userClosePendingTicket?: string;
   showDashboard?: string;
   token?: string;
+<<<<<<< HEAD
   allTicketsQueuesWaiting?: string;
+=======
+>>>>>>> organizacional/main
 }
 
 interface Request {

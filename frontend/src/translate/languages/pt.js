@@ -81,6 +81,11 @@ const messages = {
           groups: "Grupos",
         },
         users: {
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> organizacional/main
           name: "Nome",
           numberAppointments: "Quantidade de Atendimentos",
           statusNow: "Atual",
@@ -308,7 +313,10 @@ const messages = {
             "Selecione uma fila para os contatos que não possuem fila serem redirecionados",
           default: "Padrão",
           group: "Permitir grupos",
+<<<<<<< HEAD
           campaign: "Permitir campanhas",
+=======
+>>>>>>> organizacional/main
           timeSendQueue: "Tempo em minutos para redirecionar para fila",
           importAlert:
             "ATENÇÃO: Ao salvar, sua conexão será encerrada, será necessário ler novamente o QR Code para importar as mensagens",
@@ -486,7 +494,12 @@ const messages = {
           text: "Horários de atendimento",
           add: "Adicionar fila",
           edit: "Editar fila",
+<<<<<<< HEAD
           confirmationDelete: "Tem certeza? Todas as opções de integrações serão deletadas.",
+=======
+          confirmationDelete:
+            "Tem certeza? Todas as opções de integrações serão deletadas.",
+>>>>>>> organizacional/main
         },
         form: {
           name: "Nome",
@@ -532,6 +545,7 @@ const messages = {
           selectIntegration: "Selecione uma Integração",
           addOptions: "Adicionar opções",
         },
+<<<<<<< HEAD
         rotation:{
           toolTipTitle: "Adicione opções para configurar rodízio",
           toolTip:
@@ -563,6 +577,8 @@ const messages = {
           },
           success: "Roleta salva com sucesso.",
         },
+=======
+>>>>>>> organizacional/main
         serviceHours: {
           dayWeek: "Dia da semana",
           startTimeA: "Hora Inicial - Turno A",
@@ -577,6 +593,7 @@ const messages = {
           saturday: "Sábado",
           sunday: "Domingo",
         },
+<<<<<<< HEAD
         rotations: {
           table: {
             id: "ID",
@@ -599,6 +616,8 @@ const messages = {
               "Todos os dados da roleta serão perdidas. Deseja mesmo prosseguir com esta ação?.",
           },
         },
+=======
+>>>>>>> organizacional/main
       },
       queueIntegrationModal: {
         title: {
@@ -669,9 +688,12 @@ const messages = {
           showDashboard: "Ver Dashboard",
           allowRealTime: "Ver Painel de Atendimentos",
           allowConnections: "Permitir ações nas conexões",
+<<<<<<< HEAD
           allTicketsQueuesWaiting: "Visualiza Todos [Fila]",
           allTicketsQueuesWaitingEnable: "Habilitado",
           allTicketsQueuesWaitingDisable: "Desabilitado"
+=======
+>>>>>>> organizacional/main
         },
         tabs: {
           general: "Geral",
@@ -735,12 +757,19 @@ const messages = {
         form: {
           name: "Nome",
           color: "Cor",
+<<<<<<< HEAD
           timeLane: "Tempo em min. para redirecionar lane",
           nextLaneId: "Lane",
           greetingMessageLane: "Mensagem de saudação da lane",
           rollbackLaneId: "Voltar para Lane após retomar atendimento",
           conection: "Conexão",
           integration: "Integração"
+=======
+          timeLane: "Tempo em horas para redirecionar para lane",
+          nextLaneId: "Lane",
+          greetingMessageLane: "Mensagem de saudação da lane",
+          rollbackLaneId: "Voltar para Lane após retomar atendimento"
+>>>>>>> organizacional/main
         },
         buttons: {
           okAdd: "Adicionar",
@@ -1543,7 +1572,10 @@ const messages = {
           color: "Cor",
           tickets: "Tickets",
           actions: "Ações",
+<<<<<<< HEAD
           id: "Id da tag",
+=======
+>>>>>>> organizacional/main
         },
         buttons: {
           add: "Nova Lane",
@@ -1741,7 +1773,10 @@ const messages = {
           signature: "Habilitar/Desabilitar Assinatura",
           privateMessage: "Habilitar/Desabilitar Mensagem Privada",
           meet: "Enviar link para videoconferencia",
+<<<<<<< HEAD
           sendIntegration: "Enviar integração",
+=======
+>>>>>>> organizacional/main
         },
         type: {
           imageVideo: "Fotos e vídeos",
@@ -1811,8 +1846,11 @@ const messages = {
         ERR_WAPP_GREETING_REQUIRED:
           "A mensagem de saudação é obrigatório quando há mais de uma fila.",
         ERR_OUT_OF_HOURS: "Fora do Horário de Expediente!",
+<<<<<<< HEAD
         ERR_CONFLICT_ROTATION_USERS_SEQUENCE_FOUND: "Já existe um usuário com essa sequência cadastrada. É necessário trocar a sequência.",
         ERR_CONFLICT_ROTATION_USERS_FOUND: "Já existe um usuário com esse ID cadastrado. É necessário trocar o usuário."
+=======
+>>>>>>> organizacional/main
       },
     },
   },

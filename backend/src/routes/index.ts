@@ -38,6 +38,7 @@ import apiContactRoutes from "./api/apiContactRoutes";
 import apiMessageRoutes from "./api/apiMessageRoutes";
 import companySettingsRoutes from "./companySettingsRoutes";
 
+<<<<<<< HEAD
 import contactCustomFieldRoutes from "./contactCustomFieldRoutes";
 import afterSalesRoutes from "./afterSalesRoutes";
 import afterSalesDetailsRoutes from "./afterSalesDetailsRoutes";
@@ -49,6 +50,11 @@ import rotationsRoutes from "./rotationsRoutes";
 import rotationUsersRoutes from "./rotationUsersRoute";
 
 import scheduleTagIntegrationRoutes from "./scheduleTagIntegrationRoutes";
+=======
+import promptRoutes from "./promptRouter";
+import statisticsRoutes from "./statisticsRoutes";
+import scheduleMessageRoutes from "./ScheduledMessagesRoutes";
+>>>>>>> organizacional/main
 
 const routes = Router();
 
@@ -90,16 +96,22 @@ routes.use("/api", apiCompanyRoutes);
 routes.use("/api", apiContactRoutes);
 routes.use("/api", apiMessageRoutes);
 
+<<<<<<< HEAD
 routes.use(contactCustomFieldRoutes);
 routes.use(afterSalesRoutes);
 routes.use(afterSalesDetailsRoutes);
 
 routes.use(scheduleTagIntegrationRoutes);
 
+=======
+>>>>>>> organizacional/main
 routes.use(promptRoutes);
 routes.use(statisticsRoutes);
 routes.use(companySettingsRoutes);
 routes.use(scheduleMessageRoutes);
+<<<<<<< HEAD
 routes.use(rotationsRoutes);
 routes.use(rotationUsersRoutes);
+=======
+>>>>>>> organizacional/main
 export default routes;

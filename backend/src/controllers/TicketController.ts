@@ -16,7 +16,10 @@ import FindOrCreateATicketTrakingService from "../services/TicketServices/FindOr
 import ListTicketsServiceReport from "../services/TicketServices/ListTicketsServiceReport";
 import SetTicketMessagesAsRead from "../helpers/SetTicketMessagesAsRead";
 import { Mutex } from "async-mutex";
+<<<<<<< HEAD
 import StartTicketIntegrationService from "../services/TicketServices/StartTicketIntegrationService";
+=======
+>>>>>>> organizacional/main
 
 type IndexQuery = {
   searchParam: string;
@@ -355,6 +358,7 @@ export const update = async (
   return res.status(200).json(ticket);
 };
 
+<<<<<<< HEAD
 export const integration = async (
   req: Request,
   res: Response
@@ -372,6 +376,8 @@ export const integration = async (
   return res.status(200).send();
 };
 
+=======
+>>>>>>> organizacional/main
 export const remove = async (
   req: Request,
   res: Response

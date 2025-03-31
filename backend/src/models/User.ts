@@ -24,8 +24,11 @@ import Company from "./Company";
 import QuickMessage from "./QuickMessage";
 import Whatsapp from "./Whatsapp";
 import Chatbot from "./Chatbot";
+<<<<<<< HEAD
 import Tag from "./Tag";
 import UserTag from "./UserTags";
+=======
+>>>>>>> organizacional/main
 
 @Table
 class User extends Model<User> {
@@ -91,6 +94,7 @@ class User extends Model<User> {
   @Column
   allowGroup: boolean;
 
+<<<<<<< HEAD
   @Default(false)
   @Column
   allowAfterSales: boolean;
@@ -102,6 +106,8 @@ class User extends Model<User> {
   @Column
   contactCustomFields: string;
 
+=======
+>>>>>>> organizacional/main
   @Default("light")
   @Column
   defaultTheme: string;
@@ -133,9 +139,12 @@ class User extends Model<User> {
   @BelongsToMany(() => Queue, () => UserQueue)
   queues: Queue[];
 
+<<<<<<< HEAD
   @BelongsToMany(() => Tag, () => UserTag)
   tags: Tag[];
 
+=======
+>>>>>>> organizacional/main
   @HasMany(() => QuickMessage, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
@@ -190,10 +199,13 @@ class User extends Model<User> {
   @Column
   allowConnections: string;
 
+<<<<<<< HEAD
   @Default("disabled")
   @Column
   allTicketsQueuesWaiting: string;
 
+=======
+>>>>>>> organizacional/main
   @BeforeDestroy
   static async updateChatbotsUsersReferences(user: User) {
     // Atualizar os registros na tabela Chatbots onde optQueueId é igual ao ID da fila que será excluída

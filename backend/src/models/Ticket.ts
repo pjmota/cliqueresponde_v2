@@ -27,7 +27,10 @@ import Tag from "./Tag";
 import TicketTag from "./TicketTag";
 import QueueIntegrations from "./QueueIntegrations";
 import { format } from "date-fns";
+<<<<<<< HEAD
 import Prompt from "./Prompt";
+=======
+>>>>>>> organizacional/main
 
 
 @Table
@@ -171,6 +174,7 @@ class Ticket extends Model<Ticket> {
 
   @Column
   typebotSessionTime: Date
+<<<<<<< HEAD
 
   @Column
   typebotId: string;
@@ -196,6 +200,8 @@ class Ticket extends Model<Ticket> {
 
   @Column
   startedByPlatform: boolean;
+=======
+>>>>>>> organizacional/main
 }
 
 export default Ticket;

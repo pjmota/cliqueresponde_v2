@@ -5,6 +5,7 @@ import Tag from '../models/Tag'
 import { getIO } from "../libs/socket";
 import Ticket from "../models/Ticket";
 import ShowTicketService from "../services/TicketServices/ShowTicketService";
+<<<<<<< HEAD
 import logger from "../utils/logger";
 
 type IndexQuery = {
@@ -19,6 +20,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
   
   return res.json({ ticketTags});
 };
+=======
+>>>>>>> organizacional/main
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId, tagId } = req.params;

@@ -6,7 +6,10 @@ interface Request {
   companyId: number;
   searchParam?: string;
   kanban?: number;
+<<<<<<< HEAD
   whatsappId?: number;
+=======
+>>>>>>> organizacional/main
 }
 
 const ListService = async ({

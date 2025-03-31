@@ -31,17 +31,24 @@ import ShowTicketService from "./services/TicketServices/ShowTicketService";
 import SendWhatsAppMessage from "./services/WbotServices/SendWhatsAppMessage";
 import UpdateTicketService from "./services/TicketServices/UpdateTicketService";
 import { addSeconds, differenceInSeconds } from "date-fns";
+<<<<<<< HEAD
 const CronJob = require("cron").CronJob;
 import CompaniesSettings from "./models/CompaniesSettings";
 import {
   verifyMediaMessage,
   verifyMessage
 } from "./services/WbotServices/wbotMessageListener";
+=======
+const CronJob = require('cron').CronJob;
+import CompaniesSettings from "./models/CompaniesSettings";
+import { verifyMediaMessage, verifyMessage } from "./services/WbotServices/wbotMessageListener";
+>>>>>>> organizacional/main
 import FindOrCreateTicketService from "./services/TicketServices/FindOrCreateTicketService";
 import CreateLogTicketService from "./services/TicketServices/CreateLogTicketService";
 import formatBody from "./helpers/Mustache";
 import TicketTag from "./models/TicketTag";
 import Tag from "./models/Tag";
+<<<<<<< HEAD
 import { delay, makeWASocket, useMultiFileAuthState } from "@whiskeysockets/baileys";
 import Plan from "./models/Plan";
 import UpdateRotationService from "./services/RotationsService/UpdateService";
@@ -49,6 +56,10 @@ import ShowQueueIntegrationService from "./services/QueueIntegrationServices/Sho
 import { getWbot } from "./libs/wbot";
 import typebotListener from "./services/TypebotServices/typebotListener";
 import CreateLogRotationService from "./services/RotationsService/CreateLogRotationService";
+=======
+import { delay } from "@whiskeysockets/baileys";
+import Plan from "./models/Plan";
+>>>>>>> organizacional/main
 
 const connection = process.env.REDIS_URI || "";
 const limiterMax = process.env.REDIS_OPT_LIMITER_MAX || 1;
@@ -81,10 +92,14 @@ interface DispatchCampaignData {
 
 export const userMonitor = new BullQueue("UserMonitor", connection);
 export const scheduleMonitor = new BullQueue("ScheduleMonitor", connection);
+<<<<<<< HEAD
 export const sendScheduledMessages = new BullQueue(
   "SendSacheduledMessages",
   connection
 );
+=======
+export const sendScheduledMessages = new BullQueue("SendSacheduledMessages", connection);
+>>>>>>> organizacional/main
 export const campaignQueue = new BullQueue("CampaignQueue", connection);
 export const queueMonitor = new BullQueue("QueueMonitor", connection);
 
@@ -128,10 +143,14 @@ async function handleVerifySchedules(job) {
           [Op.lte]: moment().add("30", "seconds").format("YYYY-MM-DD HH:mm:ss")
         }
       },
+<<<<<<< HEAD
       include: [
         { model: Contact, as: "contact" },
         { model: User, as: "user", attributes: ["name"] }
       ],
+=======
+      include: [{ model: Contact, as: "contact" }, { model: User, as: "user", attributes: ["name"] }],
+>>>>>>> organizacional/main
       distinct: true,
       subQuery: false
     });
@@ -170,13 +189,23 @@ async function handleSendScheduledMessage(job) {
   }
 
   try {
+<<<<<<< HEAD
     let whatsapp;
+=======
+    let whatsapp
+>>>>>>> organizacional/main
 
     if (!isNil(schedule.whatsappId)) {
       whatsapp = await Whatsapp.findByPk(schedule.whatsappId);
     }
 
+<<<<<<< HEAD
     if (!whatsapp) whatsapp = await GetDefaultWhatsApp(schedule.companyId);
+=======
+    if (!whatsapp)
+      whatsapp = await GetDefaultWhatsApp(schedule.companyId);
+
+>>>>>>> organizacional/main
 
     // const settings = await CompaniesSettings.findOne({
     //   where: {
@@ -186,11 +215,15 @@ async function handleSendScheduledMessage(job) {
 
     let filePath = null;
     if (schedule.mediaPath) {
+<<<<<<< HEAD
       filePath = path.resolve(
         "public",
         `company${schedule.companyId}`,
         schedule.mediaPath
       );
+=======
+      filePath = path.resolve("public", `company${schedule.companyId}`, schedule.mediaPath);
+>>>>>>> organizacional/main
     }
 
     if (schedule.openTicket === "enabled") {
@@ -201,7 +234,11 @@ async function handleSendScheduledMessage(job) {
           whatsappId: whatsapp.id,
           status: ["open", "pending"]
         }
+<<<<<<< HEAD
       });
+=======
+      })
+>>>>>>> organizacional/main
 
       if (!ticket)
         ticket = await Ticket.create({
@@ -211,7 +248,11 @@ async function handleSendScheduledMessage(job) {
           queueId: schedule.queueId,
           userId: schedule.ticketUserId,
           status: schedule.statusTicket
+<<<<<<< HEAD
         });
+=======
+        })
+>>>>>>> organizacional/main
 
       ticket = await ShowTicketService(ticket.id, schedule.companyId);
 
@@ -219,6 +260,7 @@ async function handleSendScheduledMessage(job) {
 
       // @ts-ignore: Unreachable code error
       if (schedule.assinar && !isNil(schedule.userId)) {
+<<<<<<< HEAD
         bodyMessage = `*${schedule?.user?.name}:*\n${schedule.body.trim()}`;
       } else {
         bodyMessage = schedule.body.trim();
@@ -231,10 +273,23 @@ async function handleSendScheduledMessage(job) {
           mediaPath: filePath,
           companyId: schedule.companyId
         },
+=======
+        bodyMessage = `*${schedule?.user?.name}:*\n${schedule.body.trim()}`
+      } else {
+        bodyMessage = schedule.body.trim();
+      }
+      const sentMessage = await SendMessage(whatsapp, {
+        number: schedule.contact.number,
+        body: `\u200e ${formatBody(bodyMessage, ticket)}`,
+        mediaPath: filePath,
+        companyId: schedule.companyId
+      },
+>>>>>>> organizacional/main
         schedule.contact.isGroup
       );
 
       if (schedule.mediaPath) {
+<<<<<<< HEAD
         await verifyMediaMessage(
           sentMessage,
           ticket,
@@ -253,6 +308,11 @@ async function handleSendScheduledMessage(job) {
           true,
           false
         );
+=======
+        await verifyMediaMessage(sentMessage, ticket, ticket.contact, null, true, false, whatsapp);
+      } else {
+        await verifyMessage(sentMessage, ticket, ticket.contact, null, true, false);
+>>>>>>> organizacional/main
       }
       // if (ticket) {
       //   await UpdateTicketService({
@@ -267,6 +327,7 @@ async function handleSendScheduledMessage(job) {
       //   })
       // }
     } else {
+<<<<<<< HEAD
       await SendMessage(
         whatsapp,
         {
@@ -300,6 +361,34 @@ async function handleSendScheduledMessage(job) {
           break;
         default:
           throw new Error("Intervalo inválido");
+=======
+      await SendMessage(whatsapp, {
+        number: schedule.contact.number,
+        body: `\u200e ${schedule.body}`,
+        mediaPath: filePath,
+        companyId: schedule.companyId
+      },
+        schedule.contact.isGroup);
+    }
+
+    if (schedule.valorIntervalo > 0 && (isNil(schedule.contadorEnvio) || schedule.contadorEnvio < schedule.enviarQuantasVezes)) {
+      let unidadeIntervalo;
+      switch (schedule.intervalo) {
+        case 1:
+          unidadeIntervalo = 'days';
+          break;
+        case 2:
+          unidadeIntervalo = 'weeks';
+          break;
+        case 3:
+          unidadeIntervalo = 'months';
+          break;
+        case 4:
+          unidadeIntervalo = 'minuts';
+          break;
+        default:
+          throw new Error('Intervalo inválido');
+>>>>>>> organizacional/main
       }
 
       function isDiaUtil(date) {
@@ -310,7 +399,11 @@ async function handleSendScheduledMessage(job) {
       function proximoDiaUtil(date) {
         let proximoDia = date.clone();
         do {
+<<<<<<< HEAD
           proximoDia.add(1, "day");
+=======
+          proximoDia.add(1, 'day');
+>>>>>>> organizacional/main
         } while (!isDiaUtil(proximoDia));
         return proximoDia;
       }
@@ -319,7 +412,11 @@ async function handleSendScheduledMessage(job) {
       function diaUtilAnterior(date) {
         let diaAnterior = date.clone();
         do {
+<<<<<<< HEAD
           diaAnterior.subtract(1, "day");
+=======
+          diaAnterior.subtract(1, 'day');
+>>>>>>> organizacional/main
         } while (!isDiaUtil(diaAnterior));
         return diaAnterior;
       }
@@ -331,6 +428,7 @@ async function handleSendScheduledMessage(job) {
       // Realizar a soma da data com base no intervalo e valor do intervalo
       let novaData = new Date(dataExistente); // Clone da data existente para não modificar a original
 
+<<<<<<< HEAD
       if (unidadeIntervalo !== "minuts") {
         novaData.setDate(
           novaData.getDate() +
@@ -345,6 +443,14 @@ async function handleSendScheduledMessage(job) {
         novaData.setMinutes(
           novaData.getMinutes() + Number(schedule.valorIntervalo)
         );
+=======
+      console.log(unidadeIntervalo)
+      if (unidadeIntervalo !== "minuts") {
+        novaData.setDate(novaData.getDate() + schedule.valorIntervalo * (unidadeIntervalo === 'days' ? 1 : unidadeIntervalo === 'weeks' ? 7 : 30));
+      } else {
+        novaData.setMinutes(novaData.getMinutes() + Number(schedule.valorIntervalo));
+        console.log(novaData)
+>>>>>>> organizacional/main
       }
 
       if (schedule.tipoDias === 5 && !isDiaUtil(novaData)) {
@@ -359,8 +465,13 @@ async function handleSendScheduledMessage(job) {
       await scheduleRecord?.update({
         status: "PENDENTE",
         contadorEnvio: schedule.contadorEnvio + 1,
+<<<<<<< HEAD
         sendAt: new Date(novaData.toISOString().slice(0, 19).replace("T", " ")) // Mantendo o formato de hora
       });
+=======
+        sendAt: new Date(novaData.toISOString().slice(0, 19).replace('T', ' ')) // Mantendo o formato de hora
+      })
+>>>>>>> organizacional/main
     } else {
       await scheduleRecord?.update({
         sentAt: new Date(moment().format("YYYY-MM-DD HH:mm")),
@@ -399,7 +510,11 @@ async function handleVerifyCampaigns(job) {
     if (campaigns.length > 0) {
       logger.info(`Campanhas encontradas: ${campaigns.length}`);
 
+<<<<<<< HEAD
       const promises = campaigns.map(async campaign => {
+=======
+      const promises = campaigns.map(async (campaign) => {
+>>>>>>> organizacional/main
         try {
           await sequelize.query(
             `UPDATE "Campaigns" SET status = 'EM_ANDAMENTO' WHERE id = ${campaign.id}`
@@ -415,12 +530,18 @@ async function handleVerifyCampaigns(job) {
           return campaignQueue.add(
             "ProcessCampaign",
             { id: campaign.id, delay },
+<<<<<<< HEAD
             {
               priority: 3,
               removeOnComplete: { age: 60 * 60, count: 10 },
               removeOnFail: { age: 60 * 60, count: 10 }
             }
           );
+=======
+            { priority: 3, removeOnComplete: { age: 60 * 60, count: 10 }, removeOnFail: { age: 60 * 60, count: 10 } }
+          );
+
+>>>>>>> organizacional/main
         } catch (err) {
           Sentry.captureException(err);
         }
@@ -428,7 +549,11 @@ async function handleVerifyCampaigns(job) {
 
       await Promise.all(promises);
 
+<<<<<<< HEAD
       logger.info("Todas as campanhas foram processadas e adicionadas à fila.");
+=======
+      logger.info('Todas as campanhas foram processadas e adicionadas à fila.');
+>>>>>>> organizacional/main
     }
   } catch (err) {
     Sentry.captureException(err);
@@ -438,6 +563,10 @@ async function handleVerifyCampaigns(job) {
   }
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> organizacional/main
 async function getCampaign(id) {
   return await Campaign.findOne({
     where: { id },
@@ -450,6 +579,7 @@ async function getCampaign(id) {
           {
             model: ContactListItem,
             as: "contacts",
+<<<<<<< HEAD
             attributes: [
               "id",
               "name",
@@ -458,6 +588,9 @@ async function getCampaign(id) {
               "isWhatsappValid",
               "isGroup"
             ],
+=======
+            attributes: ["id", "name", "number", "email", "isWhatsappValid", "isGroup"],
+>>>>>>> organizacional/main
             where: { isWhatsappValid: true }
           }
         ]
@@ -466,7 +599,11 @@ async function getCampaign(id) {
         model: Whatsapp,
         as: "whatsapp",
         attributes: ["id", "name"]
+<<<<<<< HEAD
       }
+=======
+      },
+>>>>>>> organizacional/main
       // {
       //   model: CampaignShipping,
       //   as: "shipping",
@@ -515,6 +652,10 @@ async function getSettings(campaign): Promise<CampaignSettings> {
       greaterInterval,
       variables
     };
+<<<<<<< HEAD
+=======
+
+>>>>>>> organizacional/main
   } catch (error) {
     console.log(error);
     throw error; // rejeita a Promise com o erro original
@@ -623,7 +764,11 @@ function getProcessedMessage(msg: string, variables: any[], contact: any) {
     finalMessage = finalMessage.replace(/{numero}/g, contact.number);
   }
 
+<<<<<<< HEAD
   if (variables[0]?.value !== "[]") {
+=======
+  if (variables[0]?.value !== '[]') {
+>>>>>>> organizacional/main
     variables.forEach(variable => {
       if (finalMessage.includes(`{${variable.key}}`)) {
         const regex = new RegExp(`{${variable.key}}`, "g");
@@ -685,6 +830,10 @@ const checkTime = async () => {
     return true;
   }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> organizacional/main
   logger.info(
     `Envio inicia as ${hour} e termina as ${endHours}, hora atual ${timeNow} não está dentro do horário`
   );
@@ -705,12 +854,21 @@ const checkTime = async () => {
 //       where: { whatsappId: whatsappId }
 //     });
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> organizacional/main
 //     const lastUpdate = moment(setting.dateStart);
 
 //     const now = moment();
 
 //     const passou = now.isAfter(lastUpdate, "day");
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> organizacional/main
 //     if (setting.sendToday <= setting.limit) {
 //       await setting.update({
 //         dateStart: moment().format()
@@ -729,6 +887,10 @@ const checkTime = async () => {
 //       setting.reload();
 //     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> organizacional/main
 //     setting.reload();
 
 //     logger.info(`Enviada hoje ${setting.sendToday} limite ${setting.limit}`);
@@ -768,6 +930,7 @@ async function verifyAndFinalizeCampaign(campaign) {
   }
 
   const io = getIO();
+<<<<<<< HEAD
   io.of(companyId).emit(`company-${campaign.companyId}-campaign`, {
     action: "update",
     record: campaign
@@ -775,6 +938,16 @@ async function verifyAndFinalizeCampaign(campaign) {
 }
 
 /* async function handleProcessCampaign(job) {
+=======
+  io.of(companyId)
+    .emit(`company-${campaign.companyId}-campaign`, {
+      action: "update",
+      record: campaign
+    });
+}
+
+async function handleProcessCampaign(job) {
+>>>>>>> organizacional/main
   try {
     const { id }: ProcessCampaignData = job.data;
     const campaign = await getCampaign(id);
@@ -790,9 +963,13 @@ async function verifyAndFinalizeCampaign(campaign) {
         }));
 
         // const baseDelay = job.data.delay || 0;
+<<<<<<< HEAD
         const longerIntervalAfter = parseToMilliseconds(
           settings.longerIntervalAfter
         );
+=======
+        const longerIntervalAfter = parseToMilliseconds(settings.longerIntervalAfter);
+>>>>>>> organizacional/main
         const greaterInterval = parseToMilliseconds(settings.greaterInterval);
         const messageInterval = settings.messageInterval;
 
@@ -803,6 +980,7 @@ async function verifyAndFinalizeCampaign(campaign) {
 
         const queuePromises = [];
         for (let i = 0; i < contactData.length; i++) {
+<<<<<<< HEAD
           baseDelay = addSeconds(
             baseDelay,
             i > longerIntervalAfter ? greaterInterval : messageInterval
@@ -816,6 +994,12 @@ async function verifyAndFinalizeCampaign(campaign) {
             greaterInterval,
             messageInterval
           );
+=======
+          baseDelay = addSeconds(baseDelay, i > longerIntervalAfter ? greaterInterval : messageInterval);
+
+          const { contactId, campaignId, variables } = contactData[i];
+          const delay = calculateDelay(i, baseDelay, longerIntervalAfter, greaterInterval, messageInterval);
+>>>>>>> organizacional/main
           // if (isOpen || !isFds) {
           const queuePromise = campaignQueue.add(
             "PrepareContact",
@@ -823,9 +1007,13 @@ async function verifyAndFinalizeCampaign(campaign) {
             { removeOnComplete: true }
           );
           queuePromises.push(queuePromise);
+<<<<<<< HEAD
           logger.info(
             `Registro enviado pra fila de disparo: Campanha=${campaign.id};Contato=${contacts[i].name};delay=${delay}`
           );
+=======
+          logger.info(`Registro enviado pra fila de disparo: Campanha=${campaign.id};Contato=${contacts[i].name};delay=${delay}`);
+>>>>>>> organizacional/main
           // }
         }
         await Promise.all(queuePromises);
@@ -835,6 +1023,7 @@ async function verifyAndFinalizeCampaign(campaign) {
   } catch (err: any) {
     Sentry.captureException(err);
   }
+<<<<<<< HEAD
 } */
 
 
@@ -926,6 +1115,16 @@ function calculateDelay(
     return diffSeconds * 1000 + greaterInterval;
   } else {
     return diffSeconds * 1000 + messageInterval;
+=======
+}
+
+function calculateDelay(index, baseDelay, longerIntervalAfter, greaterInterval, messageInterval) {
+  const diffSeconds = differenceInSeconds(baseDelay, new Date());
+  if (index > longerIntervalAfter) {
+    return diffSeconds * 1000 + greaterInterval
+  } else {
+    return diffSeconds * 1000 + messageInterval
+>>>>>>> organizacional/main
   }
 }
 
@@ -1016,23 +1215,35 @@ async function handleDispatchCampaign(job) {
     const wbot = await GetWhatsappWbot(campaign.whatsapp);
 
     if (!wbot) {
+<<<<<<< HEAD
       logger.error(
         `campaignQueue -> DispatchCampaign -> error: wbot not found`
       );
+=======
+      logger.error(`campaignQueue -> DispatchCampaign -> error: wbot not found`);
+>>>>>>> organizacional/main
       return;
     }
 
     if (!campaign.whatsapp) {
+<<<<<<< HEAD
       logger.error(
         `campaignQueue -> DispatchCampaign -> error: whatsapp not found`
       );
+=======
+      logger.error(`campaignQueue -> DispatchCampaign -> error: whatsapp not found`);
+>>>>>>> organizacional/main
       return;
     }
 
     if (!wbot?.user?.id) {
+<<<<<<< HEAD
       logger.error(
         `campaignQueue -> DispatchCampaign -> error: wbot user not found`
       );
+=======
+      logger.error(`campaignQueue -> DispatchCampaign -> error: wbot user not found`);
+>>>>>>> organizacional/main
       return;
     }
 
@@ -1047,6 +1258,7 @@ async function handleDispatchCampaign(job) {
       }
     );
 
+<<<<<<< HEAD
     const chatId = campaignShipping.contact.isGroup
       ? `${campaignShipping.number}@g.us`
       : `${campaignShipping.number}@s.whatsapp.net`;
@@ -1062,6 +1274,9 @@ async function handleDispatchCampaign(job) {
     }
 
 // AQUI
+=======
+    const chatId = campaignShipping.contact.isGroup ? `${campaignShipping.number}@g.us` : `${campaignShipping.number}@s.whatsapp.net`;
+>>>>>>> organizacional/main
 
     if (campaign.openTicket === "enabled") {
       const [contact] = await Contact.findOrCreate({
@@ -1077,7 +1292,11 @@ async function handleDispatchCampaign(job) {
           whatsappId: campaign.whatsappId,
           profilePicUrl: ""
         }
+<<<<<<< HEAD
       });
+=======
+      })
+>>>>>>> organizacional/main
       const whatsapp = await Whatsapp.findByPk(campaign.whatsappId);
 
       let ticket = await Ticket.findOne({
@@ -1087,7 +1306,11 @@ async function handleDispatchCampaign(job) {
           whatsappId: whatsapp.id,
           status: ["open", "pending"]
         }
+<<<<<<< HEAD
       });
+=======
+      })
+>>>>>>> organizacional/main
 
       if (!ticket)
         ticket = await Ticket.create({
@@ -1097,7 +1320,11 @@ async function handleDispatchCampaign(job) {
           queueId: campaign?.queueId,
           userId: campaign?.userId,
           status: campaign?.statusTicket
+<<<<<<< HEAD
         });
+=======
+        })
+>>>>>>> organizacional/main
 
       ticket = await ShowTicketService(ticket.id, campaign.companyId);
 
@@ -1107,6 +1334,7 @@ async function handleDispatchCampaign(job) {
             text: `\u200c ${campaignShipping.confirmationMessage}`
           });
 
+<<<<<<< HEAD
           await verifyMessage(
             confirmationMessage,
             ticket,
@@ -1118,11 +1346,19 @@ async function handleDispatchCampaign(job) {
 
           await campaignShipping.update({ confirmationRequestedAt: moment() });
         } else {
+=======
+          await verifyMessage(confirmationMessage, ticket, contact, null, true, false);
+
+          await campaignShipping.update({ confirmationRequestedAt: moment() });
+        } else {
+
+>>>>>>> organizacional/main
           if (!campaign.mediaPath) {
             const sentMessage = await wbot.sendMessage(chatId, {
               text: `\u200c ${campaignShipping.message}`
             });
 
+<<<<<<< HEAD
             await verifyMessage(
               sentMessage,
               ticket,
@@ -1147,12 +1383,25 @@ async function handleDispatchCampaign(job) {
               String(campaign.companyId),
               `\u200c ${campaignShipping.message}`
             );
+=======
+            await verifyMessage(sentMessage, ticket, contact, null, true, false);
+          }
+
+
+          if (campaign.mediaPath) {
+
+            const publicFolder = path.resolve(__dirname, "..", "public");
+            const filePath = path.join(publicFolder, `company${campaign.companyId}`, campaign.mediaPath);
+
+            const options = await getMessageOptions(campaign.mediaName, filePath, String(campaign.companyId), `\u200c ${campaignShipping.message}`);
+>>>>>>> organizacional/main
             if (Object.keys(options).length) {
               if (options.mimetype === "audio/mp4") {
                 const audioMessage = await wbot.sendMessage(chatId, {
                   text: `\u200c ${campaignShipping.message}`
                 });
 
+<<<<<<< HEAD
                 await verifyMessage(
                   audioMessage,
                   ticket,
@@ -1175,6 +1424,13 @@ async function handleDispatchCampaign(job) {
                 true,
                 wbot
               );
+=======
+                await verifyMessage(audioMessage, ticket, contact, null, true, false);
+              }
+              const sentMessage = await wbot.sendMessage(chatId, { ...options });
+
+              await verifyMediaMessage(sentMessage, ticket, ticket.contact, null, false, true, wbot);
+>>>>>>> organizacional/main
             }
           }
           // if (campaign?.statusTicket === 'closed') {
@@ -1193,13 +1449,26 @@ async function handleDispatchCampaign(job) {
         }
         await campaignShipping.update({ deliveredAt: moment() });
       }
+<<<<<<< HEAD
     } else {
+=======
+    }
+    else {
+
+
+>>>>>>> organizacional/main
       if (campaign.confirmation && campaignShipping.confirmation === null) {
         await wbot.sendMessage(chatId, {
           text: campaignShipping.confirmationMessage
         });
         await campaignShipping.update({ confirmationRequestedAt: moment() });
+<<<<<<< HEAD
       } else {
+=======
+
+      } else {
+
+>>>>>>> organizacional/main
         if (!campaign.mediaPath) {
           await wbot.sendMessage(chatId, {
             text: campaignShipping.message
@@ -1208,6 +1477,7 @@ async function handleDispatchCampaign(job) {
 
         if (campaign.mediaPath) {
           const publicFolder = path.resolve(__dirname, "..", "public");
+<<<<<<< HEAD
           const filePath = path.join(
             publicFolder,
             `company${campaign.companyId}`,
@@ -1220,6 +1490,11 @@ async function handleDispatchCampaign(job) {
             String(campaign.companyId),
             campaignShipping.message
           );
+=======
+          const filePath = path.join(publicFolder, `company${campaign.companyId}`, campaign.mediaPath);
+
+          const options = await getMessageOptions(campaign.mediaName, filePath, String(campaign.companyId), campaignShipping.message);
+>>>>>>> organizacional/main
           if (Object.keys(options).length) {
             if (options.mimetype === "audio/mp4") {
               await wbot.sendMessage(chatId, {
@@ -1232,10 +1507,15 @@ async function handleDispatchCampaign(job) {
       }
 
       await campaignShipping.update({ deliveredAt: moment() });
+<<<<<<< HEAD
+=======
+
+>>>>>>> organizacional/main
     }
     await verifyAndFinalizeCampaign(campaign);
 
     const io = getIO();
+<<<<<<< HEAD
     io.of(String(campaign.companyId)).emit(
       `company-${campaign.companyId}-campaign`,
       {
@@ -1243,6 +1523,13 @@ async function handleDispatchCampaign(job) {
         record: campaign
       }
     );
+=======
+    io.of(String(campaign.companyId))
+      .emit(`company-${campaign.companyId}-campaign`, {
+        action: "update",
+        record: campaign
+      });
+>>>>>>> organizacional/main
 
     logger.info(
       `Campanha enviada para: Campanha=${campaignId};Contato=${campaignShipping.contact.name}`
@@ -1258,6 +1545,7 @@ async function handleLoginStatus(job) {
   const thresholdTime = new Date();
   thresholdTime.setMinutes(thresholdTime.getMinutes() - 5);
 
+<<<<<<< HEAD
   await User.update(
     { online: false },
     {
@@ -1267,13 +1555,25 @@ async function handleLoginStatus(job) {
       }
     }
   );
+=======
+  await User.update({ online: false }, {
+    where: {
+      updatedAt: { [Op.lt]: thresholdTime },
+      online: true,
+    },
+  });
+>>>>>>> organizacional/main
 }
 
 async function handleResumeTicketsOutOfHour(job) {
   // logger.info("Buscando atendimentos perdidos nas filas");
   try {
     const companies = await Company.findAll({
+<<<<<<< HEAD
       attributes: ["id", "name"],
+=======
+      attributes: ['id', 'name'],
+>>>>>>> organizacional/main
       where: {
         status: true
       },
@@ -1284,12 +1584,22 @@ async function handleResumeTicketsOutOfHour(job) {
           where: {
             timeSendQueue: { [Op.gt]: 0 }
           }
+<<<<<<< HEAD
         }
+=======
+        },
+>>>>>>> organizacional/main
       ]
     });
 
     companies.map(async c => {
+<<<<<<< HEAD
       c.whatsapps.map(async w => {
+=======
+
+      c.whatsapps.map(async w => {
+
+>>>>>>> organizacional/main
         if (w.status === "CONNECTED") {
           var companyId = c.id;
 
@@ -1300,6 +1610,7 @@ async function handleResumeTicketsOutOfHour(job) {
           const timeQueue = moveQueueTime;
 
           if (moveQueue > 0) {
+<<<<<<< HEAD
             if (
               !isNaN(idQueue) &&
               Number.isInteger(idQueue) &&
@@ -1310,6 +1621,12 @@ async function handleResumeTicketsOutOfHour(job) {
                 .subtract(timeQueue, "minutes")
                 .utc()
                 .format();
+=======
+
+            if (!isNaN(idQueue) && Number.isInteger(idQueue) && !isNaN(timeQueue) && Number.isInteger(timeQueue)) {
+
+              const tempoPassado = moment().subtract(timeQueue, "minutes").utc().format();
+>>>>>>> organizacional/main
               // const tempoAgora = moment().utc().format();
 
               const { count, rows: tickets } = await Ticket.findAndCountAll({
@@ -1321,13 +1638,18 @@ async function handleResumeTicketsOutOfHour(job) {
                   whatsappId: w.id,
                   updatedAt: {
                     [Op.lt]: tempoPassado
+<<<<<<< HEAD
                   }
+=======
+                  },
+>>>>>>> organizacional/main
                   // isOutOfHour: false
                 },
                 include: [
                   {
                     model: Contact,
                     as: "contact",
+<<<<<<< HEAD
                     attributes: [
                       "id",
                       "name",
@@ -1341,6 +1663,9 @@ async function handleResumeTicketsOutOfHour(job) {
                       "lgpdAcceptedAt",
                       "companyId"
                     ],
+=======
+                    attributes: ["id", "name", "number", "email", "profilePicUrl", "acceptAudioMessage", "active", "disableBot", "urlPicture", "lgpdAcceptedAt", "companyId"],
+>>>>>>> organizacional/main
                     include: ["extraInfo", "tags"]
                   },
                   {
@@ -1379,9 +1704,13 @@ async function handleResumeTicketsOutOfHour(job) {
                   //   ticket,
                   // });
 
+<<<<<<< HEAD
                   logger.info(
                     `Atendimento Perdido: ${ticket.id} - Empresa: ${companyId}`
                   );
+=======
+                  logger.info(`Atendimento Perdido: ${ticket.id} - Empresa: ${companyId}`);
+>>>>>>> organizacional/main
                 });
               }
             } else {
@@ -1396,13 +1725,21 @@ async function handleResumeTicketsOutOfHour(job) {
     logger.error("SearchForQueue -> VerifyQueue: error", e.message);
     throw e;
   }
+<<<<<<< HEAD
 }
+=======
+};
+>>>>>>> organizacional/main
 
 async function handleVerifyQueue(job) {
   // logger.info("Buscando atendimentos perdidos nas filas");
   try {
     const companies = await Company.findAll({
+<<<<<<< HEAD
       attributes: ["id", "name"],
+=======
+      attributes: ['id', 'name'],
+>>>>>>> organizacional/main
       where: {
         status: true
       },
@@ -1410,19 +1747,33 @@ async function handleVerifyQueue(job) {
         {
           model: Whatsapp,
           attributes: ["id", "name", "status", "timeSendQueue", "sendIdQueue"]
+<<<<<<< HEAD
         }
+=======
+        },
+>>>>>>> organizacional/main
       ]
     });
 
     companies.map(async c => {
+<<<<<<< HEAD
       c.whatsapps.map(async w => {
         if (w.status === "CONNECTED") {
           var companyId = c.id;
+=======
+
+      c.whatsapps.map(async w => {
+
+        if (w.status === "CONNECTED") {
+          var companyId = c.id;
+
+>>>>>>> organizacional/main
           const moveQueue = w.timeSendQueue ? w.timeSendQueue : 0;
           const moveQueueId = w.sendIdQueue;
           const moveQueueTime = moveQueue;
           const idQueue = moveQueueId;
           const timeQueue = moveQueueTime;
+<<<<<<< HEAD
           if (moveQueue > 0) {
             if (
               !isNaN(idQueue) &&
@@ -1434,6 +1785,14 @@ async function handleVerifyQueue(job) {
                 .subtract(timeQueue, "minutes")
                 .utc()
                 .format();
+=======
+
+          if (moveQueue > 0) {
+
+            if (!isNaN(idQueue) && Number.isInteger(idQueue) && !isNaN(timeQueue) && Number.isInteger(timeQueue)) {
+
+              const tempoPassado = moment().subtract(timeQueue, "minutes").utc().format();
+>>>>>>> organizacional/main
               // const tempoAgora = moment().utc().format();
 
               const { count, rows: tickets } = await Ticket.findAndCountAll({
@@ -1445,13 +1804,18 @@ async function handleVerifyQueue(job) {
                   whatsappId: w.id,
                   updatedAt: {
                     [Op.lt]: tempoPassado
+<<<<<<< HEAD
                   }
+=======
+                  },
+>>>>>>> organizacional/main
                   // isOutOfHour: false
                 },
                 include: [
                   {
                     model: Contact,
                     as: "contact",
+<<<<<<< HEAD
                     attributes: [
                       "id",
                       "name",
@@ -1465,6 +1829,9 @@ async function handleVerifyQueue(job) {
                       "lgpdAcceptedAt",
                       "companyId"
                     ],
+=======
+                    attributes: ["id", "name", "number", "email", "profilePicUrl", "acceptAudioMessage", "active", "disableBot", "urlPicture", "lgpdAcceptedAt", "companyId"],
+>>>>>>> organizacional/main
                     include: ["extraInfo", "tags"]
                   },
                   {
@@ -1510,6 +1877,7 @@ async function handleVerifyQueue(job) {
                   //   ticket,
                   // });
 
+<<<<<<< HEAD
                   logger.info(
                     `Atendimento Perdido: ${ticket.id} - Empresa: ${companyId}`
                   );
@@ -1533,6 +1901,10 @@ async function handleVerifyQueue(job) {
                   }
                 });
 
+=======
+                  logger.info(`Atendimento Perdido: ${ticket.id} - Empresa: ${companyId}`);
+                });
+>>>>>>> organizacional/main
               }
             } else {
               logger.info(`Condição não respeitada - Empresa: ${companyId}`);
@@ -1546,6 +1918,7 @@ async function handleVerifyQueue(job) {
     logger.error("SearchForQueue -> VerifyQueue: error", e.message);
     throw e;
   }
+<<<<<<< HEAD
 }
 
 export default async function handleRandomUser(param?, ticketId?, origin?) {
@@ -1910,6 +2283,192 @@ const executing = async (queue, ticketId?, origin?: '') => {
 async function handleProcessLanes() {
   const job = new CronJob("*/1 * * * *", async () => {
     logger.info('INICIANDO PROCESSO DE INTEGRAÇÃO DAS TAGS')
+=======
+};
+
+async function handleRandomUser() {
+  // logger.info("Iniciando a randomização dos atendimentos...");
+
+  const jobR = new CronJob('0 */2 * * * *', async () => {
+
+    try {
+      const companies = await Company.findAll({
+        attributes: ['id', 'name'],
+        where: {
+          status: true
+        },
+        include: [
+          {
+            model: Queues,
+            attributes: ["id", "name", "ativarRoteador", "tempoRoteador"],
+            where: {
+              ativarRoteador: true,
+              tempoRoteador: {
+                [Op.ne]: 0
+              }
+            }
+          },
+        ]
+      });
+
+      if (companies) {
+        companies.map(async c => {
+          c.queues.map(async q => {
+            const { count, rows: tickets } = await Ticket.findAndCountAll({
+              where: {
+                companyId: c.id,
+                status: "pending",
+                queueId: q.id,
+              },
+            });
+
+            //logger.info(`Localizado: ${count} filas para randomização.`);
+
+            const getRandomUserId = (userIds) => {
+              const randomIndex = Math.floor(Math.random() * userIds.length);
+              return userIds[randomIndex];
+            };
+
+            // Function to fetch the User record by userId
+            const findUserById = async (userId, companyId) => {
+              try {
+                const user = await User.findOne({
+                  where: {
+                    id: userId,
+                    companyId
+                  },
+                });
+
+                if (user && user?.profile === "user") {
+                  if (user.online === true) {
+                    return user.id;
+                  } else {
+                    // logger.info("USER OFFLINE");
+                    return 0;
+                  }
+                } else {
+                  // logger.info("ADMIN");
+                  return 0;
+                }
+
+              } catch (errorV) {
+                Sentry.captureException(errorV);
+                logger.error("SearchForUsersRandom -> VerifyUsersRandom: error", errorV.message);
+                throw errorV;
+              }
+            };
+
+            if (count > 0) {
+              for (const ticket of tickets) {
+                const { queueId, userId } = ticket;
+                const tempoRoteador = q.tempoRoteador;
+                // Find all UserQueue records with the specific queueId
+                const userQueues = await UserQueue.findAll({
+                  where: {
+                    queueId: queueId,
+                  },
+                });
+
+                const contact = await ShowContactService(ticket.contactId, ticket.companyId);
+
+                // Extract the userIds from the UserQueue records
+                const userIds = userQueues.map((userQueue) => userQueue.userId);
+
+                const tempoPassadoB = moment().subtract(tempoRoteador, "minutes").utc().toDate();
+                const updatedAtV = new Date(ticket.updatedAt);
+
+                let settings = await CompaniesSettings.findOne({
+                  where: {
+                    companyId: ticket.companyId
+                  }
+                });
+                const sendGreetingMessageOneQueues = settings.sendGreetingMessageOneQueues === "enabled" || false;
+
+                if (!userId) {
+                  // ticket.userId is null, randomly select one of the provided userIds
+                  const randomUserId = getRandomUserId(userIds);
+
+
+                  if (randomUserId !== undefined && await findUserById(randomUserId, ticket.companyId) > 0) {
+                    // Update the ticket with the randomly selected userId
+                    //ticket.userId = randomUserId;
+                    //ticket.save();
+
+                    if (sendGreetingMessageOneQueues) {
+                      const ticketToSend = await ShowTicketService(ticket.id, ticket.companyId);
+
+                      await SendWhatsAppMessage({ body: `\u200e *Assistente Virtual*:\nAguarde enquanto localizamos um atendente... Você será atendido em breve!`, ticket: ticketToSend });
+
+                    }
+
+                    await UpdateTicketService({
+                      ticketData: { status: "pending", userId: randomUserId },
+                      ticketId: ticket.id,
+                      companyId: ticket.companyId,
+
+                    });
+
+                    //await ticket.reload();
+                    logger.info(`Ticket ID ${ticket.id} atualizado para UserId ${randomUserId} - ${ticket.updatedAt}`);
+                  } else {
+                    //logger.info(`Ticket ID ${ticket.id} NOT updated with UserId ${randomUserId} - ${ticket.updatedAt}`);            
+                  }
+
+                } else if (userIds.includes(userId)) {
+                  if (tempoPassadoB > updatedAtV) {
+                    // ticket.userId is present and is in userIds, exclude it from random selection
+                    const availableUserIds = userIds.filter((id) => id !== userId);
+
+                    if (availableUserIds.length > 0) {
+                      // Randomly select one of the remaining userIds
+                      const randomUserId = getRandomUserId(availableUserIds);
+
+                      if (randomUserId !== undefined && await findUserById(randomUserId, ticket.companyId) > 0) {
+                        // Update the ticket with the randomly selected userId
+                        //ticket.userId = randomUserId;
+                        //ticket.save();
+
+                        if (sendGreetingMessageOneQueues) {
+
+                          const ticketToSend = await ShowTicketService(ticket.id, ticket.companyId);
+                          await SendWhatsAppMessage({ body: "*Assistente Virtual*:\nAguarde enquanto localizamos um atendente... Você será atendido em breve!", ticket: ticketToSend });
+                        };
+
+                        await UpdateTicketService({
+                          ticketData: { status: "pending", userId: randomUserId },
+                          ticketId: ticket.id,
+                          companyId: ticket.companyId,
+
+                        });
+
+                        logger.info(`Ticket ID ${ticket.id} atualizado para UserId ${randomUserId} - ${ticket.updatedAt}`);
+                      } else {
+                        //logger.info(`Ticket ID ${ticket.id} NOT updated with UserId ${randomUserId} - ${ticket.updatedAt}`);            
+                      }
+
+                    }
+                  }
+                }
+
+              }
+            }
+          })
+        })
+      }
+    } catch (e) {
+      Sentry.captureException(e);
+      logger.error("SearchForUsersRandom -> VerifyUsersRandom: error", e.message);
+      throw e;
+    }
+
+  });
+
+  jobR.start();
+}
+
+async function handleProcessLanes() {
+  const job = new CronJob('*/1 * * * *', async () => {
+>>>>>>> organizacional/main
     const companies = await Company.findAll({
       include: [
         {
@@ -1919,6 +2478,7 @@ async function handleProcessLanes() {
           where: {
             useKanban: true
           }
+<<<<<<< HEAD
         }
       ]
     });
@@ -2040,12 +2600,76 @@ async function handleProcessLanes() {
               }
             }
           });
+=======
+        },
+      ]
+    });
+    companies.map(async c => {
+
+      try {
+        const companyId = c.id;
+
+        const ticketTags = await TicketTag.findAll({
+          include: [{
+            model: Ticket,
+            as: "ticket",
+            where: {
+              status: "open",
+              fromMe: true,
+              companyId
+            },
+            attributes: ["id", "contactId", "updatedAt", "whatsappId"]
+          }, {
+            model: Tag,
+            as: "tag",
+            attributes: ["id", "timeLane", "nextLaneId", "greetingMessageLane"],
+            where: {
+              companyId
+            }
+          }]
+        })
+
+        if (ticketTags.length > 0) {
+          ticketTags.map(async t => {
+            if (!isNil(t?.tag.nextLaneId) && t?.tag.nextLaneId > 0 && t?.tag.timeLane > 0) {
+              const nextTag = await Tag.findByPk(t?.tag.nextLaneId);
+
+              const dataLimite = new Date();
+              dataLimite.setHours(dataLimite.getHours() - Number(t.tag.timeLane));
+              const dataUltimaInteracaoChamado = new Date(t.ticket.updatedAt)
+
+              if (dataUltimaInteracaoChamado < dataLimite) {
+                await TicketTag.destroy({ where: { ticketId: t.ticketId, tagId: t.tagId } });
+                await TicketTag.create({ ticketId: t.ticketId, tagId: nextTag.id });
+
+                const whatsapp = await Whatsapp.findByPk(t.ticket.whatsappId);
+
+                if (!isNil(nextTag.greetingMessageLane) && nextTag.greetingMessageLane !== "") {
+                  const bodyMessage = nextTag.greetingMessageLane;
+
+                  const contact = await Contact.findByPk(t.ticket.contactId);
+                  const ticketUpdate = await ShowTicketService(t.ticketId, companyId);
+
+                  await SendMessage(whatsapp, {
+                    number: contact.number,
+                    body: `${formatBody(bodyMessage, ticketUpdate)}`,
+                    mediaPath: null,
+                    companyId: companyId
+                  },
+                    contact.isGroup
+                  )
+                }
+              }
+            }
+          })
+>>>>>>> organizacional/main
         }
       } catch (e: any) {
         Sentry.captureException(e);
         logger.error("Process Lanes -> Verify: error", e.message);
         throw e;
       }
+<<<<<<< HEAD
     });
   });
   job.start();
@@ -2053,12 +2677,26 @@ async function handleProcessLanes() {
 
 async function handleCloseTicketsAutomatic() {
   const job = new CronJob("*/1 * * * *", async () => {
+=======
+
+    });
+  });
+  job.start()
+}
+
+async function handleCloseTicketsAutomatic() {
+  const job = new CronJob('*/1 * * * *', async () => {
+>>>>>>> organizacional/main
     const companies = await Company.findAll({
       where: {
         status: true
       }
     });
     companies.map(async c => {
+<<<<<<< HEAD
+=======
+
+>>>>>>> organizacional/main
       try {
         const companyId = c.id;
         await ClosedAllOpenTickets(companyId);
@@ -2067,12 +2705,22 @@ async function handleCloseTicketsAutomatic() {
         logger.error("ClosedAllOpenTickets -> Verify: error", e.message);
         throw e;
       }
+<<<<<<< HEAD
     });
   });
   job.start();
 }
 
 //handleProcessLanes();
+=======
+
+    });
+  });
+  job.start()
+}
+
+handleProcessLanes();
+>>>>>>> organizacional/main
 handleCloseTicketsAutomatic();
 handleRandomUser();
 
@@ -2132,4 +2780,8 @@ export async function startQueueProcess() {
       removeOnComplete: true
     }
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> organizacional/main

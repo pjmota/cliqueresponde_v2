@@ -37,7 +37,10 @@ import ForumIcon from "@material-ui/icons/Forum";
 import LocalAtmIcon from "@material-ui/icons/LocalAtm";
 import BusinessIcon from "@material-ui/icons/Business";
 import {
+<<<<<<< HEAD
   Alarm,
+=======
+>>>>>>> organizacional/main
   AllInclusive,
   AttachFile,
   Dashboard,
@@ -59,7 +62,10 @@ import toastError from "../errors/toastError";
 import usePlans from "../hooks/usePlans";
 import useVersion from "../hooks/useVersion";
 import { i18n } from "../translate/i18n";
+<<<<<<< HEAD
 import { Box } from "@material-ui/core";
+=======
+>>>>>>> organizacional/main
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
@@ -133,7 +139,11 @@ function ListItemLink(props) {
                   <Avatar className={`${classes.iconHoverActive} ${isActive ? "active" : ""}`}>{icon}</Avatar>
                 </Badge>
               ) : (
+<<<<<<< HEAD
                 <Avatar className={`${classes.iconHoverActive} ${isActive ? "inative" : ""}`}>{icon}</Avatar>
+=======
+                <Avatar className={`${classes.iconHoverActive} ${isActive ? "active" : ""}`}>{icon}</Avatar>
+>>>>>>> organizacional/main
               )}
             </ListItemIcon>
           ) : null}
@@ -210,7 +220,10 @@ const MainListItems = ({ collapsed, drawerClose }) => {
 
   const [connectionWarning, setConnectionWarning] = useState(false);
   const [openCampaignSubmenu, setOpenCampaignSubmenu] = useState(false);
+<<<<<<< HEAD
   const [openCampaignSubmenuUser, setOpenCampaignSubmenuUser] = useState(false);
+=======
+>>>>>>> organizacional/main
   const [openDashboardSubmenu, setOpenDashboardSubmenu] = useState(false);
   const [showCampaigns, setShowCampaigns] = useState(false);
   const [showKanban, setShowKanban] = useState(false);
@@ -229,7 +242,10 @@ const MainListItems = ({ collapsed, drawerClose }) => {
   const [version, setVersion] = useState(false);
   const [managementHover, setManagementHover] = useState(false);
   const [campaignHover, setCampaignHover] = useState(false);
+<<<<<<< HEAD
   const [campaignHoverUser, setCampaignHoverUser] = useState(false);
+=======
+>>>>>>> organizacional/main
   const { list } = useHelps();  // INSERIR
   const [hasHelps, setHasHelps] = useState(false);
 
@@ -423,6 +439,7 @@ const MainListItems = ({ collapsed, drawerClose }) => {
                 backgroundColor: theme.mode === "light" ? "rgba(120,120,120,0.1)" : "rgba(120,120,120,0.5)",
               }}
             >
+<<<<<<< HEAD
               <Box style={{ paddingLeft: "20px" }}>
                 <Can
                   role={user.profile === "user" && user.showDashboard === "enabled" ? "admin" : user.profile}
@@ -459,6 +476,42 @@ const MainListItems = ({ collapsed, drawerClose }) => {
                   )}
                 />
               </Box>
+=======
+              <Can
+                role={user.profile === "user" && user.showDashboard === "enabled" ? "admin" : user.profile}
+                perform={"drawer-admin-items:view"}
+                yes={() => (
+                  <>
+                    <ListItemLink
+                      small
+                      to="/"
+                      primary="Dashboard"
+                      icon={<DashboardOutlinedIcon />}
+                      tooltip={collapsed}
+                    />
+                    <ListItemLink
+                      small
+                      to="/reports"
+                      primary={i18n.t("mainDrawer.listItems.reports")}
+                      icon={<Description />}
+                      tooltip={collapsed}
+                    />
+                  </>
+                )}
+              />
+              <Can
+                role={user.profile === "user" && user.allowRealTime === "enabled" ? "admin" : user.profile}
+                perform={"drawer-admin-items:view"}
+                yes={() => (
+                  <ListItemLink
+                    to="/moments"
+                    primary={i18n.t("mainDrawer.listItems.chatsTempoReal")}
+                    icon={<GridOn />}
+                    tooltip={collapsed}
+                  />
+                )}
+              />
+>>>>>>> organizacional/main
             </Collapse>
           </>
         )}
@@ -528,6 +581,7 @@ const MainListItems = ({ collapsed, drawerClose }) => {
         </>
       )}
 
+<<<<<<< HEAD
 
       <Can
         role={user.profile}
@@ -594,6 +648,8 @@ const MainListItems = ({ collapsed, drawerClose }) => {
       />
 
 
+=======
+>>>>>>> organizacional/main
       {/* <ListItemLink
         to="/todolist"
         primary={i18n.t("ToDoList")}
@@ -654,7 +710,11 @@ const MainListItems = ({ collapsed, drawerClose }) => {
                         backgroundColor: theme.mode === "light" ? "rgba(120,120,120,0.1)" : "rgba(120,120,120,0.5)",
                       }}
                     >
+<<<<<<< HEAD
                       <List dense component="div" disablePadding style={{ paddingLeft: "20px" }}>
+=======
+                      <List dense component="div" disablePadding>
+>>>>>>> organizacional/main
                         <ListItemLink
                           to="/campaigns"
                           primary={i18n.t("campaigns.subMenus.list")}
@@ -792,6 +852,7 @@ const MainListItems = ({ collapsed, drawerClose }) => {
                 />
               )}
             />
+<<<<<<< HEAD
             {/* <Can
               role={user.profile}
               perform="dashboard:view"
@@ -804,6 +865,8 @@ const MainListItems = ({ collapsed, drawerClose }) => {
                 />
               )}
             /> */}
+=======
+>>>>>>> organizacional/main
             <Can
               role={user.profile}
               perform="dashboard:view"

@@ -20,7 +20,10 @@ interface WhatsappData {
   timeUseBotQueues?: string;
   expiresTicket?: string;
   allowGroup?: boolean;
+<<<<<<< HEAD
   allowCampaign?: boolean;
+=======
+>>>>>>> organizacional/main
   sendIdQueue?: number;
   timeSendQueue?: number;
   timeInactiveMessage?: string;
@@ -49,7 +52,10 @@ interface WhatsappData {
   send_token?: string;
   business_id?: string;
   phone_number?: string;
+<<<<<<< HEAD
   ignoreQueue?: boolean;
+=======
+>>>>>>> organizacional/main
 }
 
 interface Request {
@@ -88,7 +94,10 @@ const UpdateWhatsAppService = async ({
     timeUseBotQueues = 0,
     expiresTicket = 0,
     allowGroup,
+<<<<<<< HEAD
     allowCampaign,
+=======
+>>>>>>> organizacional/main
     timeSendQueue = 0,
     sendIdQueue = null,
     timeInactiveMessage = 0,
@@ -116,8 +125,12 @@ const UpdateWhatsAppService = async ({
     waba_id,
     send_token,
     business_id,
+<<<<<<< HEAD
     phone_number,
     ignoreQueue,
+=======
+    phone_number
+>>>>>>> organizacional/main
   } = whatsappData;
 
   try {
@@ -162,7 +175,10 @@ const UpdateWhatsAppService = async ({
     timeUseBotQueues: timeUseBotQueues || 0,
     expiresTicket: expiresTicket || 0,
     allowGroup,
+<<<<<<< HEAD
     allowCampaign,
+=======
+>>>>>>> organizacional/main
     timeSendQueue,
     sendIdQueue,
     timeInactiveMessage,
@@ -189,8 +205,12 @@ const UpdateWhatsAppService = async ({
     waba_id,
     send_token,
     business_id,
+<<<<<<< HEAD
     phone_number,
     ignoreQueue,
+=======
+    phone_number
+>>>>>>> organizacional/main
   });
 
   if (!requestQR) {

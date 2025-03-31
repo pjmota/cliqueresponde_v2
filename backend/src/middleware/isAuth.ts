@@ -7,7 +7,10 @@ import authConfig from "../config/auth";
 import { getIO } from "../libs/socket";
 import ShowUserService from "../services/UserServices/ShowUserService";
 import { updateUser } from "../helpers/updateUser";
+<<<<<<< HEAD
 import logger from "../utils/logger";
+=======
+>>>>>>> organizacional/main
 // import { moment} from "moment-timezone"
 
 interface TokenPayload {
@@ -22,8 +25,13 @@ interface TokenPayload {
 const isAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const authHeader = req.headers.authorization;
 
+<<<<<<< HEAD
   if (!authHeader || authHeader === 'undefined') {
     throw new AppError("ERR_SESSION_EXPIRED NEGATIVO", 401);
+=======
+  if (!authHeader) {
+    throw new AppError("ERR_SESSION_EXPIRED", 401);
+>>>>>>> organizacional/main
   }
 
   // const check = await verifyHelper();
@@ -50,7 +58,11 @@ const isAuth = async (req: Request, res: Response, next: NextFunction): Promise<
       throw new AppError(err.message, 401);
     } else {
       throw new AppError(
+<<<<<<< HEAD
         "Invalid token. We'll try to assign a new one on next request into isAuth",
+=======
+        "Invalid token. We'll try to assign a new one on next request",
+>>>>>>> organizacional/main
         403
       );
     }

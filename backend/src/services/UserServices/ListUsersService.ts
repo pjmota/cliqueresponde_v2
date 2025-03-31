@@ -4,15 +4,21 @@ import Company from "../../models/Company";
 import User from "../../models/User";
 import Plan from "../../models/Plan";
 import Ticket from "../../models/Ticket";
+<<<<<<< HEAD
 import logger from "../../utils/logger";
 import Tag from "../../models/Tag";
+=======
+>>>>>>> organizacional/main
 
 interface Request {
   searchParam?: string;
   pageNumber?: string | number;
   profile?: string;
   companyId?: number;
+<<<<<<< HEAD
   limitNull?: boolean;
+=======
+>>>>>>> organizacional/main
 }
 
 interface Response {
@@ -24,8 +30,12 @@ interface Response {
 const ListUsersService = async ({
   searchParam = "",
   pageNumber = "1",
+<<<<<<< HEAD
   companyId,
   limitNull
+=======
+  companyId
+>>>>>>> organizacional/main
 }: Request): Promise<Response> => {
   const whereCondition = {
     [Op.or]: [
@@ -59,12 +69,19 @@ const ListUsersService = async ({
       "endWork",
       "profileImage"
     ],
+<<<<<<< HEAD
     limit: limitNull ? null : limit,
+=======
+    limit,
+>>>>>>> organizacional/main
     offset,
     order: [["name", "ASC"]],
     include: [
       { model: Queue, as: "queues", attributes: ["id", "name", "color"] },
+<<<<<<< HEAD
       { model: Tag, as: "tags", attributes: ["id", "name", "color"] },
+=======
+>>>>>>> organizacional/main
       {
         model: Company,
         as: "company",
@@ -89,12 +106,20 @@ const ListUsersService = async ({
         //   },
         // ]
       }
+<<<<<<< HEAD
     ],
     //logging: console.log
   });
 
   const hasMore = count > offset + users.length;
 
+=======
+    ]
+  });
+
+  const hasMore = count > offset + users.length;
+  console.log(hasMore, count)
+>>>>>>> organizacional/main
   return {
     users,
     count,

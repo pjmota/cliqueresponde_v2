@@ -471,8 +471,13 @@ const messages = {
           text: "Horarios de atención",
           add: "Agregar fila",
           edit: "Editar fila",
+<<<<<<< HEAD
           confirmationDelete: "¿Está seguro? Todas las opciones integradas también se eliminarán.",
           rotation: "Configurar la rotación"
+=======
+          confirmationDelete:
+            "¿Está seguro? Todas las opciones integradas también se eliminarán.",
+>>>>>>> organizacional/main
         },
         form: {
           name: "Nombre",
