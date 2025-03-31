@@ -744,7 +744,6 @@ const UpdateTicketService = async ({
           !isNil(userId)
         ) {
           //transferiu o atendimento para fila e atendente
-
           await CreateLogTicketService({
             userId: oldUserId,
             queueId: oldQueueId,
@@ -820,13 +819,15 @@ const UpdateTicketService = async ({
       ...(whatsappId ? {whatsappId: Number(whatsappId)} : {})
     });
 
-    if (!userId && queueId) {
+    if (!userId && queueId && isTransfered) {
       const params: any = {
         WhatsappQueue: {
           queueId: queueId
         }
       };
-      await handleRandomUser(params, ticket.id);
+
+      let origin = 'tranferência'
+      await handleRandomUser(params, ticket.id, origin);
     }
 
     ticketTraking.queuedAt = moment().toDate();

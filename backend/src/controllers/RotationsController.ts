@@ -44,17 +44,21 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   
     if(rotation.id) {
       const searchParam = {
-        sequence: Number(sequence),
+        //sequence: Number(sequence),
         rotationId: rotation.id,
-        userId: userId
+        //userId: userId
       }
       const rotationId = rotation.id;
       const {rotationUsers} = await ListRotationUsersService({searchParam, rotationId});
-  
-      if(rotationUsers.length) {
-        throw new AppError("ERR_CONFLICT_ROTATIONUSERS_FOUND", 409);
-      }
-  
+
+      if (rotationUsers.some(user => user.sequence === Number(sequence))) {
+        throw new AppError("ERR_CONFLICT_ROTATION_USERS_SEQUENCE_FOUND", 409);
+      };
+    
+      if (rotationUsers.some(user => user.userId === userId)) {
+        throw new AppError("ERR_CONFLICT_ROTATION_USERS_FOUND", 409);
+      };
+
       await CreateServiceRotationUser({
         sequence,
         userId,
@@ -89,7 +93,7 @@ export const update = async (
   const rotationData = req.body;
   const { option } = req.body;
   const rotation = await UpdateService({rotationData, id: Number(id) });
-  
+
   const searchParam = {
     //sequence: rotationData.sequence,
     rotationId: rotation.id,
@@ -99,7 +103,11 @@ export const update = async (
   const {rotationUsers} = await ListRotationUsersService({searchParam, rotationId: Number(id)});
 
   if (rotationUsers.some(user => user.sequence === rotationData.sequence)) {
-    throw new AppError("ERR_CONFLICT_ROTATIONUSERS_FOUND", 409);
+    throw new AppError("ERR_CONFLICT_ROTATION_USERS_SEQUENCE_FOUND", 409);
+  };
+
+  if (rotationUsers.some(user => user.userId === rotationData.userId)) {
+    throw new AppError("ERR_CONFLICT_ROTATION_USERS_FOUND", 409);
   };
 
   const rotationUserData = {

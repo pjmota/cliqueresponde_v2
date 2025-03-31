@@ -5,11 +5,13 @@ import TicketTag from "../../models/TicketTag";
 
 import removeAccents from "remove-accents";
 import Contact from "../../models/Contact";
+import logger from "../../utils/logger";
 
 interface Request {
   companyId: number;
   searchParam?: string;
   pageNumber?: string | number;
+  totalPage?: string | number;
   kanban?: number;
   tagId?: number;
   whatsappId?: number;
@@ -26,6 +28,7 @@ const ListService = async ({
   companyId,
   searchParam = "",
   pageNumber = "1",
+  totalPage,
   kanban = 0,
   tagId = 0,
   whatsappId = null,
@@ -33,7 +36,7 @@ const ListService = async ({
 }: Request): Promise<Response> => {
   let whereCondition = {};
 
-  const limit = 20;
+  const limit = totalPage ? Number(totalPage) : 20;
   const offset = limit * (+pageNumber - 1);
 
   const sanitizedSearchParam = removeAccents(searchParam.toLocaleLowerCase().trim());

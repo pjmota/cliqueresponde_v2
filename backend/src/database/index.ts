@@ -52,6 +52,7 @@ import Rotations from "../models/Rotations"
 import RotationUsers from "../models/RotationUsers"
 import ScheduleTagIntegration from "../models/ScheduleTagIntegration";
 import ScheduleTagIntegrationWhatsapp from "../models/ScheduleTagIntegrationWhatsapp";
+import LogRolette from "../models/LogRolette";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -111,7 +112,8 @@ const models = [
   Rotations,
   RotationUsers,
   ScheduleTagIntegration,
-  ScheduleTagIntegrationWhatsapp
+  ScheduleTagIntegrationWhatsapp,
+  LogRolette
 ];
 
 sequelize.addModels(models);

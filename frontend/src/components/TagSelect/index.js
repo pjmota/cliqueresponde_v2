@@ -34,7 +34,8 @@ const TagSelect = ({ selectedTagIds, onChange, multiple = true, title = i18n.t("
 			const { data } = await api.get("/tags", {
         params: {
           kanban: kanban,
-					paramTag
+					paramTag,
+					...(paramTag ? {totalPage: 100} : {})
         }
       });
 
@@ -80,6 +81,12 @@ const TagSelect = ({ selectedTagIds, onChange, multiple = true, title = i18n.t("
 							horizontal: "left",
 						},
 						getContentAnchorEl: null,
+						PaperProps: {
+							style: {
+								maxHeight: tags.length > 8 ? 250 : 'auto',
+								overflowY: tags.length > 8 ? 'auto' : 'visible'
+							}
+						}
 					}}
 
 					renderValue={selected => {

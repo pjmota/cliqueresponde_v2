@@ -1170,6 +1170,11 @@ const verifyQueue = async (
   settings?: any,
   ticketTraking?: TicketTraking
 ) => {
+
+  if (ticket.startedByPlatform && ticket.whatsapp.ignoreQueue) {
+    return;
+  }
+
   const companyId = ticket.companyId;
   // console.log("GETTING WHATSAPP VERIFY QUEUE", ticket.whatsappId, wbot.id)
   const { queues, greetingMessage, maxUseBotQueues, timeUseBotQueues, complationMessage } = await ShowWhatsAppService(wbot.id!, companyId);
@@ -1402,7 +1407,8 @@ const verifyQueue = async (
   let randomUserId;
 
   if (choosenQueue) {
-    await handleRandomUser(choosenQueue, ticket.id)
+    let origin = 'cliente';
+    await handleRandomUser(choosenQueue, ticket.id, origin)
     try {
       const userQueue = await ListUserQueueServices(choosenQueue.id);
 
@@ -2059,7 +2065,12 @@ export const handleRating = async (
   await ticket.update({
     isBot: false,
     status: "closed",
-    amountUsedBotQueuesNPS: 0
+    amountUsedBotQueuesNPS: 0,
+    queueId: null,
+    chatbot: null,
+    queueOptionId: null,
+    userId: null,
+    startedByPlatform: false
   });
 
   //loga fim de atendimento
@@ -3011,6 +3022,10 @@ const handleMessage = async (
       console.log(e);
     }
 
+    if (ticket.status === "closed" && msg.key.fromMe) {
+      ticket.update({ startedByPlatform: true });
+    }
+
     let currentSchedule;
 
     if (settings.scheduleType === "company") {
@@ -3434,7 +3449,7 @@ const verifyCampaignMessageAndCloseTicket = async (message: proto.IWebMessageInf
 
     if (!isNull(messageRecord) || !isNil(messageRecord) || messageRecord !== null) {
       const ticket = await Ticket.findByPk(messageRecord.ticketId);
-      await ticket.update({ status: "closed", amountUsedBotQueues: 0 });
+      await ticket.update({ status: "closed", amountUsedBotQueues: 0, startedByPlatform: false });
 
       io.of(String(companyId))
         // .to("open")

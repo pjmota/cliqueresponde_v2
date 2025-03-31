@@ -42,12 +42,13 @@ import CreateLogTicketService from "./services/TicketServices/CreateLogTicketSer
 import formatBody from "./helpers/Mustache";
 import TicketTag from "./models/TicketTag";
 import Tag from "./models/Tag";
-import { delay } from "@whiskeysockets/baileys";
+import { delay, makeWASocket, useMultiFileAuthState } from "@whiskeysockets/baileys";
 import Plan from "./models/Plan";
-import UpdateUserService from "./services/RotationsService/UpdateService";
+import UpdateRotationService from "./services/RotationsService/UpdateService";
 import ShowQueueIntegrationService from "./services/QueueIntegrationServices/ShowQueueIntegrationService";
 import { getWbot } from "./libs/wbot";
 import typebotListener from "./services/TypebotServices/typebotListener";
+import CreateLogRotationService from "./services/RotationsService/CreateLogRotationService";
 
 const connection = process.env.REDIS_URI || "";
 const limiterMax = process.env.REDIS_OPT_LIMITER_MAX || 1;
@@ -773,7 +774,7 @@ async function verifyAndFinalizeCampaign(campaign) {
   });
 }
 
-async function handleProcessCampaign(job) {
+/* async function handleProcessCampaign(job) {
   try {
     const { id }: ProcessCampaignData = job.data;
     const campaign = await getCampaign(id);
@@ -834,7 +835,84 @@ async function handleProcessCampaign(job) {
   } catch (err: any) {
     Sentry.captureException(err);
   }
+} */
+
+
+async function handleProcessCampaign(job) {
+  try {
+    const { id }: ProcessCampaignData = job.data;
+    const campaign = await getCampaign(id);
+    const settings = await getSettings(campaign);
+
+    if (campaign) {
+      const { contacts } = campaign.contactList;
+      if (isArray(contacts) && contacts.length > 0) {
+        const contactChunks = chunkArray(contacts, 50); // Divide em lotes de 50
+        let baseDelay = campaign.scheduledAt;
+
+        const longerIntervalAfter = parseToMilliseconds(settings.longerIntervalAfter);
+        const greaterInterval = parseToMilliseconds(settings.greaterInterval);
+        const messageInterval = settings.messageInterval;
+
+        for (let chunkIndex = 0; chunkIndex < contactChunks.length; chunkIndex++) {
+          const chunk = contactChunks[chunkIndex];
+          const queuePromises = [];
+
+          // Adiciona 3 minutos extra para cada novo bloco de 50 contatos
+          baseDelay = addSeconds(baseDelay, chunkIndex * 180); // 180 segundos = 3 minutos
+
+          for (let i = 0; i < chunk.length; i++) {
+            baseDelay = addSeconds(
+              baseDelay,
+              i > longerIntervalAfter ? greaterInterval : messageInterval
+            );
+
+            const contact = chunk[i];
+            const contactData = {
+              contactId: contact.id,
+              campaignId: campaign.id,
+              variables: settings.variables,
+              isGroup: contact.isGroup
+            };
+
+            const delay = calculateDelay(
+              i,
+              baseDelay,
+              longerIntervalAfter,
+              greaterInterval,
+              messageInterval
+            );
+
+            const queuePromise = campaignQueue.add(
+              "PrepareContact",
+              { ...contactData, delay },
+              { removeOnComplete: true }
+            );
+
+            queuePromises.push(queuePromise);
+
+            logger.info(
+              `Registro enviado pra fila de disparo: Campanha=${campaign.id};Contato=${contact.name};delay=${delay}`
+            );
+          }
+
+          await Promise.all(queuePromises); // Espera o lote de 50 terminar antes de iniciar o próximo
+        }
+      }
+    }
+  } catch (err: any) {
+    Sentry.captureException(err);
+  }
 }
+
+// Função auxiliar para dividir um array em partes menores (lotes)
+function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+  const result: T[][] = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    result.push(array.slice(i, i + chunkSize));
+  }
+  return result;
+};
 
 function calculateDelay(
   index,
@@ -972,6 +1050,18 @@ async function handleDispatchCampaign(job) {
     const chatId = campaignShipping.contact.isGroup
       ? `${campaignShipping.number}@g.us`
       : `${campaignShipping.number}@s.whatsapp.net`;
+
+
+    if(chatId) {
+      const result = await wbot.onWhatsApp(chatId);
+      if(result.length > 0 && result[0].exists) {
+        logger.warn(`numero ${chatId} válido para envio`);
+      } else {
+        logger.warn(`numero ${chatId} inválido para envio`);
+      }
+    }
+
+// AQUI
 
     if (campaign.openTicket === "enabled") {
       const [contact] = await Contact.findOrCreate({
@@ -1430,15 +1520,16 @@ async function handleVerifyQueue(job) {
                       id: idQueue
                     }
                   })
-  
+ 
                   if(queue.ativarRoteador) {
                     const params: any = {
                       WhatsappQueue: {
                         queueId: idQueue
                       }
                     };
-  
-                    await handleRandomUser(params, ticket.id)
+
+                    let origin = 'automático';
+                    await handleRandomUser(params, ticket.id, origin)
                   }
                 });
 
@@ -1457,7 +1548,7 @@ async function handleVerifyQueue(job) {
   }
 }
 
-export default async function handleRandomUser(param?, ticketId?) {
+export default async function handleRandomUser(param?, ticketId?, origin?) {
   interface WhatsappQueue {
     whatsappId: number;
     queueId: number;
@@ -1480,7 +1571,7 @@ export default async function handleRandomUser(param?, ticketId?) {
   const queue = param?.WhatsappQueue.queueId as ParamType;
   if (param) {
     setTimeout(async () => {
-      await executing(queue, ticketId);
+      await executing(queue, ticketId, origin);
     }, 2000);
   }
   // const jobR = new CronJob('*/10 * * * * *', async () => {
@@ -1490,7 +1581,8 @@ export default async function handleRandomUser(param?, ticketId?) {
   // jobR.start();
 }
 
-const executing = async (queue, ticketId?) => {
+const executing = async (queue, ticketId?, origin?: '') => {
+  const iconv = require("iconv-lite");
   let getNextUserId: () => number | undefined = undefined;
   try {
     const companies = await Company.findAll({
@@ -1542,7 +1634,7 @@ const executing = async (queue, ticketId?) => {
               return userIds[currentIndex];
             };
           };
-
+          let paramsUser: User;
           // Function to fetch the User record by userId
           const findUserById = async (userId, companyId, rotationUsers?) => {
             try {
@@ -1553,7 +1645,7 @@ const executing = async (queue, ticketId?) => {
                 }
                 //logging: console.log
               });
-
+              paramsUser = user
               if (user && user?.profile === "user") {
                 if (user.online === true) {
                   return user.id;
@@ -1617,7 +1709,9 @@ const executing = async (queue, ticketId?) => {
                     ru."userId",
                     ru."sequence",
                     ru."rotationId",
-                    r."lastSequence"
+                    r."lastSequence",
+                    r."queueId",
+                    r."companyId"
                   from "RotationUsers" ru
                     left join "Rotations" r on r.id = ru."rotationId"
                   where r."companyId" = ${ticket.companyId} and r."queueId" = ${queue}
@@ -1666,7 +1760,7 @@ const executing = async (queue, ticketId?) => {
                 } else {
                   //logger.info(`Ticket ID ${ticket.id} NOT updated with UserId ${randomUserId} - ${ticket.updatedAt}`);
                 }
-              } /* if (userIds.includes(userId)) */ else {
+              } else {
                 if (tempoPassadoB > updatedAtV) {
                   // ticket.userId is present and is in userIds, exclude it from random selection
 
@@ -1709,6 +1803,7 @@ const executing = async (queue, ticketId?) => {
                     const randomUserId = rotationUsers
                       ? getNextUserId()
                       : getRandomUserId(availableUserIds);
+
                     if (
                       randomUserId !== undefined &&
                       (await findUserById(
@@ -1749,12 +1844,34 @@ const executing = async (queue, ticketId?) => {
                           lastSequence: Number(data[0].sequence)
                         };
 
-                        await UpdateUserService({
+                        await UpdateRotationService({
                           rotationData,
                           id: data[0].rotationId
                         });
-                        if (ticket.id === ticketId) {
-                        }
+                        
+                        const whatsappConnection = await Whatsapp.findByPk(ticket.whatsappId);
+                        
+                        const paramLog = {
+                          ticketId: ticket.id,
+                          userId: data[0].userId,
+                          userName: paramsUser.name,
+                          rotationId: data[0].rotationId,
+                          sequence: data[0].sequence,
+                          lastSequence: data[0].lastSequence,
+                          companyId: data[0].companyId,
+                          companyName: c.name,
+                          queueId: data[0].queueId,
+                          queueName: q.name,
+                          queueRouletteActive: q.ativarRoteador,
+                          contactId: contact.id,
+                          contactName: contact.name,
+                          contactNumber: contact.number,
+                          whatsappId: ticket.whatsappId,
+                          whatsappName: whatsappConnection.name,
+                          origin: origin
+                        };
+
+                        await CreateLogRotationService(paramLog)
 
                         logger.info(
                           `Ticket ID ${ticket.id} atualizado para UserId ${randomUserId} - ${ticket.updatedAt}`

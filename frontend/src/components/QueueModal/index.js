@@ -397,7 +397,6 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
   };
 
   const handleSaveQueue = async (values) => {
-    console.log('instegrations', rotationId)
     try {
       if (queueId) {
         await api.put(`/queue/${queueId}`, { ...values, schedules, rotationId });

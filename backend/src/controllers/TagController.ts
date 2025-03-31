@@ -18,13 +18,14 @@ import SyncTagLanesService from "../services/TagServices/SyncTagLaneService";
 type IndexQuery = {
   searchParam?: string;
   pageNumber?: string | number;
+  totalPage?: string | number;
   kanban?: number;
   tagId?: number;
   paramTag?: string;
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const { pageNumber, searchParam, kanban, tagId, paramTag } = req.query as IndexQuery;
+  const { pageNumber, totalPage, searchParam, kanban, tagId, paramTag } = req.query as IndexQuery;
   const { companyId } = req.user;
   const { tags, count, hasMore } = await ListService({
     searchParam,
@@ -32,7 +33,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     companyId,
     kanban,
     tagId,
-    ...(paramTag ? {paramTag: JSON.parse(paramTag)} : {})
+    ...(paramTag ? {paramTag: JSON.parse(paramTag)} : {}),
+    ...(paramTag ? {totalPage} : {})
   });
 
   return res.json({ tags, count, hasMore });

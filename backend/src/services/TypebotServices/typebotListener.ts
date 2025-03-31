@@ -28,7 +28,6 @@ const typebotListener = async ({
   typebot
 }: Request): Promise<void> => {
   if (msg.key.remoteJid === "status@broadcast") return;
-
   const {
     urlN8N: url,
     typebotExpires,
@@ -314,6 +313,7 @@ const typebotListener = async ({
 
                   return;
                 }
+
                 if (
                   !isNil(jsonGatilho.queueId) &&
                   jsonGatilho.queueId > 0 &&
@@ -336,8 +336,8 @@ const typebotListener = async ({
                       queueId: jsonGatilho.queueId
                     }
                   }
-
-                  await handleRandomUser( params, ticket.id )
+                  let origin = 'type bote - api'
+                  await handleRandomUser( params, ticket.id, origin )
 
                   return;
                 }
@@ -348,6 +348,7 @@ const typebotListener = async ({
                   !isNil(jsonGatilho.userId) &&
                   jsonGatilho.userId > 0
                 ) {
+
                   await UpdateTicketService({
                     ticketData: {
                       queueId: jsonGatilho.queueId,

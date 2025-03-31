@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
-import { useMediaQuery, useTheme } from '@material-ui/core';
+import { Select, Typography, useMediaQuery, useTheme } from '@material-ui/core';
 import { isNil } from "lodash";
 import {
   CircularProgress,
@@ -40,6 +40,7 @@ import {
   Duo,
   Timer,
   WhatsApp,
+  AccountTree,
 } from "@material-ui/icons";
 import AddIcon from "@material-ui/icons/Add";
 import { CameraAlt } from "@material-ui/icons";
@@ -65,6 +66,7 @@ import { EditMessageContext } from "../../context/EditingMessage/EditingMessageC
 import ScheduleModal from "../ScheduleModal";
 import usePlans from "../../hooks/usePlans";
 import TemplateModal from "../TemplateMetaModal";
+import { toast } from "react-toastify";
 
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
@@ -340,6 +342,20 @@ const useStyles = makeStyles((theme) => ({
   flexItem: {
     flex: 1,
   },
+  integrationBox: {
+    position: "absolute",
+    bottom: 70,
+    left: 110,
+    width: 160,
+    borderTop: "1px solid #e8e8e8",
+    padding: '8px',
+    borderRadius: '4px',
+    background: 'white'
+  },
+
+  integrationText: {
+    fontSize: '1rem'
+  },
 }));
 
 const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketChannel }) => {
@@ -376,6 +392,10 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
   const [useWhatsappOfficial, setUseWhatsappOfficial] = useState(false);
   const { list: listQuickMessages } = useQuickMessages();
 
+  const [showIntegration, setShowIntegration] = useState(false);
+  const [integration, setIntegration] = useState(0);
+  const [integrations, setIntegrations] = useState([]);
+
 
   const isMobile = useMediaQuery('(max-width: 767px)'); // Ajuste o valor conforme necessário
   const [placeholderText, setPlaceHolderText] = useState("");
@@ -407,6 +427,7 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
       setUseWhatsappOfficial(planConfigs.plan.useWhatsappOfficial);
     }
     fetchData();
+    getIntegration();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // Determine o texto do placeholder com base no ticketStatus
@@ -623,7 +644,7 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
 
     // Certifique-se de que a variável medias esteja preenchida antes de continuar
     if (!mediasUpload.length) {
-      console.log("Nenhuma mídia selecionada.");
+      //console.log("Nenhuma mídia selecionada.");
       setLoading(false);
       return;
     }
@@ -708,7 +729,7 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
       if (editingMessage !== null) {
         await api.post(`/messages/edit/${editingMessage.id}`, message);
       } else {
-        console.log("ENVIOU PARA TIKCET", ticketId)
+        //console.log("ENVIOU PARA TIKCET", ticketId)
         await api.post(`/messages/${ticketId}`, message);
       }
     } catch (err) {
@@ -929,6 +950,42 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
     setShowModalMedias(false);
   };
 
+
+  const handleSaveIntegration = async (e) => {
+ 
+    const id = e.target.value
+
+    if (id === 0) {
+      toast.error('Selecione um fluxo');
+    }
+
+    setIntegration(e.target.value)
+
+    const data = {
+      integrationId: id
+    }
+
+    try {
+      await api.request({
+        url: `/tickets/${ticketId}/integration`,
+        method: "POST",
+        data
+      });
+      setShowIntegration(false);
+      toast.success('Fluxo iniciado com sucesso.');
+    } catch (error) {
+      toast.error('Erro ao enviar fluxo')
+    }
+
+    setIntegration(undefined);
+    
+  };
+
+  const getIntegration = async () => {
+    const { data } = await api.get("/queueIntegration/");
+    setIntegrations(data.queueIntegrations)
+  }
+
   const renderReplyingMessage = (message) => {
     return (
       <div className={classes.replyginMsgWrapper}>
@@ -1131,15 +1188,41 @@ const MessageInput = ({ ticketId, ticketStatus, droppedFiles, contactId, ticketC
                 )}
               </Menu>
               {/* <IconButton
-				  aria-label="upload"
-				  component="span"
-				  disabled={disableOption()}
-				  onMouseOver={() => setOnDragEnter(true)}
-				>
-				  <AttachFile className={classes.sendMessageIcons} />
-				</IconButton> */}
+                aria-label="upload"
+                component="span"
+                disabled={disableOption()}
+                onMouseOver={() => setOnDragEnter(true)}
+              >
+                <AttachFile className={classes.sendMessageIcons} />
+              </IconButton> */
+              }
+              <Tooltip title={i18n.t("messageInput.tooltip.sendIntegration")}>
+                <IconButton
+                  aria-label="emojiPicker"
+                  component="span"
+                  //disabled={disabled}
+                  onClick={() => setShowIntegration((prev) => !prev)}
+                >
+                  <AccountTree className={classes.sendMessageIcons} />
+                </IconButton>
+              </Tooltip>
+              {showIntegration && (
+                <div className={classes.integrationBox}>
+                  <Typography className={classes.integrationText}>Enviar um fluxo</Typography>
+                  <Select
+                    style={{width: '100%', padding: 5}}
+                    fullWidth
+                    value={integration}
+                    onChange={(e) => handleSaveIntegration(e) }
+                  >
+                    <MenuItem value={0}>{ 'Selecione...' }</MenuItem>
+                    { integrations.map((item, index) => {
+                      return <MenuItem value={item.id} key={index}>{ item.name }</MenuItem>
+                    })}
+                  </Select>
+                </div>
+              )}
 
-              {/* </label> */}
               {signMessagePar && (
                 <Tooltip title={i18n.t("messageInput.tooltip.signature")}>
                   <IconButton

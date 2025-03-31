@@ -1741,6 +1741,7 @@ const messages = {
           signature: "Habilitar/Desabilitar Assinatura",
           privateMessage: "Habilitar/Desabilitar Mensagem Privada",
           meet: "Enviar link para videoconferencia",
+          sendIntegration: "Enviar integração",
         },
         type: {
           imageVideo: "Fotos e vídeos",
@@ -1810,7 +1811,8 @@ const messages = {
         ERR_WAPP_GREETING_REQUIRED:
           "A mensagem de saudação é obrigatório quando há mais de uma fila.",
         ERR_OUT_OF_HOURS: "Fora do Horário de Expediente!",
-        ERR_CONFLICT_ROTATIONUSERS_FOUND: "Já existe um usuário com essa sequência cadastrada. É necessário trocar a sequência."
+        ERR_CONFLICT_ROTATION_USERS_SEQUENCE_FOUND: "Já existe um usuário com essa sequência cadastrada. É necessário trocar a sequência.",
+        ERR_CONFLICT_ROTATION_USERS_FOUND: "Já existe um usuário com esse ID cadastrado. É necessário trocar o usuário."
       },
     },
   },

@@ -55,7 +55,7 @@ const useStyles = makeStyles(theme => ({
 		justifyContent: "flex-start",
 	},
 	content: {
-		display: "flex",
+		display: "block",
 		backgroundColor: theme.palette.inputBackground,
 		flexDirection: "column",
 		padding: "8px 0px 8px 8px",

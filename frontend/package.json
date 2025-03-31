@@ -83,9 +83,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false react-scripts build",
-    "buildWin": "set GENERATE_SOURCEMAP=false && react-scripts build",
-    "builddev": "react-scripts build",
+    "start:dev": "set NODE_OPTIONS=--openssl-legacy-provider && set \"REACT_APP_BACKEND_URL=http://localhost:8082\" && set PORT=3001 && react-scripts start",
+    "build": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
+    "buildWin": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
+    "builddev": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
