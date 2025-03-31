@@ -5,25 +5,17 @@ import TicketTag from "../../models/TicketTag";
 
 import removeAccents from "remove-accents";
 import Contact from "../../models/Contact";
-<<<<<<< HEAD
 import logger from "../../utils/logger";
-=======
->>>>>>> organizacional/main
 
 interface Request {
   companyId: number;
   searchParam?: string;
   pageNumber?: string | number;
-<<<<<<< HEAD
   totalPage?: string | number;
   kanban?: number;
   tagId?: number;
   whatsappId?: number;
   paramTag?: boolean;
-=======
-  kanban?: number;
-  tagId?: number;
->>>>>>> organizacional/main
 }
 
 interface Response {
@@ -36,7 +28,6 @@ const ListService = async ({
   companyId,
   searchParam = "",
   pageNumber = "1",
-<<<<<<< HEAD
   totalPage,
   kanban = 0,
   tagId = 0,
@@ -46,14 +37,6 @@ const ListService = async ({
   let whereCondition = {};
 
   const limit = totalPage ? Number(totalPage) : 20;
-=======
-  kanban = 0,
-  tagId = 0
-}: Request): Promise<Response> => {
-  let whereCondition = {};
-
-  const limit = 20;
->>>>>>> organizacional/main
   const offset = limit * (+pageNumber - 1);
 
   const sanitizedSearchParam = removeAccents(searchParam.toLocaleLowerCase().trim());
@@ -76,11 +59,7 @@ const ListService = async ({
     }
 
     const { count, rows: tags } = await Tag.findAndCountAll({
-<<<<<<< HEAD
       where: { ...whereCondition, companyId, ...(paramTag ? {} : { kanban }) },
-=======
-      where: { ...whereCondition, companyId, kanban },
->>>>>>> organizacional/main
       limit,
       include: [
         {
@@ -98,17 +77,11 @@ const ListService = async ({
         'id',
         'name',
         'color',
-<<<<<<< HEAD
         'kanban'
       ],
       offset,
       order: [["name", "ASC"]],
       //logging: console.log
-=======
-      ],
-      offset,
-      order: [["name", "ASC"]],
->>>>>>> organizacional/main
     });
 
 

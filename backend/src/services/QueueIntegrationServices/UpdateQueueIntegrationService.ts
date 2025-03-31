@@ -18,10 +18,7 @@ interface IntegrationData {
   typebotDelayMessage?: number;
   typebotKeywordRestart?: string;
   typebotRestartMessage?: string;
-<<<<<<< HEAD
   whatsappId?: number;
-=======
->>>>>>> organizacional/main
 }
 
 interface Request {
@@ -53,12 +50,8 @@ const UpdateQueueIntegrationService = async ({
     typebotUnknownMessage,
     typebotDelayMessage,
     typebotKeywordRestart,
-<<<<<<< HEAD
     typebotRestartMessage,
     whatsappId
-=======
-    typebotRestartMessage 
->>>>>>> organizacional/main
   } = integrationData;
 
   try {
@@ -83,12 +76,8 @@ const UpdateQueueIntegrationService = async ({
     typebotUnknownMessage,
     typebotDelayMessage,
     typebotKeywordRestart,
-<<<<<<< HEAD
     typebotRestartMessage,
     whatsappId
-=======
-    typebotRestartMessage 
->>>>>>> organizacional/main
   });
 
   return integration;

@@ -26,7 +26,6 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
-<<<<<<< HEAD
   const { 
     type, 
     name, 
@@ -34,16 +33,12 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     jsonContent, 
     language, 
     urlN8N,
-=======
-  const { type, name, projectName, jsonContent, language, urlN8N,
->>>>>>> organizacional/main
     typebotExpires,
     typebotKeywordFinish,
     typebotSlug,
     typebotUnknownMessage,
     typebotDelayMessage,
     typebotKeywordRestart,
-<<<<<<< HEAD
     typebotRestartMessage,
     whatsappId
   } = req.body;
@@ -57,24 +52,14 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     language, 
     urlN8N, 
     companyId,
-=======
-    typebotRestartMessage } = req.body;
-  const { companyId } = req.user;
-  const queueIntegration = await CreateQueueIntegrationService({
-    type, name, projectName, jsonContent, language, urlN8N, companyId,
->>>>>>> organizacional/main
     typebotExpires,
     typebotKeywordFinish,
     typebotSlug,
     typebotUnknownMessage,
     typebotDelayMessage,
     typebotKeywordRestart,
-<<<<<<< HEAD
     typebotRestartMessage,
     whatsappId
-=======
-    typebotRestartMessage 
->>>>>>> organizacional/main
   });
 
   const io = getIO();

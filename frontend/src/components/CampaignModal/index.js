@@ -196,11 +196,7 @@ const CampaignModal = ({
         .get(`/whatsapp`, { params: { companyId, session: 0 } })
         .then(({ data }) => {
           // Mapear os dados recebidos da API para adicionar a propriedade 'selected'
-<<<<<<< HEAD
           const mappedWhatsapps = data.filter(e => e.allowCampaign && (user.profile !== 'user' || e.id === user.whatsappId)).map((whatsapp) => ({
-=======
-          const mappedWhatsapps = data.map((whatsapp) => ({
->>>>>>> organizacional/main
             ...whatsapp,
             selected: false,
           }));

@@ -9,12 +9,8 @@ import {
   BelongsToMany,
   ForeignKey,
   BelongsTo,
-<<<<<<< HEAD
   HasMany,
   AllowNull
-=======
-  HasMany
->>>>>>> organizacional/main
 } from "sequelize-typescript";
 import Company from "./Company";
 import Ticket from "./Ticket";
@@ -74,7 +70,6 @@ class Tag extends Model<Tag> {
 
   @Column
   rollbackLaneId: number;
-<<<<<<< HEAD
 
   @AllowNull(true)
   @Column
@@ -83,8 +78,6 @@ class Tag extends Model<Tag> {
   @AllowNull(true)
   @Column
   queueIntegrationId: number;
-=======
->>>>>>> organizacional/main
 }
 
 export default Tag;

@@ -14,10 +14,7 @@ import {
 } from "sequelize-typescript";
 import Queue from "./Queue";
 import Company from "./Company";
-<<<<<<< HEAD
 import Whatsapp from "./Whatsapp";
-=======
->>>>>>> organizacional/main
 
 @Table
 class QueueIntegrations extends Model<QueueIntegrations> {
@@ -81,7 +78,6 @@ class QueueIntegrations extends Model<QueueIntegrations> {
 
     @Column
     typebotRestartMessage: string;
-<<<<<<< HEAD
 
     @ForeignKey(() => Whatsapp)
     @Column
@@ -98,8 +94,6 @@ class QueueIntegrations extends Model<QueueIntegrations> {
 
     @Column
     typebotKeywordStart: string;
-=======
->>>>>>> organizacional/main
 }
 
 export default QueueIntegrations;

@@ -21,10 +21,7 @@ interface WhatsappData {
   timeUseBotQueues?: string;
   expiresTicket?: string;
   allowGroup?: boolean;
-<<<<<<< HEAD
   allowCampaign?: boolean;
-=======
->>>>>>> organizacional/main
   sendIdQueue?: number;
   timeSendQueue?: number;
   timeInactiveMessage?: string;
@@ -82,10 +79,7 @@ const UpdateWhatsAppServiceAdmin = async ({
     timeUseBotQueues = 0,
     expiresTicket = 0,
     allowGroup,
-<<<<<<< HEAD
     allowCampaign,
-=======
->>>>>>> organizacional/main
     timeSendQueue = 0,
     sendIdQueue = null,
     timeInactiveMessage = 0,
@@ -147,10 +141,7 @@ const UpdateWhatsAppServiceAdmin = async ({
     timeUseBotQueues: timeUseBotQueues || 0,
     expiresTicket: expiresTicket || 0,
     allowGroup,
-<<<<<<< HEAD
     allowCampaign,
-=======
->>>>>>> organizacional/main
     timeSendQueue,
     sendIdQueue,
     timeInactiveMessage,

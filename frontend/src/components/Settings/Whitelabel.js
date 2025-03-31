@@ -334,11 +334,7 @@ export default function Whitelabel(props) {
                     }}
                     onBlur={async (_) => {
                       await handleSaveSetting("appName", appName);
-<<<<<<< HEAD
                       colorMode.setAppName(appName || "CRM Clique Responde");
-=======
-                      colorMode.setAppName(appName || "Multi100");
->>>>>>> organizacional/main
                     }}
                   />
                 </FormControl>

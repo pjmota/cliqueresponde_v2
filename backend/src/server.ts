@@ -9,10 +9,7 @@ import Company from "./models/Company";
 import BullQueue from './libs/queue';
 
 import { startQueueProcess } from "./queues";
-<<<<<<< HEAD
 import CronScheduleTagIntegrationService from './services/ScheduleTagIntegration/CronScheduleTagIntegrationService';
-=======
->>>>>>> organizacional/main
 // import { ScheduledMessagesJob, ScheduleMessagesGenerateJob, ScheduleMessagesEnvioJob, ScheduleMessagesEnvioForaHorarioJob } from "./wbotScheduledMessages";
 
 const server = app.listen(process.env.PORT, async () => {
@@ -54,7 +51,6 @@ process.on("unhandledRejection", (reason, p) => {
   process.exit(1);
 });
 
-<<<<<<< HEAD
 cron.schedule("* * * * *", async () => {
   try {
     logger.info(
@@ -71,8 +67,6 @@ cron.schedule("* * * * *", async () => {
   }
 });
 
-=======
->>>>>>> organizacional/main
 // cron.schedule("* * * * * *", async () => {
 
 //   try {

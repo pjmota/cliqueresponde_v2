@@ -19,10 +19,7 @@ interface Request {
   typebotDelayMessage?: number;
   typebotKeywordRestart?: string;
   typebotRestartMessage?: string;
-<<<<<<< HEAD
   whatsappId?: number;
-=======
->>>>>>> organizacional/main
 }
 
 const CreateQueueIntegrationService = async ({
@@ -39,12 +36,8 @@ const CreateQueueIntegrationService = async ({
   typebotUnknownMessage,
   typebotDelayMessage,
   typebotKeywordRestart,
-<<<<<<< HEAD
   typebotRestartMessage,
   whatsappId
-=======
-  typebotRestartMessage 
->>>>>>> organizacional/main
 }: Request): Promise<QueueIntegrations> => {
   const schema = Yup.object().shape({
     name: Yup.string()
@@ -85,12 +78,8 @@ const CreateQueueIntegrationService = async ({
       typebotUnknownMessage,
       typebotDelayMessage,
       typebotKeywordRestart,
-<<<<<<< HEAD
       typebotRestartMessage,
       whatsappId
-=======
-      typebotRestartMessage 
->>>>>>> organizacional/main
     }
   );
 

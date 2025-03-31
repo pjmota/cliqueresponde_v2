@@ -19,11 +19,8 @@ ticketRoutes.get("/tickets/u/:uuid", isAuth, TicketController.showFromUUID);
 
 ticketRoutes.post("/tickets", isAuth, TicketController.store);
 
-<<<<<<< HEAD
 ticketRoutes.post("/tickets/:ticketId/integration", isAuth, TicketController.integration);
 
-=======
->>>>>>> organizacional/main
 ticketRoutes.put("/tickets/:ticketId", isAuth, TicketController.update);
 
 ticketRoutes.delete("/tickets/:ticketId", isAuth, TicketController.remove);

@@ -55,11 +55,7 @@ const useStyles = makeStyles(theme => ({
 		justifyContent: "flex-start",
 	},
 	content: {
-<<<<<<< HEAD
 		display: "block",
-=======
-		display: "flex",
->>>>>>> organizacional/main
 		backgroundColor: theme.palette.inputBackground,
 		flexDirection: "column",
 		padding: "8px 0px 8px 8px",
@@ -108,12 +104,8 @@ const ContactDrawer = ({ open, handleDrawerClose, contact, ticket, loading }) =>
 	const { get } = useCompanySettings();
 	const [hideNum, setHideNum] = useState(false);
 	const { user } = useContext(AuthContext);
-<<<<<<< HEAD
   const [acceptAudioMessage, setAcceptAudio] = useState(contact.acceptAudioMessage);
 	const [contactWithoutContryNumber, setContactWithoutContryNumber] = useState(undefined);
-=======
-    const [acceptAudioMessage, setAcceptAudio] = useState(contact.acceptAudioMessage);
->>>>>>> organizacional/main
 
 	useEffect(() => {
 		async function fetchData() {
@@ -132,14 +124,11 @@ const ContactDrawer = ({ open, handleDrawerClose, contact, ticket, loading }) =>
 	useEffect(() => {
 		setAcceptAudio(contact.acceptAudioMessage);
 		setOpenForm(false);
-<<<<<<< HEAD
 
 		const number = contact?.number;
 		if(number){
 			setContactWithoutContryNumber(number.startsWith('55') ? number.slice(2) : number);
 		}
-=======
->>>>>>> organizacional/main
 	}, [open, contact]);
 
 	
@@ -242,14 +231,10 @@ const ContactDrawer = ({ open, handleDrawerClose, contact, ticket, loading }) =>
 								subheader={
 									<>
 										<Typography style={{ fontSize: 12 }}>
-<<<<<<< HEAD
 											<Link href={`tel:${contact.number}`}>{hideNum && user.profile === "user" ? formatSerializedId(contact.number).slice(0, -6) + "**-**" + contact.number.slice(-2) : formatSerializedId(contact.number)}</Link>
 										</Typography>
 										<Typography style={{fontSize: 12}}>
 											<Link href={`tel:${contactWithoutContryNumber}`}>Ligar</Link>
-=======
-											{hideNum && user.profile === "user" ? formatSerializedId(contact.number).slice(0, -6) + "**-**" + contact.number.slice(-2) : formatSerializedId(contact.number)}
->>>>>>> organizacional/main
 										</Typography>
 										<Typography style={{ color: "primary", fontSize: 12 }}>
 											<Link href={`mailto:${contact.email}`}>{contact.email}</Link>

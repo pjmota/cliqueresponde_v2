@@ -4,10 +4,7 @@ import AppError from "../../errors/AppError";
 import ShowUserService from "./ShowUserService";
 import Company from "../../models/Company";
 import User from "../../models/User";
-<<<<<<< HEAD
 import logger from "../../utils/logger";
-=======
->>>>>>> organizacional/main
 
 interface UserData {
   email?: string;
@@ -16,10 +13,7 @@ interface UserData {
   profile?: string;
   companyId?: number;
   queueIds?: number[];
-<<<<<<< HEAD
   tagIds?: number[];
-=======
->>>>>>> organizacional/main
   startWork?: string;
   endWork?: string;
   farewellMessage?: string;
@@ -36,10 +30,7 @@ interface UserData {
   allowRealTime?: string;
   allowConnections?: string;
   profileImage?: string;
-<<<<<<< HEAD
   allTicketsQueuesWaiting?: string;
-=======
->>>>>>> organizacional/main
 }
 
 interface Request {
@@ -62,10 +53,6 @@ const UpdateUserService = async ({
   companyId,
   requestUserId
 }: Request): Promise<Response | undefined> => {
-<<<<<<< HEAD
-
-=======
->>>>>>> organizacional/main
   const user = await ShowUserService(userId, companyId);
 
   const requestUser = await User.findByPk(requestUserId);
@@ -90,10 +77,7 @@ const UpdateUserService = async ({
     profile,
     name,
     queueIds = [],
-<<<<<<< HEAD
     tagIds = [],
-=======
->>>>>>> organizacional/main
     startWork,
     endWork,
     farewellMessage,
@@ -109,12 +93,8 @@ const UpdateUserService = async ({
     allowConnections,
     defaultTicketsManagerWidth = 550,
     allowRealTime,
-<<<<<<< HEAD
     profileImage,
     allTicketsQueuesWaiting
-=======
-    profileImage
->>>>>>> organizacional/main
   } = userData;
 
   try {
@@ -143,19 +123,12 @@ const UpdateUserService = async ({
     defaultTicketsManagerWidth,
     allowRealTime,
     profileImage,
-<<<<<<< HEAD
     allowConnections,
     allTicketsQueuesWaiting
   });
 
   await user.$set("queues", queueIds);
   await user.$set("tags", tagIds);
-=======
-    allowConnections
-  });
-
-  await user.$set("queues", queueIds);
->>>>>>> organizacional/main
 
   await user.reload();
 
@@ -176,10 +149,7 @@ const UpdateUserService = async ({
     companyId: user.companyId,
     company,
     queues: user.queues,
-<<<<<<< HEAD
     tags: user.tags,
-=======
->>>>>>> organizacional/main
     startWork: user.startWork,
     endWork: user.endWork,
     greetingMessage: user.farewellMessage,
@@ -193,12 +163,8 @@ const UpdateUserService = async ({
     defaultTicketsManagerWidth: user.defaultTicketsManagerWidth,
     allowRealTime: user.allowRealTime,
     allowConnections: user.allowConnections,
-<<<<<<< HEAD
     profileImage: user.profileImage,
     allTicketsQueuesWaiting: user.allTicketsQueuesWaiting
-=======
-    profileImage: user.profileImage
->>>>>>> organizacional/main
   };
 
   return serializedUser;

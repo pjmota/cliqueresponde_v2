@@ -33,10 +33,7 @@ import Contact from "../models/Contact";
 import Tag from "../models/Tag";
 import ContactTag from "../models/ContactTag";
 import logger from "../utils/logger";
-<<<<<<< HEAD
 import UpsertContactCustomFieldBasedOnUserService from "../services/ContactCustomFieldService/UpsertContactCustomFieldBasedOnUserService";
-=======
->>>>>>> organizacional/main
 
 type IndexQuery = {
   searchParam: string;
@@ -281,7 +278,6 @@ export const update = async (
   return res.status(200).json(contact);
 };
 
-<<<<<<< HEAD
 export const updateCustomFields = async (
   req: Request,
   res: Response
@@ -292,8 +288,6 @@ export const updateCustomFields = async (
   return res.status(200).json(contact);
 }
 
-=======
->>>>>>> organizacional/main
 export const remove = async (
   req: Request,
   res: Response

@@ -42,10 +42,7 @@ interface WhatsappData {
   timeUseBotQueues?: string;
   expiresTicket?: number;
   allowGroup?: false;
-<<<<<<< HEAD
   allowCampaign?: false;
-=======
->>>>>>> organizacional/main
   sendIdQueue?: number;
   timeSendQueue?: number;
   timeInactiveMessage?: string;
@@ -74,10 +71,7 @@ interface WhatsappData {
   phone_number?: string;
   waba_webhook?: string;
   channel?: string;
-<<<<<<< HEAD
   ignoreQueue?: boolean;
-=======
->>>>>>> organizacional/main
 }
 
 interface QueryParams {
@@ -116,10 +110,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     timeUseBotQueues,
     expiresTicket,
     allowGroup,
-<<<<<<< HEAD
     allowCampaign,
-=======
->>>>>>> organizacional/main
     timeSendQueue,
     sendIdQueue,
     timeInactiveMessage,
@@ -147,12 +138,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     business_id,
     phone_number,
     waba_webhook,
-<<<<<<< HEAD
     channel,
     ignoreQueue,
-=======
-    channel
->>>>>>> organizacional/main
   }: WhatsappData = req.body;
   const { companyId } = req.user;
 
@@ -179,10 +166,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     timeUseBotQueues,
     expiresTicket,
     allowGroup,
-<<<<<<< HEAD
     allowCampaign,
-=======
->>>>>>> organizacional/main
     timeSendQueue,
     sendIdQueue,
     timeInactiveMessage,
@@ -210,12 +194,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     business_id,
     phone_number,
     waba_webhook,
-<<<<<<< HEAD
     channel,
     ignoreQueue,
-=======
-    channel
->>>>>>> organizacional/main
   });
 
   if (["whatsapp_oficial"].includes(whatsapp.channel)) {

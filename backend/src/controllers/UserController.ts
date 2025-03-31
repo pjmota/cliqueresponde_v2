@@ -26,31 +26,20 @@ import APIShowEmailUserService from "../services/UserServices/APIShowEmailUserSe
 type IndexQuery = {
   searchParam: string;
   pageNumber: string;
-<<<<<<< HEAD
   limitNull?: string;
-=======
->>>>>>> organizacional/main
 };
 
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-<<<<<<< HEAD
   const { searchParam, pageNumber, limitNull } = req.query as IndexQuery;
-=======
-  const { searchParam, pageNumber } = req.query as IndexQuery;
->>>>>>> organizacional/main
   const { companyId, profile } = req.user;
 
   const { users, count, hasMore } = await ListUsersService({
     searchParam,
     pageNumber,
     companyId,
-<<<<<<< HEAD
     profile,
     limitNull: limitNull === 'true' ? true : false
-=======
-    profile
->>>>>>> organizacional/main
   });
 
   return res.json({ users, count, hasMore });
@@ -80,12 +69,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     showDashboard,
     defaultTicketsManagerWidth = 550,
     allowRealTime,
-<<<<<<< HEAD
     allowConnections,
     allTicketsQueuesWaiting
-=======
-    allowConnections
->>>>>>> organizacional/main
   } = req.body;
   let userCompanyId: number | null = null;
 
@@ -140,12 +125,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       showDashboard: 'disabled',
       defaultTicketsManagerWidth: 550,
       allowRealTime: 'disabled',
-<<<<<<< HEAD
       allowConnections: 'disabled',
       allTicketsQueuesWaiting: 'disabled'
-=======
-      allowConnections: 'disabled'
->>>>>>> organizacional/main
     };
 
     const user = await CreateCompanyService(companyData);
@@ -203,12 +184,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       showDashboard,
       defaultTicketsManagerWidth,
       allowRealTime,
-<<<<<<< HEAD
       allowConnections,
       allTicketsQueuesWaiting
-=======
-      allowConnections
->>>>>>> organizacional/main
     });
 
     const io = getIO();

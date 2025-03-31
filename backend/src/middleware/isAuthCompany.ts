@@ -26,11 +26,7 @@ const isAuthCompany = async (
     }
   } catch (err) {
     throw new AppError(
-<<<<<<< HEAD
       "Invalid token. We'll try to assign a new one on next request into isAuthCompany",
-=======
-      "Invalid token. We'll try to assign a new one on next request",
->>>>>>> organizacional/main
       403
     );
   }

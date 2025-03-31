@@ -3,11 +3,8 @@ import * as Yup from "yup";
 import AppError from "../../errors/AppError";
 import Tag from "../../models/Tag";
 import ShowService from "./ShowService";
-<<<<<<< HEAD
 import ScheduleTagIntegration from "../../models/ScheduleTagIntegration";
 import logger from "../../utils/logger";
-=======
->>>>>>> organizacional/main
 
 interface TagData {
   id?: number;
@@ -18,11 +15,8 @@ interface TagData {
   nextLaneId?: number;
   greetingMessageLane: string;
   rollbackLaneId?: number;
-<<<<<<< HEAD
   whatsappId?: number;
   queueIntegrationId?: number;
-=======
->>>>>>> organizacional/main
 }
 
 interface Request {
@@ -44,14 +38,10 @@ const UpdateUserService = async ({
     timeLane,
     nextLaneId = null,
     greetingMessageLane,
-<<<<<<< HEAD
     rollbackLaneId = null,
     whatsappId = null,
     queueIntegrationId = null,
   } = tagData;
-=======
-    rollbackLaneId = null} = tagData;
->>>>>>> organizacional/main
 
   try {
     await schema.validate({ name });
@@ -67,7 +57,6 @@ const UpdateUserService = async ({
     nextLaneId: String(nextLaneId) === "" ? null : nextLaneId,
     greetingMessageLane,
     rollbackLaneId: String(rollbackLaneId) === "" ? null : rollbackLaneId,
-<<<<<<< HEAD
     whatsappId,
     queueIntegrationId
   });
@@ -96,10 +85,6 @@ const UpdateUserService = async ({
     }
   }
 
-=======
-  });
-
->>>>>>> organizacional/main
   await tag.reload();
   return tag;
 };

@@ -21,10 +21,7 @@ const useStyles = makeStyles((theme) => ({
 		width: "100vw",
 		height: "100vh",
 		background: theme.mode === "light" ? theme.palette.light : theme.palette.dark,
-<<<<<<< HEAD
 		backgroundImage: "url(/background-login.png)",
-=======
->>>>>>> organizacional/main
 		backgroundRepeat: "no-repeat",
 		backgroundSize: "100% 100%",
 		backgroundPosition: "center",
@@ -35,11 +32,7 @@ const useStyles = makeStyles((theme) => ({
 		textAlign: "center",
 	},
 	paper: {
-<<<<<<< HEAD
 		backgroundColor: theme.mode === "light" ? "rgba(255, 255, 255, 1)" : "rgba(255, 255, 255, 0.2)",
-=======
-		backgroundColor: theme.mode === "light" ? "rgba(255, 255, 255, 0.7)" : "rgba(255, 255, 255, 0.2)",
->>>>>>> organizacional/main
 		backdropFilter: "blur(10px)",
 		boxShadow: theme.mode === "light" ? "0 4px 6px rgba(0, 0, 0, 0.1)" : "0 4px 6px rgba(255, 255, 255, 0.2)",
 		display: "flex",
@@ -109,11 +102,7 @@ const Login = () => {
 	return (
 		<>
 			<Helmet>
-<<<<<<< HEAD
 				<title>{appName || "CRM Clique Responde"}</title>
-=======
-				<title>{appName || "Multi100"}</title>
->>>>>>> organizacional/main
 				<link rel="icon" href={appLogoFavicon || "/default-favicon.ico"} />
 			</Helmet>
 			<div className={classes.root}>

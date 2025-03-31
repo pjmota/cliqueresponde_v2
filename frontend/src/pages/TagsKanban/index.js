@@ -261,10 +261,7 @@ const Tags = () => {
         <Table size="small">
           <TableHead>
             <TableRow>
-<<<<<<< HEAD
               <TableCell align="center">{i18n.t("tagsKanban.table.id")}</TableCell>
-=======
->>>>>>> organizacional/main
               <TableCell align="center">{i18n.t("tagsKanban.table.name")}</TableCell>
               <TableCell align="center">{i18n.t("tagsKanban.table.tickets")}</TableCell>
               <TableCell align="center">{i18n.t("tagsKanban.table.actions")}</TableCell>
@@ -274,10 +271,7 @@ const Tags = () => {
             <>
               {tags.map((tag) => (
                 <TableRow key={tag.id}>
-<<<<<<< HEAD
                   <TableCell align="center">{tag?.id}</TableCell>
-=======
->>>>>>> organizacional/main
                   <TableCell align="center">
                     <Chip
                       variant="outlined"

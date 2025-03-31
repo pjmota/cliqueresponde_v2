@@ -4,7 +4,6 @@ import * as Yup from "yup";
 import { Formik, FieldArray, Form, Field } from "formik";
 import { toast } from "react-toastify";
 
-<<<<<<< HEAD
 import { 
   FormControl, 
   FormControlLabel, 
@@ -22,9 +21,6 @@ import {
   TableBody,
   Box
 } from "@material-ui/core";
-=======
-import { FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Paper, Select, Tab, Tabs } from "@material-ui/core";
->>>>>>> organizacional/main
 
 import { makeStyles } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -47,10 +43,7 @@ import toastError from "../../errors/toastError";
 import ColorPicker from "../ColorPicker";
 import { IconButton, InputAdornment } from "@material-ui/core";
 import { Colorize } from "@material-ui/icons";
-<<<<<<< HEAD
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-=======
->>>>>>> organizacional/main
 import Typography from "@material-ui/core/Typography";
 import DeleteOutline from "@material-ui/icons/DeleteOutline";
 import Stepper from "@material-ui/core/Stepper";
@@ -71,12 +64,9 @@ import useQueues from "../../hooks/useQueues";
 import UserStatusIcon from "../UserModal/statusIcon";
 import usePlans from "../../hooks/usePlans";
 import ColorBoxModal from "../ColorBoxModal";
-<<<<<<< HEAD
 import TableRowSkeleton from "../TableRowSkeleton";
 import QueueSelect from "../QueueSelect";
 import { RotationOptions } from "../RotationOptions";
-=======
->>>>>>> organizacional/main
 // import { ColorBox } from "material-ui-color";
 
 
@@ -144,10 +134,7 @@ const QueueSchema = Yup.object().shape({
       })
     )
     .required("Must have friends"),
-<<<<<<< HEAD
   lastSequence: Yup.number()
-=======
->>>>>>> organizacional/main
 });
 
 const QueueModal = ({ open, onClose, queueId, onEdit }) => {
@@ -164,12 +151,8 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
     ativarRoteador: false,
     integrationId: "",
     fileListId: "",
-<<<<<<< HEAD
     closeTicket: false,
     lastSequence: ""
-=======
-    closeTicket: false
->>>>>>> organizacional/main
   };
 
   const [colorPickerModalOpen, setColorPickerModalOpen] = useState(false);
@@ -197,14 +180,11 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
   const [userOptions, setUserOptions] = useState([]);
   const isMounted = useRef(true);
 
-<<<<<<< HEAD
   const [selectedQueueId, setSelectedQueueId] = useState(null);
   const [rotationId, setRotationId] = useState(null);
   const [lastSequenceId, setLastSequenceId] = useState(null);
   const [totationUser, setRotationUser] = useState();
 
-=======
->>>>>>> organizacional/main
   const initialStateSchedule = [
     { weekday: i18n.t("queueModal.serviceHours.monday"), weekdayEn: "monday", startTimeA: "08:00", endTimeA: "12:00", startTimeB: "13:00", endTimeB: "18:00" },
     { weekday: i18n.t("queueModal.serviceHours.tuesday"), weekdayEn: "tuesday", startTimeA: "08:00", endTimeA: "12:00", startTimeB: "13:00", endTimeB: "18:00" },
@@ -266,7 +246,6 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
     (async () => {
       if (!queueId) return;
       try {
-<<<<<<< HEAD
         setTab(0)
         const { data } = await api.get(`/queue/${queueId}`);
 
@@ -287,12 +266,6 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
             ...data,
             ...(param ? { lastSequence: param } : {})
           };
-=======
-        const { data } = await api.get(`/queue/${queueId}`);
-
-        setQueue((prevState) => {
-          return { ...prevState, ...data };
->>>>>>> organizacional/main
         });
 
         if (isArray(data.schedules) && data.schedules.length > 0)
@@ -314,12 +287,8 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
         ativarRoteador: false,
         integrationId: "",
         fileListId: "",
-<<<<<<< HEAD
         closeTicket: false,
         lastSequence:  0
-=======
-        closeTicket: false
->>>>>>> organizacional/main
       });
     };
   }, [queueId, open]);
@@ -386,13 +355,10 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
     }
   }, [isNameEdit, activeStep]);
 
-<<<<<<< HEAD
   useEffect(() => {
     setSelectedQueueId([1])
   }, [])
 
-=======
->>>>>>> organizacional/main
   const handleClose = () => {
     onClose();
     setIsNamedEdit(null);
@@ -433,16 +399,10 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
   const handleSaveQueue = async (values) => {
     try {
       if (queueId) {
-<<<<<<< HEAD
         await api.put(`/queue/${queueId}`, { ...values, schedules, rotationId });
       } else {
         await api.post("/queue", { ...values, schedules });
 
-=======
-        await api.put(`/queue/${queueId}`, { ...values, schedules });
-      } else {
-        await api.post("/queue", { ...values, schedules });
->>>>>>> organizacional/main
       }
 
       toast.success(`${i18n.t("queues.toasts.success")}`);
@@ -453,10 +413,6 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
   };
 
   const handleSaveBot = async (values) => {
-<<<<<<< HEAD
-=======
-    console.log(values)
->>>>>>> organizacional/main
     try {
       if (queueId) {
         const { data } = await api.put(`/queue/${queueId}`, values);
@@ -510,14 +466,11 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
   //     </Dialog>
   //   )
   // }
-<<<<<<< HEAD
   
   const activateRotation = (isActivated) => {
     setQueue({...queue, ativarRoteador: isActivated})
   };
 
-=======
->>>>>>> organizacional/main
   return (
     <div className={classes.root}>
       <ConfirmationModal
@@ -544,7 +497,6 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
             ? `${i18n.t("queueModal.title.edit")}`
             : `${i18n.t("queueModal.title.add")}`}
         </DialogTitle>
-<<<<<<< HEAD
         <Formik
           initialValues={queue}
           validateOnChange={false}
@@ -644,117 +596,11 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                       className={classes.textField1}
                       value={values.orderQueue ?? ""}
                     />
-=======
-        <Tabs
-          value={tab}
-          indicatorColor="primary"
-          textColor="primary"
-          onChange={(e, v) => setTab(v)}
-          aria-label="disabled tabs example"
-        >
-          <Tab label={i18n.t("queueModal.title.queueData")} />
-          {schedulesEnabled && <Tab label={i18n.t("queueModal.title.text")} />}
-        </Tabs>
-        {tab === 0 && (
-          <Formik
-            initialValues={queue}
-            validateOnChange={false}
-            enableReinitialize={true}
-            validationSchema={QueueSchema}
-            onSubmit={(values, actions) => {
-              setTimeout(() => {
-                handleSaveQueue(values);
-                actions.setSubmitting(false);
-              }, 400);
-            }}
-          >
-            {({ setFieldValue, touched, errors, isSubmitting, values }) => (
-              <Form>
-                <DialogContent dividers>
-                  <Field
-                    as={TextField}
-                    label={i18n.t("queueModal.form.name")}
-                    autoFocus
-                    name="name"
-                    error={touched.name && Boolean(errors.name)}
-                    helperText={touched.name && errors.name}
-                    variant="outlined"
-                    margin="dense"
-                    className={classes.textField}
-                  />
-                  <Field
-                    as={TextField}
-                    label={i18n.t("queueModal.form.color")}
-                    name="color"
-                    id="color"
-                    onFocus={() => {
-                      setColorPickerModalOpen(true);
-                      greetingRef.current.focus();
-                    }}
-                    error={touched.color && Boolean(errors.color)}
-                    helperText={touched.color && errors.color}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <div
-                            style={{ backgroundColor: values.color }}
-                            className={classes.colorAdorment}
-                          ></div>
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <IconButton
-                          size="small"
-                          color="default"
-                          onClick={() => setColorPickerModalOpen(!colorPickerModalOpen)}
-                        >
-                          <Colorize />
-
-                        </IconButton>
-                      ),
-                    }}
-                    variant="outlined"
-                    margin="dense"
-                  />
-                  <ColorBoxModal
-                    open={colorPickerModalOpen}
-                    handleClose={() => setColorPickerModalOpen(false)}
-                    onChange={(color) => {
-                      setFieldValue("color", `#${color.hex}`);
-                    }}
-                    currentColor={values.color}
-                  />
-                  
-                  <Field
-                    as={TextField}
-                    label={i18n.t("queueModal.form.orderQueue")}
-                    name="orderQueue"
-                    type="orderQueue"
-                    error={touched.orderQueue && Boolean(errors.orderQueue)}
-                    helperText={touched.orderQueue && errors.orderQueue}
-                    variant="outlined"
-                    margin="dense"
-                    className={classes.textField1}
-                  />
-                  <FormControlLabel
-                    control={
-                      <Field
-                        as={Switch}
-                        color="primary"
-                        name="closeTicket"
-                        checked={values.closeTicket}
-                      />
-                    }
-                    label={i18n.t("queueModal.form.closeTicket")}
-                  />
-                  <div>
->>>>>>> organizacional/main
                     <FormControlLabel
                       control={
                         <Field
                           as={Switch}
                           color="primary"
-<<<<<<< HEAD
                           name="closeTicket"
                           checked={values.closeTicket}
                         />
@@ -835,42 +681,12 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                           </Field>
                         </FormControl>
                       )}
-=======
-                          name="ativarRoteador"
-                          checked={values.ativarRoteador}
-                        />
-                      }
-                      label={i18n.t("queueModal.form.rotate")}
-                    />
-                    <Field
-                      as={Select}
-                      label={i18n.t("queueModal.form.timeRotate")}
-                      name="tempoRoteador"
-                      id="tempoRoteador"
-                      variant="outlined"
-                      margin="dense"
-                      className={classes.selectField}
-                    >
-                      <MenuItem value="0" selected disabled>{i18n.t("queueModal.form.timeRotate")}</MenuItem>
-                      <MenuItem value="2">2 minutos</MenuItem>
-                      <MenuItem value="5">5 minutos</MenuItem>
-                      <MenuItem value="10">10 minutos</MenuItem>
-                      <MenuItem value="15">15 minutos</MenuItem>
-                      <MenuItem value="30">30 minutos</MenuItem>
-                      <MenuItem value="45">45 minutos</MenuItem>
-                      <MenuItem value="60">60 minutos</MenuItem>
-                    </Field>
-                  </div>
-                  <div>
-                    {showIntegrations && (
->>>>>>> organizacional/main
                       <FormControl
                         variant="outlined"
                         margin="dense"
                         className={classes.FormControl}
                         fullWidth
                       >
-<<<<<<< HEAD
                         <InputLabel id="fileListId-selection-label">
                           {i18n.t("queueModal.form.fileListId")}
                         </InputLabel>
@@ -908,95 +724,10 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                         }
                         helperText={
                           touched.greetingMessage && errors.greetingMessage
-=======
-                        <InputLabel id="integrationId-selection-label">
-                          {i18n.t("queueModal.form.integrationId")}
-                        </InputLabel>
-                        <Field
-                          as={Select}
-                          label={i18n.t("queueModal.form.integrationId")}
-                          name="integrationId"
-                          id="integrationId"
-                          placeholder={i18n.t("queueModal.form.integrationId")}
-                          labelId="integrationId-selection-label"
-                          value={values.integrationId || ""}
-                        >
-                          <MenuItem value={""} >{"Nenhum"}</MenuItem>
-                          {integrations.map((integration) => (
-                            <MenuItem key={integration.id} value={integration.id}>
-                              {integration.name}
-                            </MenuItem>
-                          ))}
-                        </Field>
-
-                      </FormControl>
-                    )}
-                    <FormControl
-                      variant="outlined"
-                      margin="dense"
-                      className={classes.FormControl}
-                      fullWidth
-                    >
-                      <InputLabel id="fileListId-selection-label">{i18n.t("queueModal.form.fileListId")}</InputLabel>
-                      <Field
-                        as={Select}
-                        label={i18n.t("queueModal.form.fileListId")}
-                        name="fileListId"
-                        id="fileListId"
-                        placeholder={i18n.t("queueModal.form.fileListId")}
-                        labelId="fileListId-selection-label"
-                        value={values.fileListId || ""}
-                      >
-                        <MenuItem value={""} >{"Nenhum"}</MenuItem>
-                        {file.map(f => (
-                          <MenuItem key={f.id} value={f.id}>
-                            {f.name}
-                          </MenuItem>
-                        ))}
-                      </Field>
-                    </FormControl>
-                  </div>
-                  <div>
-                    <Field
-                      as={TextField}
-                      label={i18n.t("queueModal.form.greetingMessage")}
-                      type="greetingMessage"
-                      multiline
-                      inputRef={greetingRef}
-                      minRows={5}
-                      fullWidth
-                      name="greetingMessage"
-                      error={
-                        touched.greetingMessage && Boolean(errors.greetingMessage)
-                      }
-                      helperText={
-                        touched.greetingMessage && errors.greetingMessage
-                      }
-                      variant="outlined"
-                      margin="dense"
-                    />
-                    {schedulesEnabled && (
-                      <Field
-                        as={TextField}
-                        label={i18n.t("queueModal.form.outOfHoursMessage")}
-                        type="outOfHoursMessage"
-                        multiline
-                        rows={5}
-                        fullWidth
-                        required={schedulesEnabled}
-                        name="outOfHoursMessage"
-                        error={
-                          touched.outOfHoursMessage &&
-                          Boolean(errors.outOfHoursMessage)
-                        }
-                        helperText={
-                          touched.outOfHoursMessage && errors.outOfHoursMessage
->>>>>>> organizacional/main
                         }
                         variant="outlined"
                         margin="dense"
                       />
-<<<<<<< HEAD
                       {schedulesEnabled && (
                         <Field
                           as={TextField}
@@ -1249,196 +980,11 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                                                     style={{
                                                       marginLeft: "4px",
                                                     }}
-=======
-                    )}
-                  </div>
-
-                  <Typography variant="subtitle1">
-                    {i18n.t("queueModal.bot.title")}
-                    <CustomToolTip
-                      title={i18n.t("queueModal.bot.toolTipTitle")}
-                      content={i18n.t("queueModal.bot.toolTip")}
-                    >
-                      <HelpOutlineOutlinedIcon
-                        style={{ marginLeft: "14px" }}
-                        fontSize="small"
-                      />
-                    </CustomToolTip>
-                  </Typography>
-
-                  <div>
-                    <FieldArray name="chatbots">
-                      {({ push, remove }) => (
-                        <>
-                          <Stepper
-                            nonLinear
-                            activeStep={activeStep}
-                            orientation="vertical"
-                          >
-                            {values.chatbots &&
-                              values.chatbots.length > 0 &&
-                              values.chatbots.map((info, index) => (
-                                <Step
-                                  key={`${info.id ? info.id : index}-chatbots`}
-                                  onClick={() => setActiveStep(index)}
-                                >
-                                  <StepLabel key={`${info.id}-chatbots`}>
-                                    {isNameEdit !== index &&
-                                      queue.chatbots[index]?.name ? (
-                                      <div
-                                        className={classes.greetingMessage}
-                                        variant="body1"
-                                      >
-                                        {values.chatbots[index].name}
-
-                                        <IconButton
-                                          size="small"
-                                          onClick={() => {
-                                            setIsNamedEdit(index);
-                                            setIsStepContent(false);
-                                          }}
-                                        >
-                                          <EditIcon />
-                                        </IconButton>
-
-                                        <IconButton
-                                          onClick={() => {
-                                            setSelectedQueue(info);
-                                            setConfirmModalOpen(true);
-                                          }}
-                                          size="small"
-                                        >
-                                          <DeleteOutline />
-                                        </IconButton>
-                                      </div>
-                                    ) : (
-                                      <Grid spacing={2} container>
-                                        <Grid xs={12} md={12} item>
-
-                                          <Field
-                                            as={TextField}
-                                            name={`chatbots[${index}].name`}
-                                            variant="outlined"
-                                            margin="dense"
-                                            color="primary"
-                                            label={i18n.t("queueModal.form.greetingMessage")}
-                                            disabled={isSubmitting}
-                                            autoFocus
-                                            fullWidth
-                                            size="small"
-                                            error={
-                                              touched?.chatbots?.[index]?.name &&
-                                              Boolean(
-                                                errors.chatbots?.[index]?.name
-                                              )
-                                            }
-                                            className={classes.textField}
-                                          />
-                                        </Grid>
-                                        <Grid xs={12} md={8} item>
-                                          <FormControl
-                                            variant="outlined"
-                                            margin="dense"
-                                            className={classes.formControl}
-                                            fullWidth
-                                          >
-                                            <InputLabel id="queueType-selection-label">{i18n.t("queueModal.form.queueType")}</InputLabel>
-
-                                            <Field
-                                              as={Select}
-                                              name={`chatbots[${index}].queueType`}
-                                              variant="outlined"
-                                              margin="dense"
-                                              fullWidth
-                                              labelId="queueType-selection-label"
-                                              label={i18n.t("queueModal.form.queueType")}
-                                              error={touched?.chatbots?.[index]?.queueType &&
-                                                Boolean(errors?.chatbots?.[index]?.queueType)}
-                                            // helpertext={touched?.chatbots?.[index]?.queueType && errors?.chatbots?.[index]?.queueType}
-                                            // value={`chatbots[${index}].queueType`}
-                                            >
-                                              <MenuItem value={"text"}>{i18n.t("queueModal.bot.text")}</MenuItem>
-                                              <MenuItem value={"attendent"}>{i18n.t("queueModal.bot.attendent")}</MenuItem>
-                                              <MenuItem value={"queue"}>{i18n.t("queueModal.bot.queue")}</MenuItem>
-                                              <MenuItem value={"integration"}>{i18n.t("queueModal.bot.integration")}</MenuItem>
-                                              <MenuItem value={"file"}>{i18n.t("queueModal.bot.file")}</MenuItem>
-                                            </Field>
-                                          </FormControl>
-                                        </Grid>
-
-                                        <Grid xs={12} md={4} item>
-                                          <FormControlLabel
-                                            control={
-                                              <Field
-                                                as={Checkbox}
-                                                color="primary"
-                                                name={`chatbots[${index}].closeTicket`}
-                                                checked={values.chatbots[index].closeTicket || false}
-                                              />
-                                            }
-                                            labelPlacement="top"
-                                            label={i18n.t("queueModal.form.closeTicket")}
-                                          />
-
-                                          <IconButton
-                                            size="small"
-                                            onClick={() =>
-                                              values.chatbots[index].name
-                                                ? handleSaveBot(values)
-                                                : null
-                                            }
-                                            disabled={isSubmitting}
-                                          >
-                                            <SaveIcon />
-                                          </IconButton>
-
-                                          <IconButton
-                                            size="small"
-                                            onClick={() => remove(index)}
-                                            disabled={isSubmitting}
-                                          >
-                                            <DeleteOutline />
-                                          </IconButton>
-                                        </Grid>
-                                      </Grid>
-                                    )}
-                                  </StepLabel>
-
-                                  {isStepContent && queue.chatbots[index] && (
-                                    <StepContent>
-                                      <>
-                                        {isGreetingMessageEdit !== index ? (
-                                          <div
-                                            className={classes.greetingMessage}
-                                          >
-                                            <Typography
-                                              color="textSecondary"
-                                              variant="body1"
-                                            >
-                                              Message:
-                                            </Typography>
-
-                                            {
-                                              values.chatbots[index]
-                                                .greetingMessage
-                                            }
-
-                                            {!queue.chatbots[index]
-                                              ?.greetingMessage && (
-                                                <CustomToolTip
-                                                  title={i18n.t("queueModal.bot.toolTipMessageTitle")}
-                                                  content={i18n.t("queueModal.bot.toolTipMessageContent")}
-                                                >
-                                                  <HelpOutlineOutlinedIcon
-                                                    color="secondary"
-                                                    style={{ marginLeft: "4px" }}
->>>>>>> organizacional/main
                                                     fontSize="small"
                                                   />
                                                 </CustomToolTip>
                                               )}
 
-<<<<<<< HEAD
                                               <IconButton
                                                 size="small"
                                                 onClick={() =>
@@ -2007,324 +1553,6 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                 )}
               </DialogContent>
               <DialogActions>
-=======
-                                            <IconButton
-                                              size="small"
-                                              onClick={() =>
-                                                setGreetingMessageEdit(index)
-                                              }
-                                            >
-                                              <EditIcon />
-                                            </IconButton>
-                                          </div>
-                                        ) : (
-                                          <Grid spacing={2} container>
-                                            <div
-                                              className={classes.greetingMessage}
-                                            >
-                                              {queue.chatbots[index].queueType === "text" && (
-                                                <Grid xs={12} md={12} item>
-                                                  <Field
-                                                    as={TextField}
-                                                    name={`chatbots[${index}].greetingMessage`}
-                                                    label={i18n.t("queueModal.form.message")}
-                                                    variant="outlined"
-                                                    margin="dense"
-                                                    fullWidth
-                                                    multiline
-                                                    error={
-                                                      touched.greetingMessage &&
-                                                      Boolean(errors.greetingMessage)
-                                                    }
-                                                    helperText={
-                                                      touched.greetingMessage &&
-                                                      errors.greetingMessage
-                                                    }
-                                                    className={classes.textField}
-                                                  />
-
-                                                </Grid>
-                                              )}
-                                            </div>
-                                            {queue.chatbots[index].queueType === "queue" && (
-                                              <>
-                                                <Grid xs={12} md={12} item>
-                                                  <Field
-                                                    as={TextField}
-                                                    name={`chatbots[${index}].greetingMessage`}
-                                                    label={i18n.t("queueModal.form.message")}
-                                                    variant="outlined"
-                                                    margin="dense"
-                                                    fullWidth
-                                                    multiline
-                                                    error={
-                                                      touched.greetingMessage &&
-                                                      Boolean(errors.greetingMessage)
-                                                    }
-                                                    helperText={
-                                                      touched.greetingMessage &&
-                                                      errors.greetingMessage
-                                                    }
-                                                    className={classes.textField}
-                                                  />
-                                                </Grid>
-                                                <Grid xs={12} md={8} item>
-                                                  <FormControl
-                                                    variant="outlined"
-                                                    margin="dense"
-                                                    className={classes.FormControl}
-                                                    fullWidth
-                                                  >
-                                                    <InputLabel id="queue-selection-label">{i18n.t("queueModal.form.queue")}</InputLabel>
-                                                    <Field
-                                                      as={Select}
-                                                      name={`chatbots[${index}].optQueueId`}
-                                                      error={touched?.chatbots?.[index]?.optQueueId &&
-                                                        Boolean(errors?.chatbots?.[index]?.optQueueId)}
-                                                      helpertext={touched?.chatbots?.[index]?.optQueueId && errors?.chatbots?.[index]?.optQueueId}
-                                                      // value={`chatbots[${index}].optQueueId`}
-                                                      className={classes.textField1}
-                                                    >
-                                                      {queues.map(queue => (
-                                                        <MenuItem key={queue.id} value={queue.id}>
-                                                          {queue.name}
-                                                        </MenuItem>
-                                                      ))}
-                                                    </Field>
-                                                  </FormControl>
-                                                </Grid>
-                                              </>
-                                            )}
-                                            {queue.chatbots[index].queueType === "attendent" && (
-                                              <>
-                                                <Grid xs={12} md={12} item>
-                                                  <Field
-                                                    as={TextField}
-                                                    name={`chatbots[${index}].greetingMessage`}
-                                                    label={i18n.t("queueModal.form.message")}
-                                                    variant="outlined"
-                                                    margin="dense"
-                                                    fullWidth
-                                                    multiline
-                                                    error={
-                                                      touched.greetingMessage &&
-                                                      Boolean(errors.greetingMessage)
-                                                    }
-                                                    helperText={
-                                                      touched.greetingMessage &&
-                                                      errors.greetingMessage
-                                                    }
-                                                    className={classes.textField}
-                                                  />
-                                                </Grid>
-                                                {/* SELECIONAR USUARIO */}
-                                                <Grid xs={12} md={4} item>
-                                                  <Autocomplete
-                                                    style={{ marginTop: '8px' }}
-                                                    variant="outlined"
-                                                    margin="dense"
-                                                    getOptionLabel={(option) => `${option.name}`}
-                                                    value={queue.chatbots[index].user}
-                                                    onChange={(e, newValue) => {
-                                                      if (newValue != null) {
-                                                        setFieldValue(`chatbots[${index}].optUserId`, newValue.id);
-                                                      } else {
-                                                        setFieldValue(`chatbots[${index}].optUserId`, null);
-
-                                                      }
-                                                      if (newValue != null && Array.isArray(newValue.queues)) {
-                                                        if (newValue.queues.length === 1) {
-                                                          setSelectedQueueOption(newValue.queues[0].id);
-                                                          setFieldValue(`chatbots[${index}].optQueueId`, newValue.queues[0].id);
-                                                        }
-                                                        setQueues(newValue.queues);
-
-                                                      } else {
-                                                        setQueues(allQueues);
-                                                        setSelectedQueueOption("");
-                                                      }
-                                                    }}
-                                                    options={userOptions}
-                                                    filterOptions={filterOptions}
-                                                    freeSolo
-                                                    fullWidth
-                                                    autoHighlight
-                                                    noOptionsText={i18n.t("transferTicketModal.noOptions")}
-                                                    loading={loading}
-                                                    size="small"
-                                                    renderOption={option => (<span> <UserStatusIcon user={option} /> {option.name}</span>)}
-                                                    renderInput={(params) => (
-                                                      <TextField
-                                                        {...params}
-                                                        label={i18n.t("transferTicketModal.fieldLabel")}
-                                                        variant="outlined"
-                                                        onChange={(e) => setSearchParam(e.target.value)}
-                                                        InputProps={{
-                                                          ...params.InputProps,
-                                                          endAdornment: (
-                                                            <Fragment>
-                                                              {loading ? (
-                                                                <CircularProgress color="inherit" size={20} />
-                                                              ) : null}
-                                                              {params.InputProps.endAdornment}
-                                                            </Fragment>
-                                                          ),
-                                                        }}
-                                                      />
-                                                    )}
-                                                  />
-                                                </Grid>
-                                                <Grid xs={12} md={4} item>
-                                                  <FormControl
-                                                    variant="outlined"
-                                                    margin="dense"
-                                                    fullWidth
-                                                    className={classes.formControl}
-                                                  >
-                                                    <InputLabel>
-                                                      {i18n.t("transferTicketModal.fieldQueueLabel")}
-                                                    </InputLabel>
-                                                    <Select
-                                                      value={selectedQueueOption}
-                                                      onChange={(e) => {
-                                                        setSelectedQueueOption(e.target.value)
-                                                        setFieldValue(`chatbots[${index}].optQueueId`, e.target.value);
-                                                      }}
-                                                      label={i18n.t("transferTicketModal.fieldQueuePlaceholder")}
-                                                    >
-                                                      {queues.map((queue) => (
-                                                        <MenuItem key={queue.id} value={queue.id}>
-                                                          {queue.name}
-                                                        </MenuItem>
-                                                      ))}
-                                                    </Select>
-                                                  </FormControl>
-                                                </Grid>
-                                              </>
-                                            )}
-                                            {queue.chatbots[index].queueType === "integration" && (
-                                              <>
-                                                <Grid xs={12} md={12} item>
-                                                  <Field
-                                                    as={TextField}
-                                                    name={`chatbots[${index}].greetingMessage`}
-                                                    label={i18n.t("queueModal.form.message")}
-                                                    variant="outlined"
-                                                    margin="dense"
-                                                    fullWidth
-                                                    multiline
-                                                    error={
-                                                      touched.greetingMessage &&
-                                                      Boolean(errors.greetingMessage)
-                                                    }
-                                                    helperText={
-                                                      touched.greetingMessage &&
-                                                      errors.greetingMessage
-                                                    }
-                                                    className={classes.textField}
-                                                  />
-                                                </Grid>
-                                                <Grid xs={12} md={8} item>
-                                                  <FormControl
-                                                    variant="outlined"
-                                                    margin="dense"
-                                                    className={classes.FormControl}
-                                                    fullWidth
-                                                  >
-                                                    <InputLabel id="optIntegrationId-selection-label">{i18n.t("queueModal.form.integration")}</InputLabel>
-                                                    <Field
-                                                      as={Select}
-                                                      name={`chatbots[${index}].optIntegrationId`}
-                                                      error={touched?.chatbots?.[index]?.optIntegrationId &&
-                                                        Boolean(errors?.chatbots?.[index]?.optIntegrationId)}
-                                                      helpertext={touched?.chatbots?.[index]?.optIntegrationId && errors?.chatbots?.[index]?.optIntegrationId}
-                                                      // value={`chatbots[${index}].optQueueId`}
-                                                      className={classes.textField1}
-                                                    >
-                                                      {integrations.map(integration => (
-                                                        <MenuItem key={integration.id} value={integration.id}>
-                                                          {integration.name}
-                                                        </MenuItem>
-                                                      ))}
-                                                    </Field>
-                                                  </FormControl>
-                                                </Grid>
-                                              </>
-                                            )}
-                                            {queue.chatbots[index].queueType === "file" && (
-                                              <>
-                                                <Grid xs={12} md={12} item>
-                                                  <Field
-                                                    as={TextField}
-                                                    name={`chatbots[${index}].greetingMessage`}
-                                                    label={i18n.t("queueModal.form.message")}
-                                                    variant="outlined"
-                                                    margin="dense"
-                                                    fullWidth
-                                                    multiline
-                                                    error={
-                                                      touched.greetingMessage &&
-                                                      Boolean(errors.greetingMessage)
-                                                    }
-                                                    helperText={
-                                                      touched.greetingMessage &&
-                                                      errors.greetingMessage
-                                                    }
-                                                    className={classes.textField}
-                                                  />
-                                                </Grid>
-                                                <InputLabel>{"Selecione um Arquivo"}</InputLabel>
-                                                <Field
-                                                  as={Select}
-                                                  name={`chatbots[${index}].optFileId`}
-                                                  error={touched?.chatbots?.[index]?.optFileId &&
-                                                    Boolean(errors?.chatbots?.[index]?.optFileId)}
-                                                  helpertext={touched?.chatbots?.[index]?.optFileId && errors?.chatbots?.[index]?.optFileId}
-                                                  className={classes.textField1}
-                                                >
-                                                  {file.map(f => (
-                                                    <MenuItem key={f.id} value={f.id}>
-                                                      {f.name}
-                                                    </MenuItem>
-                                                  ))}
-                                                </Field>
-                                              </>
-                                            )}
-                                            <IconButton
-                                              size="small"
-                                              onClick={() =>
-                                                handleSaveBot(values)
-                                              }
-                                              disabled={isSubmitting}
-                                            >
-                                              {" "}
-                                              <SaveIcon />
-                                            </IconButton>
-                                          </Grid>
-                                        )}
-
-                                        <OptionsChatBot chatBotId={info.id} />
-                                      </>
-                                    </StepContent>
-                                  )}
-                                </Step>
-                              ))}
-
-                            <Step>
-                              <StepLabel
-                                onClick={() => push({ name: "", value: "" })}
-                              >
-                                {i18n.t("queueModal.bot.addOptions")}
-                              </StepLabel>
-                            </Step>
-                          </Stepper>
-                        </>
-                      )}
-                    </FieldArray>
-                  </div>
-                </DialogContent>
-                <DialogActions>
->>>>>>> organizacional/main
                   <Button
                     onClick={handleClose}
                     // color="secondary"
@@ -2351,26 +1579,9 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                     )}
                   </Button>
                 </DialogActions>
-<<<<<<< HEAD
             </Form>
           )}
         </Formik>
-=======
-              </Form>
-            )}
-          </Formik>
-        )}
-        {tab === 1 && (
-          <Paper style={{ padding: 20 }}>
-            <SchedulesForm
-              loading={false}
-              onSubmit={handleSaveSchedules}
-              initialValues={schedules}
-              labelSaveButton={i18n.t("whatsappModal.buttons.okAdd")}
-            />
-          </Paper>
-        )}
->>>>>>> organizacional/main
       </Dialog>
     </div >
   );

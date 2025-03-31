@@ -87,27 +87,21 @@ class Whatsapp extends Model<Whatsapp> {
   @Column
   allowGroup: boolean;
 
-<<<<<<< HEAD
   @Default(false)
   @AllowNull
   @Column
   allowCampaign: boolean;
 
-=======
->>>>>>> organizacional/main
   @CreatedAt
   createdAt: Date;
 
   @UpdatedAt
   updatedAt: Date;
 
-<<<<<<< HEAD
   @Default(false)
   @Column
   ignoreQueue: boolean;
 
-=======
->>>>>>> organizacional/main
   @HasMany(() => Ticket)
   tickets: Ticket[];
 

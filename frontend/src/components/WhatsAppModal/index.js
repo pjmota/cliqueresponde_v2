@@ -122,10 +122,7 @@ const WhatsAppModal = ({ open, onClose, whatsAppId, channel }) => {
     provider: "beta",
     expiresTicket: 0,
     allowGroup: false,
-<<<<<<< HEAD
     allowCampaign: false,
-=======
->>>>>>> organizacional/main
     enableImportMessage: false,
     groupAsTicket: "disabled",
     timeUseBotQueues: '0',
@@ -574,7 +571,6 @@ const WhatsAppModal = ({ open, onClose, whatsAppId, channel }) => {
                               label={i18n.t("whatsappModal.form.group")}
                             />
                           )}
-<<<<<<< HEAD
                           <FormControlLabel
                             control={
                               <Field
@@ -586,8 +582,6 @@ const WhatsAppModal = ({ open, onClose, whatsAppId, channel }) => {
                             }
                             label={i18n.t("whatsappModal.form.campaign")}
                           />
-=======
->>>>>>> organizacional/main
                         </Grid>
                         {!isOficial && (
                           <Grid xs={6} md={4} item>

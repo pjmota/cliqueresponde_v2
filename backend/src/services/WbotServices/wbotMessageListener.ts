@@ -50,11 +50,7 @@ import VerifyCurrentSchedule from "../CompanyService/VerifyCurrentSchedule";
 import Campaign from "../../models/Campaign";
 import CampaignShipping from "../../models/CampaignShipping";
 import { Op } from "sequelize";
-<<<<<<< HEAD
 import handleRandomUser, { campaignQueue, parseToMilliseconds, randomValue } from "../../queues";
-=======
-import { campaignQueue, parseToMilliseconds, randomValue } from "../../queues";
->>>>>>> organizacional/main
 import User from "../../models/User";
 import { sayChatbot } from "./ChatBotListener";
 import MarkDeleteWhatsAppMessage from "./MarkDeleteWhatsAppMessage";
@@ -85,14 +81,9 @@ import TicketTag from "../../models/TicketTag";
 import pino from "pino";
 import BullQueues from "../../libs/queue";
 import { Transform } from "stream";
-<<<<<<< HEAD
 import { getWbot, msgDB } from "../../libs/wbot";
 import { title } from "process";
 import { handleGetAndSendMessageIntegration } from "../../functions/CreateSession";
-=======
-import { msgDB } from "../../libs/wbot";
-import { title } from "process";
->>>>>>> organizacional/main
 
 const os = require("os");
 
@@ -155,11 +146,6 @@ const multVecardGet = function (param: any) {
   let fim = param.split("\n")[4].indexOf(':')
   let contact = param.split("\n")[4].substring(inicio + 1, fim).replace(";", "")
   let contactSemWhats = param.split("\n")[4].replace("item1.TEL:", "")
-<<<<<<< HEAD
-
-=======
-  //console.log(contact);
->>>>>>> organizacional/main
   if (contact != "item1.TEL") {
     output = output + name + ": 📞" + contact + "" + "\n"
   } else
@@ -168,11 +154,7 @@ const multVecardGet = function (param: any) {
 }
 
 const contactsArrayMessageGet = (msg: any,) => {
-<<<<<<< HEAD
   let contactsArray = msg?.message?.contactsArrayMessage?.contacts
-=======
-  let contactsArray = msg.message?.contactsArrayMessage?.contacts
->>>>>>> organizacional/main
   let vcardMulti = contactsArray.map(function (item, indice) {
     return item.vcard;
   });
@@ -194,31 +176,18 @@ const contactsArrayMessageGet = (msg: any,) => {
 }
 
 const getTypeMessage = (msg: proto.IWebMessageInfo): string => {
-<<<<<<< HEAD
   const msgType = getContentType(msg?.message);
   if (msg?.message?.viewOnceMessageV2) {
-=======
-  const msgType = getContentType(msg.message);
-  if (msg.message?.viewOnceMessageV2) {
->>>>>>> organizacional/main
     return "viewOnceMessageV2"
   }
   return msgType
 };
-<<<<<<< HEAD
 
 const getAd = (msg: any): string => {
   if (msg?.key.fromMe && msg?.message?.listResponseMessage?.contextInfo?.externalAdReply) {
     let bodyMessage = `*${msg?.message?.listResponseMessage?.contextInfo?.externalAdReply?.title}*`;
 
     bodyMessage += `\n\n${msg?.message?.listResponseMessage?.contextInfo?.externalAdReply?.body}`;
-=======
-const getAd = (msg: any): string => {
-  if (msg.key.fromMe && msg.message?.listResponseMessage?.contextInfo?.externalAdReply) {
-    let bodyMessage = `*${msg.message?.listResponseMessage?.contextInfo?.externalAdReply?.title}*`;
-
-    bodyMessage += `\n\n${msg.message?.listResponseMessage?.contextInfo?.externalAdReply?.body}`;
->>>>>>> organizacional/main
 
     return bodyMessage;
   }
@@ -230,11 +199,7 @@ const getBodyButton = (msg: any): string => {
 
       let bodyMessage = `[BUTTON]\n\n*${msg?.message?.buttonsMessage?.contentText}*\n\n`;
       // eslint-disable-next-line no-restricted-syntax
-<<<<<<< HEAD
       for (const button of msg?.message?.buttonsMessage?.buttons) {
-=======
-      for (const button of msg.message?.buttonsMessage?.buttons) {
->>>>>>> organizacional/main
         bodyMessage += `*${button.buttonId}* - ${button.buttonText.displayText}\n`;
       }
 
@@ -243,11 +208,7 @@ const getBodyButton = (msg: any): string => {
     if (msg?.messageType === "listMessage" || msg?.message?.listMessage?.description) {
       let bodyMessage = `[LIST]\n\n*${msg?.message?.listMessage?.description}*\n\n`;
       // eslint-disable-next-line no-restricted-syntax
-<<<<<<< HEAD
       for (const button of msg?.message?.listMessage?.sections[0]?.rows) {
-=======
-      for (const button of msg.message?.listMessage?.sections[0]?.rows) {
->>>>>>> organizacional/main
         bodyMessage += `${button.title}\n`;
       }
 
@@ -272,7 +233,6 @@ export const getBodyMessage = (msg: proto.IWebMessageInfo): string | null => {
     let type = getTypeMessage(msg);
 
     if (type === undefined) console.log(JSON.stringify(msg))
-<<<<<<< HEAD
     const types = {
       conversation: msg?.message?.conversation,
       imageMessage: msg?.message?.imageMessage?.caption,
@@ -305,78 +265,28 @@ export const getBodyMessage = (msg: proto.IWebMessageInfo): string | null => {
       highlyStructuredMessage: msg?.message?.highlyStructuredMessage,
       protocolMessage: msg?.message?.protocolMessage?.editedMessage?.conversation,
       advertising: getAd(msg) || msg?.message?.listResponseMessage?.contextInfo?.externalAdReply?.title,
-=======
-
-    const types = {
-      conversation: msg.message?.conversation,
-      imageMessage: msg.message?.imageMessage?.caption,
-      videoMessage: msg.message?.videoMessage?.caption,
-      extendedTextMessage: msg?.message?.extendedTextMessage?.text,
-      buttonsResponseMessage: msg.message?.buttonsResponseMessage?.selectedDisplayText,
-      listResponseMessage: msg.message?.listResponseMessage?.title || msg.message?.listResponseMessage?.singleSelectReply?.selectedRowId,
-      templateButtonReplyMessage: msg.message?.templateButtonReplyMessage?.selectedId,
-      messageContextInfo: msg.message?.buttonsResponseMessage?.selectedButtonId || msg.message?.listResponseMessage?.title,
-      buttonsMessage: getBodyButton(msg) || msg.message?.listResponseMessage?.title,
-      stickerMessage: "sticker",
-      contactMessage: msg.message?.contactMessage?.vcard,
-      contactsArrayMessage: (msg.message?.contactsArrayMessage?.contacts) && contactsArrayMessageGet(msg),
-      //locationMessage: `Latitude: ${msg.message.locationMessage?.degreesLatitude} - Longitude: ${msg.message.locationMessage?.degreesLongitude}`,
-      locationMessage: msgLocation(msg.message?.locationMessage?.jpegThumbnail, msg.message?.locationMessage?.degreesLatitude, msg.message?.locationMessage?.degreesLongitude),
-      liveLocationMessage: `Latitude: ${msg.message?.liveLocationMessage?.degreesLatitude} - Longitude: ${msg.message?.liveLocationMessage?.degreesLongitude}`,
-      documentMessage: msg.message?.documentMessage?.caption,
-      audioMessage: "Áudio",
-      listMessage: getBodyButton(msg) || msg.message?.listResponseMessage?.title,
-      viewOnceMessage: getBodyButton(msg),
-      reactionMessage: msg.message?.reactionMessage?.text || "reaction",
-      senderKeyDistributionMessage: msg?.message?.senderKeyDistributionMessage?.axolotlSenderKeyDistributionMessage,
-      documentWithCaptionMessage: msg.message?.documentWithCaptionMessage?.message?.documentMessage?.caption,
-      viewOnceMessageV2: msg.message?.viewOnceMessageV2?.message?.imageMessage?.caption,
-      editedMessage:
-        msg?.message?.protocolMessage?.editedMessage?.conversation ||
-        msg?.message?.editedMessage?.message?.protocolMessage?.editedMessage?.conversation,
-      ephemeralMessage: msg.message?.ephemeralMessage?.message?.extendedTextMessage?.text,
-      imageWhitCaptionMessage: msg?.message?.ephemeralMessage?.message?.imageMessage,
-      highlyStructuredMessage: msg.message?.highlyStructuredMessage,
-      protocolMessage: msg?.message?.protocolMessage?.editedMessage?.conversation,
-      advertising: getAd(msg) || msg.message?.listResponseMessage?.contextInfo?.externalAdReply?.title,
->>>>>>> organizacional/main
     };
 
     const objKey = Object.keys(types).find(key => key === type);
 
     if (!objKey) {
-<<<<<<< HEAD
       logger.warn(`#### Nao achou o type 152: ${type} ${JSON.stringify(msg?.message)}`);
       Sentry.setExtra("Mensagem", { BodyMsg: msg?.message, msg, type });
-=======
-      logger.warn(`#### Nao achou o type 152: ${type} ${JSON.stringify(msg.message)}`);
-      Sentry.setExtra("Mensagem", { BodyMsg: msg.message, msg, type });
->>>>>>> organizacional/main
       Sentry.captureException(
         new Error("Novo Tipo de Mensagem em getTypeMessage")
       );
     }
-<<<<<<< HEAD
 
     return types[type];
   } catch (error) {
     Sentry.setExtra("Error getTypeMessage", { msg, BodyMsg: msg?.message });
-=======
-    return types[type];
-  } catch (error) {
-    Sentry.setExtra("Error getTypeMessage", { msg, BodyMsg: msg.message });
->>>>>>> organizacional/main
     Sentry.captureException(error);
     console.log(error);
   }
 };
 
 export const getQuotedMessage = (msg: proto.IWebMessageInfo) => {
-<<<<<<< HEAD
   const body = extractMessageContent(msg?.message)[
-=======
-  const body = extractMessageContent(msg.message)[
->>>>>>> organizacional/main
     Object.keys(msg?.message).values().next().value
   ];
 
@@ -391,11 +301,7 @@ export const getQuotedMessage = (msg: proto.IWebMessageInfo) => {
 };
 
 export const getQuotedMessageId = (msg: proto.IWebMessageInfo) => {
-<<<<<<< HEAD
   const body = extractMessageContent(msg?.message)[
-=======
-  const body = extractMessageContent(msg.message)[
->>>>>>> organizacional/main
     Object.keys(msg?.message).values().next().value
   ];
   let reaction = msg?.message?.reactionMessage
@@ -417,23 +323,15 @@ const getSenderMessage = (
   wbot: Session
 ): string => {
   const me = getMeSocket(wbot);
-<<<<<<< HEAD
   if (msg?.key.fromMe) return me.id;
 
   const senderId =
     msg?.participant || msg?.key.participant || msg?.key.remoteJid || undefined;
-=======
-  if (msg.key.fromMe) return me.id;
-
-  const senderId =
-    msg.participant || msg.key.participant || msg.key.remoteJid || undefined;
->>>>>>> organizacional/main
 
   return senderId && jidNormalizedUser(senderId);
 };
 
 const getContactMessage = async (msg: proto.IWebMessageInfo, wbot: Session) => {
-<<<<<<< HEAD
   const isGroup = msg?.key.remoteJid.includes("g.us");
   const rawNumber = msg?.key.remoteJid.replace(/\D/g, "");
   return isGroup
@@ -444,18 +342,6 @@ const getContactMessage = async (msg: proto.IWebMessageInfo, wbot: Session) => {
     : {
       id: msg?.key.remoteJid,
       name: msg?.key.fromMe ? rawNumber : msg?.pushName
-=======
-  const isGroup = msg.key.remoteJid.includes("g.us");
-  const rawNumber = msg.key.remoteJid.replace(/\D/g, "");
-  return isGroup
-    ? {
-      id: getSenderMessage(msg, wbot),
-      name: msg.pushName
-    }
-    : {
-      id: msg.key.remoteJid,
-      name: msg.key.fromMe ? rawNumber : msg.pushName
->>>>>>> organizacional/main
     };
 };
 
@@ -480,7 +366,6 @@ function findCaption(obj) {
 
 // const downloadMedia = async (msg: proto.IWebMessageInfo, companyId: number, whatsappId: number) => {
 //   const mineType =
-<<<<<<< HEAD
 //     msg?.message?.imageMessage ||
 //     msg?.message?.audioMessage ||
 //     msg?.message?.videoMessage ||
@@ -516,43 +401,6 @@ function findCaption(obj) {
 
 //   // eslint-disable-next-line no-nested-ternary
 //   const messageType = msg?.message?.documentMessage
-=======
-//     msg.message?.imageMessage ||
-//     msg.message?.audioMessage ||
-//     msg.message?.videoMessage ||
-//     msg.message?.stickerMessage ||
-//     msg.message?.documentMessage ||
-//     msg.message?.documentWithCaptionMessage?.message?.documentMessage ||
-//     // msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.imageMessage ||
-//     // msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.videoMessage ||
-//     // msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.audioMessage ||
-//     msg.message?.ephemeralMessage?.message?.audioMessage ||
-//     msg.message?.ephemeralMessage?.message?.documentMessage ||
-//     msg.message?.ephemeralMessage?.message?.videoMessage ||
-//     msg.message?.ephemeralMessage?.message?.stickerMessage ||
-//     msg.message?.ephemeralMessage?.message?.imageMessage ||
-//     msg.message?.viewOnceMessage?.message?.imageMessage ||
-//     msg.message?.viewOnceMessage?.message?.videoMessage ||
-//     msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.imageMessage ||
-//     msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.videoMessage ||
-//     msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.audioMessage ||
-//     msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.documentMessage ||
-//     msg.message?.templateMessage?.hydratedTemplate?.imageMessage ||
-//     msg.message?.templateMessage?.hydratedTemplate?.documentMessage ||
-//     msg.message?.templateMessage?.hydratedTemplate?.videoMessage ||
-//     msg.message?.templateMessage?.hydratedFourRowTemplate?.imageMessage ||
-//     msg.message?.templateMessage?.hydratedFourRowTemplate?.documentMessage ||
-//     msg.message?.templateMessage?.hydratedFourRowTemplate?.videoMessage ||
-//     msg.message?.templateMessage?.fourRowTemplate?.imageMessage ||
-//     msg.message?.templateMessage?.fourRowTemplate?.documentMessage ||
-//     msg.message?.templateMessage?.fourRowTemplate?.videoMessage ||
-//     msg.message?.interactiveMessage?.header?.imageMessage ||
-//     msg.message?.interactiveMessage?.header?.documentMessage ||
-//     msg.message?.interactiveMessage?.header?.videoMessage;
-
-//   // eslint-disable-next-line no-nested-ternary
-//   const messageType = msg.message?.documentMessage
->>>>>>> organizacional/main
 //     ? "document"
 //     : mineType.mimetype.split("/")[0].replace("application", "document")
 //       ? (mineType.mimetype
@@ -566,7 +414,6 @@ function findCaption(obj) {
 //   while (contDownload < 10 && !stream) {
 //     try {
 //       const { mediaKey, directPath, url } =
-<<<<<<< HEAD
 //         msg?.message?.imageMessage ||
 //         msg?.message?.audioMessage ||
 //         msg?.message?.videoMessage ||
@@ -596,37 +443,6 @@ function findCaption(obj) {
 //         msg?.message?.interactiveMessage?.header?.imageMessage ||
 //         msg?.message?.interactiveMessage?.header?.documentMessage ||
 //         msg?.message?.interactiveMessage?.header?.videoMessage ||
-=======
-//         msg.message?.imageMessage ||
-//         msg.message?.audioMessage ||
-//         msg.message?.videoMessage ||
-//         msg.message?.stickerMessage ||
-//         msg.message?.documentMessage ||
-//         msg.message?.documentWithCaptionMessage?.message?.documentMessage ||
-//         msg.message?.ephemeralMessage?.message?.audioMessage ||
-//         msg.message?.ephemeralMessage?.message?.documentMessage ||
-//         msg.message?.ephemeralMessage?.message?.videoMessage ||
-//         msg.message?.ephemeralMessage?.message?.stickerMessage ||
-//         msg.message?.ephemeralMessage?.message?.imageMessage ||
-//         msg.message?.viewOnceMessage?.message?.imageMessage ||
-//         msg.message?.viewOnceMessage?.message?.videoMessage ||
-//         msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.imageMessage ||
-//         msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.videoMessage ||
-//         msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.audioMessage ||
-//         msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.documentMessage ||
-//         msg.message?.templateMessage?.hydratedTemplate?.imageMessage ||
-//         msg.message?.templateMessage?.hydratedTemplate?.documentMessage ||
-//         msg.message?.templateMessage?.hydratedTemplate?.videoMessage ||
-//         msg.message?.templateMessage?.hydratedFourRowTemplate?.imageMessage ||
-//         msg.message?.templateMessage?.hydratedFourRowTemplate?.documentMessage ||
-//         msg.message?.templateMessage?.hydratedFourRowTemplate?.videoMessage ||
-//         msg.message?.templateMessage?.fourRowTemplate?.imageMessage ||
-//         msg.message?.templateMessage?.fourRowTemplate?.documentMessage ||
-//         msg.message?.templateMessage?.fourRowTemplate?.videoMessage ||
-//         msg.message?.interactiveMessage?.header?.imageMessage ||
-//         msg.message?.interactiveMessage?.header?.documentMessage ||
-//         msg.message?.interactiveMessage?.header?.videoMessage ||
->>>>>>> organizacional/main
 //         { mediakey: undefined, directPath: undefined, url: undefined };
 //       // eslint-disable-next-line no-await-in-loop
 //       stream = await downloadContentFromMessage(
@@ -668,11 +484,7 @@ function findCaption(obj) {
 //     Sentry.captureException(new Error("ERR_WAPP_DOWNLOAD_MEDIA"));
 //     throw new Error("ERR_WAPP_DOWNLOAD_MEDIA");
 //   }
-<<<<<<< HEAD
 //   let filename = msg?.message?.documentMessage?.fileName || "";
-=======
-//   let filename = msg.message?.documentMessage?.fileName || "";
->>>>>>> organizacional/main
 
 //   if (!filename) {
 //     const ext = mineType.mimetype.split("/")[1].split(";")[0];
@@ -688,7 +500,6 @@ function findCaption(obj) {
 
 const downloadMedia = async (msg: proto.IWebMessageInfo, isImported: Date = null, wbot: Session) => {
 
-<<<<<<< HEAD
   if (msg?.message?.stickerMessage) {
     const urlAnt = "https://web.whatsapp.net";
     const directPath = msg?.message?.stickerMessage?.directPath;
@@ -696,15 +507,6 @@ const downloadMedia = async (msg: proto.IWebMessageInfo, isImported: Date = null
     const final = newUrl + directPath;
     if (msg?.message?.stickerMessage?.url?.includes(urlAnt)) {
       msg.message.stickerMessage.url = msg?.message?.stickerMessage.url.replace(urlAnt, final);
-=======
-  if (msg.message?.stickerMessage) {
-    const urlAnt = "https://web.whatsapp.net";
-    const directPath = msg.message?.stickerMessage?.directPath;
-    const newUrl = "https://mmg.whatsapp.net";
-    const final = newUrl + directPath;
-    if (msg.message?.stickerMessage?.url?.includes(urlAnt)) {
-      msg.message.stickerMessage.url = msg.message?.stickerMessage.url.replace(urlAnt, final);
->>>>>>> organizacional/main
     }
   }
 
@@ -727,7 +529,6 @@ const downloadMedia = async (msg: proto.IWebMessageInfo, isImported: Date = null
     }
   }
 
-<<<<<<< HEAD
   let filename = msg?.message?.documentMessage?.fileName || "";
 
   const mineType =
@@ -760,40 +561,6 @@ const downloadMedia = async (msg: proto.IWebMessageInfo, isImported: Date = null
     msg?.message?.interactiveMessage?.header?.imageMessage ||
     msg?.message?.interactiveMessage?.header?.documentMessage ||
     msg?.message?.interactiveMessage?.header?.videoMessage;
-=======
-  let filename = msg.message?.documentMessage?.fileName || "";
-
-  const mineType =
-    msg.message?.imageMessage ||
-    msg.message?.audioMessage ||
-    msg.message?.videoMessage ||
-    msg.message?.stickerMessage ||
-    msg.message?.ephemeralMessage?.message?.stickerMessage ||
-    msg.message?.documentMessage ||
-    msg.message?.documentWithCaptionMessage?.message?.documentMessage ||
-    msg.message?.ephemeralMessage?.message?.audioMessage ||
-    msg.message?.ephemeralMessage?.message?.documentMessage ||
-    msg.message?.ephemeralMessage?.message?.videoMessage ||
-    msg.message?.ephemeralMessage?.message?.imageMessage ||
-    msg.message?.viewOnceMessage?.message?.imageMessage ||
-    msg.message?.viewOnceMessage?.message?.videoMessage ||
-    msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.imageMessage ||
-    msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.videoMessage ||
-    msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.audioMessage ||
-    msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.documentMessage ||
-    msg.message?.templateMessage?.hydratedTemplate?.imageMessage ||
-    msg.message?.templateMessage?.hydratedTemplate?.documentMessage ||
-    msg.message?.templateMessage?.hydratedTemplate?.videoMessage ||
-    msg.message?.templateMessage?.hydratedFourRowTemplate?.imageMessage ||
-    msg.message?.templateMessage?.hydratedFourRowTemplate?.documentMessage ||
-    msg.message?.templateMessage?.hydratedFourRowTemplate?.videoMessage ||
-    msg.message?.templateMessage?.fourRowTemplate?.imageMessage ||
-    msg.message?.templateMessage?.fourRowTemplate?.documentMessage ||
-    msg.message?.templateMessage?.fourRowTemplate?.videoMessage ||
-    msg.message?.interactiveMessage?.header?.imageMessage ||
-    msg.message?.interactiveMessage?.header?.documentMessage ||
-    msg.message?.interactiveMessage?.header?.videoMessage;
->>>>>>> organizacional/main
 
   if (!filename) {
     const ext = mineType.mimetype.split("/")[1].split(";")[0];
@@ -883,7 +650,6 @@ export const verifyMediaMessage = async (
         "*System:* \nFalha no download da mídia verifique no dispositivo";
       const messageData = {
         //mensagem de texto
-<<<<<<< HEAD
         wid: msg?.key.id,
         ticketId: ticket.id,
         contactId: msg?.key.fromMe ? undefined : ticket.contactId,
@@ -900,24 +666,6 @@ export const verifyMediaMessage = async (
         timestamp: getTimestampMessage(msg?.messageTimestamp),
         createdAt: new Date(
           Math.floor(getTimestampMessage(msg?.messageTimestamp) * 1000)
-=======
-        wid: msg.key.id,
-        ticketId: ticket.id,
-        contactId: msg.key.fromMe ? undefined : ticket.contactId,
-        body,
-        reactionMessage: msg.message?.reactionMessage,
-        fromMe: msg.key.fromMe,
-        mediaType: getTypeMessage(msg),
-        read: msg.key.fromMe,
-        quotedMsgId: quotedMsg?.id || msg.message?.reactionMessage?.key?.id,
-        ack: msg.status,
-        companyId: companyId,
-        remoteJid: msg.key.remoteJid,
-        participant: msg.key.participant,
-        timestamp: getTimestampMessage(msg.messageTimestamp),
-        createdAt: new Date(
-          Math.floor(getTimestampMessage(msg.messageTimestamp) * 1000)
->>>>>>> organizacional/main
         ).toISOString(),
         dataJson: JSON.stringify(msg),
         ticketImported: ticket.imported,
@@ -1020,7 +768,6 @@ export const verifyMediaMessage = async (
     const body = getBodyMessage(msg);
 
     const messageData = {
-<<<<<<< HEAD
       wid: msg?.key.id,
       ticketId: ticket.id,
       contactId: msg?.key.fromMe ? undefined : contact.id,
@@ -1037,24 +784,6 @@ export const verifyMediaMessage = async (
       ticketTrakingId: ticketTraking?.id,
       createdAt: new Date(
         Math.floor(getTimestampMessage(msg?.messageTimestamp) * 1000)
-=======
-      wid: msg.key.id,
-      ticketId: ticket.id,
-      contactId: msg.key.fromMe ? undefined : contact.id,
-      body: body || media.filename,
-      fromMe: msg.key.fromMe,
-      read: msg.key.fromMe,
-      mediaUrl: media.filename,
-      mediaType: media.mimetype.split("/")[0],
-      quotedMsgId: quotedMsg?.id,
-      ack: Number(String(msg.status).replace('PENDING', '2').replace('NaN', '1')) || 2,
-      remoteJid: msg.key.remoteJid,
-      participant: msg.key.participant,
-      dataJson: JSON.stringify(msg),
-      ticketTrakingId: ticketTraking?.id,
-      createdAt: new Date(
-        Math.floor(getTimestampMessage(msg.messageTimestamp) * 1000)
->>>>>>> organizacional/main
       ).toISOString(),
       ticketImported: ticket.imported,
       isForwarded,
@@ -1070,11 +799,7 @@ export const verifyMediaMessage = async (
       companyId: companyId
     });
 
-<<<<<<< HEAD
     if (!msg?.key.fromMe && ticket.status === "closed") {
-=======
-    if (!msg.key.fromMe && ticket.status === "closed") {
->>>>>>> organizacional/main
       await ticket.update({ status: "pending" });
       await ticket.reload({
         attributes: [
@@ -1148,7 +873,6 @@ export const verifyMessage = async (
   const companyId = ticket.companyId;
 
   const messageData = {
-<<<<<<< HEAD
     wid: msg?.key.id,
     ticketId: ticket.id,
     contactId: msg?.key.fromMe ? undefined : contact.id,
@@ -1160,28 +884,11 @@ export const verifyMessage = async (
     ack: Number(String(msg?.status).replace('PENDING', '2').replace('NaN', '1')) || 2,
     remoteJid: msg?.key.remoteJid,
     participant: msg?.key.participant,
-=======
-    wid: msg.key.id,
-    ticketId: ticket.id,
-    contactId: msg.key.fromMe ? undefined : contact.id,
-    body,
-    fromMe: msg.key.fromMe,
-    mediaType: getTypeMessage(msg),
-    read: msg.key.fromMe,
-    quotedMsgId: quotedMsg?.id,
-    ack: Number(String(msg.status).replace('PENDING', '2').replace('NaN', '1')) || 2,
-    remoteJid: msg.key.remoteJid,
-    participant: msg.key.participant,
->>>>>>> organizacional/main
     dataJson: JSON.stringify(msg),
     ticketTrakingId: ticketTraking?.id,
     isPrivate,
     createdAt: new Date(
-<<<<<<< HEAD
       Math.floor(getTimestampMessage(msg?.messageTimestamp) * 1000)
-=======
-      Math.floor(getTimestampMessage(msg.messageTimestamp) * 1000)
->>>>>>> organizacional/main
     ).toISOString(),
     ticketImported: ticket.imported,
     isForwarded
@@ -1193,11 +900,7 @@ export const verifyMessage = async (
 
   await CreateMessageService({ messageData, companyId: companyId });
 
-<<<<<<< HEAD
   if (!msg?.key.fromMe && ticket.status === "closed") {
-=======
-  if (!msg.key.fromMe && ticket.status === "closed") {
->>>>>>> organizacional/main
     await ticket.update({ status: "pending" });
     await ticket.reload({
       include: [
@@ -1230,11 +933,7 @@ export const verifyMessage = async (
 };
 
 const isValidMsg = (msg: proto.IWebMessageInfo): boolean => {
-<<<<<<< HEAD
   if (msg?.key.remoteJid === "status@broadcast") return false;
-=======
-  if (msg.key.remoteJid === "status@broadcast") return false;
->>>>>>> organizacional/main
   try {
     const msgType = getTypeMessage(msg);
     if (!msgType) {
@@ -1274,11 +973,7 @@ const isValidMsg = (msg: proto.IWebMessageInfo): boolean => {
     if (!ifType) {
       logger.warn(`#### Nao achou o type em isValidMsg: ${msgType}
 ${JSON.stringify(msg?.message)}`);
-<<<<<<< HEAD
       Sentry.setExtra("Mensagem", { BodyMsg: msg?.message, msg, msgType });
-=======
-      Sentry.setExtra("Mensagem", { BodyMsg: msg.message, msg, msgType });
->>>>>>> organizacional/main
       Sentry.captureException(new Error("Novo Tipo de Mensagem em isValidMsg"));
     }
 
@@ -1399,11 +1094,7 @@ async function sendDelayedMessages(
   //       react
   //     );
   //   if (test) {
-<<<<<<< HEAD
   //     msg?.react(react);
-=======
-  //     msg.react(react);
->>>>>>> organizacional/main
   //     await delay(1000);
   //   }
   // }
@@ -1478,14 +1169,11 @@ const verifyQueue = async (
   settings?: any,
   ticketTraking?: TicketTraking
 ) => {
-<<<<<<< HEAD
 
   if (ticket.startedByPlatform && ticket.whatsapp.ignoreQueue) {
     return;
   }
 
-=======
->>>>>>> organizacional/main
   const companyId = ticket.companyId;
   // console.log("GETTING WHATSAPP VERIFY QUEUE", ticket.whatsappId, wbot.id)
   const { queues, greetingMessage, maxUseBotQueues, timeUseBotQueues, complationMessage } = await ShowWhatsAppService(wbot.id!, companyId);
@@ -1505,25 +1193,14 @@ const verifyQueue = async (
 
     //inicia integração dialogflow/n8n
     if (
-<<<<<<< HEAD
       !msg?.key.fromMe &&
-=======
-      !msg.key.fromMe &&
->>>>>>> organizacional/main
       !ticket.isGroup &&
       queues[0].integrationId
     ) {
       const integrations = await ShowQueueIntegrationService(queues[0].integrationId, companyId);
-<<<<<<< HEAD
       await handleMessageIntegration(msg, wbot, integrations, ticket, companyId)
 
       if (msg?.key.fromMe) {
-=======
-
-      await handleMessageIntegration(msg, wbot, companyId, integrations, ticket)
-
-      if (msg.key.fromMe) {
->>>>>>> organizacional/main
         await ticket.update({
           typebotSessionTime: moment().toDate(),
           useIntegration: true,
@@ -1729,11 +1406,8 @@ const verifyQueue = async (
   let randomUserId;
 
   if (choosenQueue) {
-<<<<<<< HEAD
     let origin = 'cliente';
     await handleRandomUser(choosenQueue, ticket.id, origin)
-=======
->>>>>>> organizacional/main
     try {
       const userQueue = await ListUserQueueServices(choosenQueue.id);
 
@@ -1895,27 +1569,16 @@ const verifyQueue = async (
 
       //inicia integração dialogflow/n8n/typebot
       if (
-<<<<<<< HEAD
         !msg?.key.fromMe &&
-=======
-        !msg.key.fromMe &&
->>>>>>> organizacional/main
         !ticket.isGroup &&
         choosenQueue?.integrationId
       ) {
 
         const integrations = await ShowQueueIntegrationService(choosenQueue.integrationId, companyId);
-<<<<<<< HEAD
         
         await handleMessageIntegration(msg, wbot, integrations, ticket, companyId)
 
         if (msg?.key.fromMe) {
-=======
-
-        await handleMessageIntegration(msg, wbot, companyId, integrations, ticket)
-
-        if (msg.key.fromMe) {
->>>>>>> organizacional/main
           await ticket.update({
             typebotSessionTime: moment().toDate(),
             useIntegration: true,
@@ -2208,13 +1871,8 @@ const verifyQueue = async (
   //       }
   //     }
   //   }, { userJid: ticket.contact.remoteJid })
-<<<<<<< HEAD
   //   await wbot.relayMessage(msg?.key.remoteJid, msg?.message, {
   //     messageId: msg?.key.id
-=======
-  //   await wbot.relayMessage(msg.key.remoteJid, msg.message, {
-  //     messageId: msg.key.id
->>>>>>> organizacional/main
   //   })
 
   //   const buttons = [];
@@ -2232,11 +1890,7 @@ const verifyQueue = async (
   //     description: "Voltar Menu Inicial",
   //     header: "#"
   //   });
-<<<<<<< HEAD
   //   // await wbot.relayMessage(msg?.key.remoteJid, msg?.message, { messageId: msg?.key.id })
-=======
-  //   // await wbot.relayMessage(msg.key.remoteJid, msg.message, { messageId: msg.key.id })
->>>>>>> organizacional/main
   //   // await wbot.relayMessage(ticket.contact.remoteJid, {
   //   //   interactiveMessage: {
   //   //     body: {
@@ -2410,16 +2064,12 @@ export const handleRating = async (
   await ticket.update({
     isBot: false,
     status: "closed",
-<<<<<<< HEAD
     amountUsedBotQueuesNPS: 0,
     queueId: null,
     chatbot: null,
     queueOptionId: null,
     userId: null,
     startedByPlatform: false
-=======
-    amountUsedBotQueuesNPS: 0
->>>>>>> organizacional/main
   });
 
   //loga fim de atendimento
@@ -2551,11 +2201,7 @@ const handleOpenAi = async (
 
   if (!prompt) return;
 
-<<<<<<< HEAD
   if (msg?.messageStubType) return;
-=======
-  if (msg.messageStubType) return;
->>>>>>> organizacional/main
 
   const publicFolder: string = path.resolve(
     __dirname,
@@ -2594,11 +2240,7 @@ const handleOpenAi = async (
 
   let messagesOpenAi = [];
 
-<<<<<<< HEAD
   if (msg?.message?.conversation || msg?.message?.extendedTextMessage?.text) {
-=======
-  if (msg.message?.conversation || msg.message?.extendedTextMessage?.text) {
->>>>>>> organizacional/main
     messagesOpenAi = [];
     messagesOpenAi.push({ role: "system", content: promptSystem });
     for (
@@ -2634,11 +2276,7 @@ const handleOpenAi = async (
     }
 
     if (prompt.voice === "texto") {
-<<<<<<< HEAD
       const sentMessage = await wbot.sendMessage(msg?.key.remoteJid!, {
-=======
-      const sentMessage = await wbot.sendMessage(msg.key.remoteJid!, {
->>>>>>> organizacional/main
         text: `\u200e ${response!}`
       });
       await verifyMessage(sentMessage!, ticket, contact);
@@ -2653,11 +2291,7 @@ const handleOpenAi = async (
         "mp3"
       ).then(async () => {
         try {
-<<<<<<< HEAD
           const sendMessage = await wbot.sendMessage(msg?.key.remoteJid!, {
-=======
-          const sendMessage = await wbot.sendMessage(msg.key.remoteJid!, {
->>>>>>> organizacional/main
             audio: { url: `${publicFolder}/${fileNameWithOutExtension}.mp3` },
             mimetype: "audio/mpeg",
             ptt: true
@@ -2670,11 +2304,7 @@ const handleOpenAi = async (
         }
       });
     }
-<<<<<<< HEAD
   } else if (msg?.message?.audioMessage) {
-=======
-  } else if (msg.message?.audioMessage) {
->>>>>>> organizacional/main
     const mediaUrl = mediaSent!.mediaUrl!.split("/").pop();
     const file = fs.createReadStream(`${publicFolder}/${mediaUrl}`) as any;
 
@@ -2715,11 +2345,7 @@ const handleOpenAi = async (
         .trim();
     }
     if (prompt.voice === "texto") {
-<<<<<<< HEAD
       const sentMessage = await wbot.sendMessage(msg?.key.remoteJid!, {
-=======
-      const sentMessage = await wbot.sendMessage(msg.key.remoteJid!, {
->>>>>>> organizacional/main
         text: `\u200e ${response!}`
       });
       await verifyMessage(sentMessage!, ticket, contact);
@@ -2734,11 +2360,7 @@ const handleOpenAi = async (
         "mp3"
       ).then(async () => {
         try {
-<<<<<<< HEAD
           const sendMessage = await wbot.sendMessage(msg?.key.remoteJid!, {
-=======
-          const sendMessage = await wbot.sendMessage(msg.key.remoteJid!, {
->>>>>>> organizacional/main
             audio: { url: `${publicFolder}/${fileNameWithOutExtension}.mp3` },
             mimetype: "audio/mpeg",
             ptt: true
@@ -2770,7 +2392,6 @@ const transferQueue = async (
 export const handleMessageIntegration = async (
   msg: proto.IWebMessageInfo,
   wbot: Session,
-<<<<<<< HEAD
   queueIntegration: QueueIntegrations,
   ticket: Ticket,
   companyId?: number,
@@ -2778,16 +2399,6 @@ export const handleMessageIntegration = async (
   const msgType = getTypeMessage(msg);
   // REGRA PARA DESABILITAR O BOT PARA ALGUM CONTATO
   if (ticket?.contact?.disableBot && !msg) {
-=======
-  companyId: number,
-  queueIntegration: QueueIntegrations,
-  ticket: Ticket
-): Promise<void> => {
-  const msgType = getTypeMessage(msg);
-
-  // REGRA PARA DESABILITAR O BOT PARA ALGUM CONTATO
-  if (ticket?.contact?.disableBot) {
->>>>>>> organizacional/main
     return;
   }
 
@@ -2817,14 +2428,8 @@ export const handleMessageIntegration = async (
 
   } else if (queueIntegration.type === "dialogflow") {
     let inputAudio: string | undefined;
-<<<<<<< HEAD
     if (msgType === "audioMessage") {
       let filename = `${msg?.messageTimestamp}.ogg`;
-=======
-
-    if (msgType === "audioMessage") {
-      let filename = `${msg.messageTimestamp}.ogg`;
->>>>>>> organizacional/main
       readFile(
         join(__dirname, "..", "..", "..", "public", `company${companyId}`, filename),
         "base64",
@@ -2856,7 +2461,6 @@ export const handleMessageIntegration = async (
     );
     debouncedSentMessage();
   } else if (queueIntegration.type === "typebot") {
-<<<<<<< HEAD
     if (queueIntegration.whatsappId) {
       const _wbot = getWbot(queueIntegration.whatsappId);
       await typebotListener({
@@ -2868,10 +2472,6 @@ export const handleMessageIntegration = async (
     } else {
       await typebotListener({ ticket, msg, wbot, typebot: queueIntegration });
     }
-=======
-    // await typebots(ticket, msg, wbot, queueIntegration);
-    await typebotListener({ ticket, msg, wbot, typebot: queueIntegration });
->>>>>>> organizacional/main
 
   }
 }
@@ -2886,11 +2486,7 @@ const handleMessage = async (
   if (isImported) {
     addLogs({ fileName: `processImportMessagesWppId${wbot.id}.txt`, text: `Importando Mensagem: ${JSON.stringify(msg, null, 2)}>>>>>>>>>>>>>>>>>>>` })
 
-<<<<<<< HEAD
     let wid = msg?.key.id
-=======
-    let wid = msg.key.id
->>>>>>> organizacional/main
     let existMessage = await Message.findOne({
       where: { wid }
     })
@@ -2923,7 +2519,6 @@ const handleMessage = async (
     //if (msgType === "protocolMessage") return; // Tratar isso no futuro para excluir msgs se vor REVOKE
 
     const hasMedia =
-<<<<<<< HEAD
       msg?.message?.imageMessage ||
       msg?.message?.audioMessage ||
       msg?.message?.videoMessage ||
@@ -2961,54 +2556,11 @@ const handleMessage = async (
       msg?.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.videoMessage ||
       msg?.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.imageMessage ||
       msg?.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.locationMessage
-=======
-      msg.message?.imageMessage ||
-      msg.message?.audioMessage ||
-      msg.message?.videoMessage ||
-      msg.message?.stickerMessage ||
-      msg.message?.documentMessage ||
-      msg.message?.documentWithCaptionMessage?.message?.documentMessage ||
-      // msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.imageMessage ||
-      // msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.videoMessage ||
-      // msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.audioMessage ||
-      msg.message?.ephemeralMessage?.message?.audioMessage ||
-      msg.message?.ephemeralMessage?.message?.documentMessage ||
-      msg.message?.ephemeralMessage?.message?.videoMessage ||
-      msg.message?.ephemeralMessage?.message?.stickerMessage ||
-      msg.message?.ephemeralMessage?.message?.imageMessage ||
-      msg.message?.viewOnceMessage?.message?.imageMessage ||
-      msg.message?.viewOnceMessage?.message?.videoMessage ||
-      msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.imageMessage ||
-      msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.videoMessage ||
-      msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.audioMessage ||
-      msg.message?.ephemeralMessage?.message?.viewOnceMessage?.message?.documentMessage ||
-      msg.message?.documentWithCaptionMessage?.message?.documentMessage ||
-      msg.message?.templateMessage?.hydratedTemplate?.imageMessage ||
-      msg.message?.templateMessage?.hydratedTemplate?.documentMessage ||
-      msg.message?.templateMessage?.hydratedTemplate?.videoMessage ||
-      msg.message?.templateMessage?.hydratedFourRowTemplate?.imageMessage ||
-      msg.message?.templateMessage?.hydratedFourRowTemplate?.documentMessage ||
-      msg.message?.templateMessage?.hydratedFourRowTemplate?.videoMessage ||
-      msg.message?.templateMessage?.fourRowTemplate?.imageMessage ||
-      msg.message?.templateMessage?.fourRowTemplate?.documentMessage ||
-      msg.message?.templateMessage?.fourRowTemplate?.videoMessage ||
-      msg.message?.interactiveMessage?.header?.imageMessage ||
-      msg.message?.interactiveMessage?.header?.documentMessage ||
-      msg.message?.interactiveMessage?.header?.videoMessage ||
-      msg.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.documentMessage ||
-      msg.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.videoMessage ||
-      msg.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.imageMessage ||
-      msg.message?.highlyStructuredMessage?.hydratedHsm?.hydratedTemplate?.locationMessage
->>>>>>> organizacional/main
     // const isPrivate = /\u200d/.test(bodyMessage);
 
     // if (isPrivate) return;
 
-<<<<<<< HEAD
     if (msg?.key.fromMe) {
-=======
-    if (msg.key.fromMe) {
->>>>>>> organizacional/main
       if (/\u200e/.test(bodyMessage)) return;
 
       if (
@@ -3029,11 +2581,7 @@ const handleMessage = async (
       msgContact = await getContactMessage(msg, wbot);
     }
 
-<<<<<<< HEAD
     const isGroup = msg?.key.remoteJid?.endsWith("@g.us");
-=======
-    const isGroup = msg.key.remoteJid?.endsWith("@g.us");
->>>>>>> organizacional/main
 
     // IGNORAR MENSAGENS DE GRUPO
     // const msgIsGroupBlock = await Settings.findOne({
@@ -3046,11 +2594,7 @@ const handleMessage = async (
     if (!whatsapp.allowGroup && isGroup) return;
 
     if (isGroup) {
-<<<<<<< HEAD
       const grupoMeta = await wbot.groupMetadata(msg?.key.remoteJid);
-=======
-      const grupoMeta = await wbot.groupMetadata(msg.key.remoteJid);
->>>>>>> organizacional/main
       const msgGroupContact = {
         id: grupoMeta.id,
         name: grupoMeta.subject
@@ -3062,11 +2606,7 @@ const handleMessage = async (
 
     let unreadMessages = 0;
 
-<<<<<<< HEAD
     if (msg?.key.fromMe) {
-=======
-    if (msg.key.fromMe) {
->>>>>>> organizacional/main
       await cacheLayer.set(`contacts:${contact.id}:unreads`, "0");
     } else {
       const unreads = await cacheLayer.get(`contacts:${contact.id}:unreads`);
@@ -3084,13 +2624,8 @@ const handleMessage = async (
     const enableLGPD = settings.enableLGPD === "enabled";
 
     // contador
-<<<<<<< HEAD
     // if (msg?.key.fromMe && count?.unreadCount > 0) {
     //   let remoteJid = msg?.key.remoteJid;
-=======
-    // if (msg.key.fromMe && count?.unreadCount > 0) {
-    //   let remoteJid = msg.key.remoteJid;
->>>>>>> organizacional/main
     //   SendAckBYRemoteJid({ remoteJid, companyId });
     // }
     const mutex = new Mutex();
@@ -3112,7 +2647,6 @@ const handleMessage = async (
       return result;
     });
 
-<<<<<<< HEAD
     await handleGetAndSendMessageIntegration(
       msg,
       wbot,
@@ -3122,8 +2656,6 @@ const handleMessage = async (
     );
 
 
-=======
->>>>>>> organizacional/main
     let bodyRollbackTag = "";
     let bodyNextTag = "";
     let rollbackTag;
@@ -3165,11 +2697,7 @@ const handleMessage = async (
       await TicketTag.create({ ticketId: ticket.id, tagId: rollbackTag.id });
     }
 
-<<<<<<< HEAD
     // if (!msg?.key.fromMe && whatsapp?.integrationId > 0) {
-=======
-    // if (!msg.key.fromMe && whatsapp?.integrationId > 0) {
->>>>>>> organizacional/main
 
     //   const integration = await ShowQueueIntegrationService(whatsapp.integrationId, companyId);
 
@@ -3187,19 +2715,11 @@ const handleMessage = async (
         queueId: whatsapp.queueIdImportMessages
       })
     }
-<<<<<<< HEAD
     // console.log(msg?.message?.editedMessage)
     // console.log(ticket)
     if (msgType === "editedMessage" || msgType === "protocolMessage") {
       const msgKeyIdEdited = msgType === "editedMessage" ? msg?.message.editedMessage.message.protocolMessage.key.id : msg?.message?.protocolMessage.key.id;
       let bodyEdited = findCaption(msg?.message)
-=======
-    // console.log(msg.message?.editedMessage)
-    // console.log(ticket)
-    if (msgType === "editedMessage" || msgType === "protocolMessage") {
-      const msgKeyIdEdited = msgType === "editedMessage" ? msg.message.editedMessage.message.protocolMessage.key.id : msg.message?.protocolMessage.key.id;
-      let bodyEdited = findCaption(msg.message)
->>>>>>> organizacional/main
 
       // console.log("bodyEdited", bodyEdited)
       const io = getIO();
@@ -3251,11 +2771,7 @@ const handleMessage = async (
     let useLGPD = false;
 
     try {
-<<<<<<< HEAD
       if (!msg?.key.fromMe) {
-=======
-      if (!msg.key.fromMe) {
->>>>>>> organizacional/main
         //MENSAGEM DE FÉRIAS COLETIVAS
 
         if (!isNil(whatsapp.collectiveVacationMessage && !isGroup)) {
@@ -3332,11 +2848,7 @@ const handleMessage = async (
 
 
         //TRATAMENTO LGPD 
-<<<<<<< HEAD
         if (enableLGPD && ticket.status === "lgpd" && !isImported && !msg?.key.fromMe) {
-=======
-        if (enableLGPD && ticket.status === "lgpd" && !isImported && !msg.key.fromMe) {
->>>>>>> organizacional/main
           if (hasMedia) {
             await verifyMediaMessage(msg, ticket, contact, ticketTraking, false, false, wbot);
           } else {
@@ -3481,19 +2993,11 @@ const handleMessage = async (
       Sentry.captureException(e);
       console.log(e);
     }
-<<<<<<< HEAD
     const isMsgForwarded = msg?.message?.extendedTextMessage?.contextInfo?.isForwarded ||
       msg?.message?.imageMessage?.contextInfo?.isForwarded ||
       msg?.message?.audioMessage?.contextInfo?.isForwarded ||
       msg?.message?.videoMessage?.contextInfo?.isForwarded ||
       msg?.message?.documentMessage?.contextInfo?.isForwarded
-=======
-    const isMsgForwarded = msg.message?.extendedTextMessage?.contextInfo?.isForwarded ||
-      msg.message?.imageMessage?.contextInfo?.isForwarded ||
-      msg.message?.audioMessage?.contextInfo?.isForwarded ||
-      msg.message?.videoMessage?.contextInfo?.isForwarded ||
-      msg.message?.documentMessage?.contextInfo?.isForwarded
->>>>>>> organizacional/main
 
     let mediaSent: Message | undefined;
 
@@ -3510,24 +3014,17 @@ const handleMessage = async (
     // Atualiza o ticket se a ultima mensagem foi enviada por mim, para que possa ser finalizado. 
     try {
       await ticket.update({
-<<<<<<< HEAD
         fromMe: msg?.key.fromMe,
-=======
-        fromMe: msg.key.fromMe,
->>>>>>> organizacional/main
       });
     } catch (e) {
       Sentry.captureException(e);
       console.log(e);
     }
 
-<<<<<<< HEAD
     if (ticket.status === "closed" && msg.key.fromMe) {
       ticket.update({ startedByPlatform: true });
     }
 
-=======
->>>>>>> organizacional/main
     let currentSchedule;
 
     if (settings.scheduleType === "company") {
@@ -3537,11 +3034,7 @@ const handleMessage = async (
     }
 
     try {
-<<<<<<< HEAD
       if (!msg?.key.fromMe && settings.scheduleType && (!ticket.isGroup || whatsapp.groupAsTicket === "enabled") && !["open", "group"].includes(ticket.status)) {
-=======
-      if (!msg.key.fromMe && settings.scheduleType && (!ticket.isGroup || whatsapp.groupAsTicket === "enabled") && !["open", "group"].includes(ticket.status)) {
->>>>>>> organizacional/main
         /**
          * Tratamento para envio de mensagem quando a empresa está fora do expediente
          */
@@ -3627,11 +3120,7 @@ const handleMessage = async (
       !ticket.imported &&
       !ticket.queue &&
       !isGroup &&
-<<<<<<< HEAD
       !msg?.key.fromMe &&
-=======
-      !msg.key.fromMe &&
->>>>>>> organizacional/main
       !ticket.userId &&
       !isNil(whatsapp.promptId)
     ) {
@@ -3641,11 +3130,7 @@ const handleMessage = async (
     //integraçao na conexao
     if (
       !ticket.imported &&
-<<<<<<< HEAD
       !msg?.key.fromMe &&
-=======
-      !msg.key.fromMe &&
->>>>>>> organizacional/main
       !ticket.isGroup &&
       !ticket.queue &&
       !ticket.user &&
@@ -3655,37 +3140,22 @@ const handleMessage = async (
     ) {
 
       const integrations = await ShowQueueIntegrationService(whatsapp.integrationId, companyId);
-<<<<<<< HEAD
       await handleMessageIntegration(msg, wbot, integrations, ticket, companyId)
-=======
-
-      await handleMessageIntegration(msg, wbot, companyId, integrations, ticket)
->>>>>>> organizacional/main
 
       return
     }
 
     if (
       !ticket.imported &&
-<<<<<<< HEAD
       !msg?.key.fromMe &&
-=======
-      !msg.key.fromMe &&
->>>>>>> organizacional/main
       !ticket.isGroup &&
       !ticket.userId &&
       ticket.integrationId
       && ticket.useIntegration
     ) {
       const integrations = await ShowQueueIntegrationService(ticket.integrationId, companyId);
-<<<<<<< HEAD
       await handleMessageIntegration(msg, wbot, integrations, ticket, companyId)
       if (msg?.key.fromMe) {
-=======
-
-      await handleMessageIntegration(msg, wbot, companyId, integrations, ticket)
-      if (msg.key.fromMe) {
->>>>>>> organizacional/main
         await ticket.update({
           typebotSessionTime: moment().toDate(),
         })
@@ -3696,11 +3166,7 @@ const handleMessage = async (
       !ticket.imported &&
       !ticket.queue &&
       (!ticket.isGroup || whatsapp.groupAsTicket === "enabled") &&
-<<<<<<< HEAD
       !msg?.key.fromMe &&
-=======
-      !msg.key.fromMe &&
->>>>>>> organizacional/main
       !ticket.userId &&
       whatsapp.queues.length >= 1 &&
       !ticket.useIntegration
@@ -3724,11 +3190,7 @@ const handleMessage = async (
     // Verificação se aceita audio do contato
     if (
       getTypeMessage(msg) === "audioMessage" &&
-<<<<<<< HEAD
       !msg?.key.fromMe &&
-=======
-      !msg.key.fromMe &&
->>>>>>> organizacional/main
       (!ticket.isGroup || whatsapp.groupAsTicket === "enabled") &&
       (!contact?.acceptAudioMessage ||
         settings?.acceptAudioMessageContact === "disabled")
@@ -3740,15 +3202,9 @@ const handleMessage = async (
         },
         {
           quoted: {
-<<<<<<< HEAD
             key: msg?.key,
             message: {
               extendedTextMessage: msg?.message.extendedTextMessage
-=======
-            key: msg.key,
-            message: {
-              extendedTextMessage: msg.message.extendedTextMessage
->>>>>>> organizacional/main
             }
           }
         }
@@ -3758,11 +3214,7 @@ const handleMessage = async (
 
 
     try {
-<<<<<<< HEAD
       if (!msg?.key.fromMe && settings?.scheduleType && ticket.queueId !== null && (!ticket.isGroup || whatsapp.groupAsTicket === "enabled") && ticket.status !== "open") {
-=======
-      if (!msg.key.fromMe && settings?.scheduleType && ticket.queueId !== null && (!ticket.isGroup || whatsapp.groupAsTicket === "enabled") && ticket.status !== "open") {
->>>>>>> organizacional/main
         /**
          * Tratamento para envio de mensagem quando a empresa/fila está fora do expediente
          */
@@ -3843,11 +3295,7 @@ const handleMessage = async (
       console.log(e);
     }
 
-<<<<<<< HEAD
     if (ticket.queue && ticket.queueId && !msg?.key.fromMe && !ticket.useIntegration && !ticket.integrationId) {
-=======
-    if (ticket.queue && ticket.queueId && !msg.key.fromMe && !ticket.useIntegration && !ticket.integrationId) {
->>>>>>> organizacional/main
       if (!ticket.user || ticket.queue?.chatbots?.length > 0) {
         await sayChatbot(ticket.queueId, wbot, ticket, contact, msg, ticketTraking);
       }
@@ -3877,11 +3325,7 @@ const handleMsgAck = async (
   try {
     const messageToUpdate = await Message.findOne({
       where: {
-<<<<<<< HEAD
         wid: msg?.key.id,
-=======
-        wid: msg.key.id,
->>>>>>> organizacional/main
       },
       include: [
         "contact",
@@ -4004,11 +3448,7 @@ const verifyCampaignMessageAndCloseTicket = async (message: proto.IWebMessageInf
 
     if (!isNull(messageRecord) || !isNil(messageRecord) || messageRecord !== null) {
       const ticket = await Ticket.findByPk(messageRecord.ticketId);
-<<<<<<< HEAD
       await ticket.update({ status: "closed", amountUsedBotQueues: 0, startedByPlatform: false });
-=======
-      await ticket.update({ status: "closed", amountUsedBotQueues: 0 });
->>>>>>> organizacional/main
 
       io.of(String(companyId))
         // .to("open")
@@ -4033,13 +3473,8 @@ const verifyCampaignMessageAndCloseTicket = async (message: proto.IWebMessageInf
 const filterMessages = (msg: WAMessage): boolean => {
   msgDB.save(msg);
 
-<<<<<<< HEAD
   if (msg?.message?.protocolMessage?.editedMessage) return true;
   if (msg?.message?.protocolMessage) return false;
-=======
-  if (msg.message?.protocolMessage?.editedMessage) return true;
-  if (msg.message?.protocolMessage) return false;
->>>>>>> organizacional/main
 
   if (
     [
@@ -4047,11 +3482,7 @@ const filterMessages = (msg: WAMessage): boolean => {
       WAMessageStubType.E2E_DEVICE_CHANGED,
       WAMessageStubType.E2E_IDENTITY_CHANGED,
       WAMessageStubType.CIPHERTEXT
-<<<<<<< HEAD
     ].includes(msg?.messageStubType as WAMessageStubType)
-=======
-    ].includes(msg.messageStubType as WAMessageStubType)
->>>>>>> organizacional/main
   )
     return false;
 

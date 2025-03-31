@@ -136,11 +136,7 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: 20,
         fontWeight: "bold",
         color: theme.mode === 'light' ? "black" : grey[400],
-<<<<<<< HEAD
         width: "70%"
-=======
-        width: "50%"
->>>>>>> organizacional/main
     },
 
     badgeStyle: {
@@ -330,17 +326,11 @@ const TicketListItemCustom = ({ setTabOpen, ticket }) => {
     const handleAcepptTicket = async (id) => {
         setLoading(true);
         try {
-<<<<<<< HEAD
             //console.log('ticket.useIntegration', ticket.useIntegration)
             const otherTicket = await api.put(`/tickets/${id}`, ({
                 status: ticket.isGroup && ticket.channel === 'whatsapp' ? "group" : "open",
                 userId: user?.id,
                 useIntegration: ticket.useIntegration === 'false' ? ticket.useIntegration : 'false'
-=======
-            const otherTicket = await api.put(`/tickets/${id}`, ({
-                status: ticket.isGroup && ticket.channel === 'whatsapp' ? "group" : "open",
-                userId: user?.id,
->>>>>>> organizacional/main
             }));
 
             if (otherTicket.data.id !== ticket.id) {
@@ -464,11 +454,7 @@ const TicketListItemCustom = ({ setTabOpen, ticket }) => {
                 button
                 dense
                 onClick={(e) => {
-<<<<<<< HEAD
                     //console.log('e', e)
-=======
-                    console.log('e', e)
->>>>>>> organizacional/main
                     const isCheckboxClicked = (e.target.tagName.toLowerCase() === 'input' && e.target.type === 'checkbox')
                         || (e.target.tagName.toLowerCase() === 'svg' && e.target.type === undefined)
                         || (e.target.tagName.toLowerCase() === 'path' && e.target.type === undefined);
@@ -556,11 +542,7 @@ const TicketListItemCustom = ({ setTabOpen, ticket }) => {
                                 <span className={classes.secondaryContentSecond} >
                                     {ticket?.whatsapp ? <Badge className={classes.connectionTag} style={{ backgroundColor: ticket.channel === "whatsapp" ? "#25D366" : ticket.channel === "facebook" ? "#4267B2" : "#E1306C" }}>{ticket.whatsapp?.name.toUpperCase()}</Badge> : <br></br>}
                                     {<Badge style={{ backgroundColor: ticket.queue?.color || "#7c7c7c" }} className={classes.connectionTag}>{ticket.queueId ? ticket.queue?.name.toUpperCase() : ticket.status === "lgpd" ? "LGPD" : "SEM FILA"}</Badge>}
-<<<<<<< HEAD
                                     {ticket?.user ? (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>) : null}
-=======
-                                    {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
->>>>>>> organizacional/main
                                 </span>
                                 <span className={classes.secondaryContentSecond} >
                                     {

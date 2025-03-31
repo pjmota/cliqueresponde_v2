@@ -13,11 +13,8 @@ tagRoutes.get("/tag/kanban", isAuth, TagController.kanban);
 tagRoutes.post("/tags", isAuth, TagController.store);
 tagRoutes.post("/tags/sync", isAuth, TagController.syncTags);
 
-<<<<<<< HEAD
 tagRoutes.post("/tags/syncLane", isAuth, TagController.syncTagsLane);
 
-=======
->>>>>>> organizacional/main
 tagRoutes.put("/tags/:tagId", isAuth, TagController.update);
 
 tagRoutes.delete("/tags/:tagId", isAuth, TagController.remove);

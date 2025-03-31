@@ -6,11 +6,8 @@ import ListQueuesService from "../services/QueueService/ListQueuesService";
 import ShowQueueService from "../services/QueueService/ShowQueueService";
 import UpdateQueueService from "../services/QueueService/UpdateQueueService";
 import { isNil } from "lodash";
-<<<<<<< HEAD
 import logger from "../utils/logger";
 import UpdateRotationService from "../services/RotationsService/UpdateService";
-=======
->>>>>>> organizacional/main
 
 type QueueFilter = {
   companyId: number;
@@ -38,13 +35,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     outOfHoursMessage,
     schedules,
     chatbots,
-<<<<<<< HEAD
     orderQueue,
     tempoRoteador,
-=======
-    orderQueue, 
-    tempoRoteador, 
->>>>>>> organizacional/main
     ativarRoteador,
     integrationId,
     fileListId,
@@ -57,19 +49,11 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     color,
     greetingMessage,
     companyId,
-<<<<<<< HEAD
     outOfHoursMessage,
     tempoRoteador: tempoRoteador === "" ? 0 : tempoRoteador,
     ativarRoteador,
     schedules,
     chatbots,
-=======
-    outOfHoursMessage, 
-    tempoRoteador: tempoRoteador ===""? 0 : tempoRoteador, 
-    ativarRoteador,
-    schedules,
-    chatbots, 
->>>>>>> organizacional/main
     orderQueue: orderQueue === "" ? null : orderQueue,
     integrationId: integrationId === "" ? null : integrationId,
     fileListId: fileListId === "" ? null : fileListId,
@@ -77,12 +61,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   });
 
   const io = getIO();
-<<<<<<< HEAD
   io.of(String(companyId)).emit(`company-${companyId}-queue`, {
-=======
-  io.of(String(companyId))
-  .emit(`company-${companyId}-queue`, {
->>>>>>> organizacional/main
     action: "update",
     queue
   });
@@ -113,7 +92,6 @@ export const update = async (
     outOfHoursMessage,
     schedules,
     chatbots,
-<<<<<<< HEAD
     orderQueue,
     tempoRoteador,
     ativarRoteador,
@@ -156,34 +134,6 @@ export const update = async (
 
   const io = getIO();
   io.of(String(companyId)).emit(`company-${companyId}-queue`, {
-=======
-    orderQueue, 
-    tempoRoteador, 
-    ativarRoteador,
-    integrationId,
-    fileListId,
-    closeTicket
-  } = req.body;
-
-  const queue = await UpdateQueueService(queueId, 
-    {name,
-    color,
-    greetingMessage,
-    outOfHoursMessage, 
-    tempoRoteador: tempoRoteador ===""? 0 : tempoRoteador, 
-    ativarRoteador,
-    schedules,
-    chatbots, 
-    orderQueue: orderQueue === "" ? null : orderQueue,
-    integrationId: integrationId === "" ? null : integrationId,
-    fileListId: fileListId === "" ? null : fileListId,
-    closeTicket},
-    companyId);
-
-  const io = getIO();
-  io.of(String(companyId))
-  .emit(`company-${companyId}-queue`, {
->>>>>>> organizacional/main
     action: "update",
     queue
   });
@@ -201,12 +151,7 @@ export const remove = async (
   await DeleteQueueService(queueId, companyId);
 
   const io = getIO();
-<<<<<<< HEAD
   io.of(String(companyId)).emit(`company-${companyId}-queue`, {
-=======
-  io.of(String(companyId))
-  .emit(`company-${companyId}-queue`, {
->>>>>>> organizacional/main
     action: "delete",
     queueId: +queueId
   });

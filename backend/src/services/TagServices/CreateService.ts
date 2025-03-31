@@ -2,11 +2,8 @@ import * as Yup from "yup";
 
 import AppError from "../../errors/AppError";
 import Tag from "../../models/Tag";
-<<<<<<< HEAD
 import logger from "../../utils/logger";
 import ScheduleTagIntegration from "../../models/ScheduleTagIntegration";
-=======
->>>>>>> organizacional/main
 
 interface Request {
   name: string;
@@ -14,17 +11,11 @@ interface Request {
   kanban: string;
   companyId: number;
   timeLane?: number;
-<<<<<<< HEAD
   nextLaneId?: number | null;
   greetingMessageLane?: string;
   rollbackLaneId?: number | null;
   whatsappId?: number | null;
   queueIntegrationId?: number | null;
-=======
-  nextLaneId?: number;
-  greetingMessageLane?: string;
-  rollbackLaneId?: number;
->>>>>>> organizacional/main
 }
 
 const CreateService = async ({
@@ -35,13 +26,9 @@ const CreateService = async ({
   timeLane = null,
   nextLaneId = null,
   greetingMessageLane = "",
-<<<<<<< HEAD
   rollbackLaneId = null,
   whatsappId = null,
   queueIntegrationId = null
-=======
-  rollbackLaneId = null
->>>>>>> organizacional/main
 }: Request): Promise<Tag> => {
   const schema = Yup.object().shape({
     name: Yup.string().required().min(3)
@@ -56,19 +43,14 @@ const CreateService = async ({
   const [tag] = await Tag.findOrCreate({
     where: { name, color, kanban, companyId },
     defaults: {
-<<<<<<< HEAD
       name,
       color,
       kanban,
       companyId,
-=======
-      name, color, kanban, companyId,
->>>>>>> organizacional/main
       timeLane,
       nextLaneId: String(nextLaneId) === "" ? null : nextLaneId,
       greetingMessageLane,
       rollbackLaneId: String(rollbackLaneId) === "" ? null : rollbackLaneId,
-<<<<<<< HEAD
       whatsappId: String(whatsappId) === "" ? null : whatsappId,
       queueIntegrationId: String(queueIntegrationId) === "" ? null : queueIntegrationId
     }
@@ -95,11 +77,6 @@ const CreateService = async ({
     }
   }
 
-=======
-    }
-  });
-
->>>>>>> organizacional/main
   await tag.reload();
 
   return tag;

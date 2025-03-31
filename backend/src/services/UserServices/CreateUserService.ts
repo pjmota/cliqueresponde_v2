@@ -11,10 +11,7 @@ interface Request {
   password: string;
   name: string;
   queueIds?: number[];
-<<<<<<< HEAD
   tagsIds?: number[];
-=======
->>>>>>> organizacional/main
   companyId?: number;
   profile?: string;
   startWork?: string;
@@ -31,10 +28,7 @@ interface Request {
   defaultTicketsManagerWidth?: number;
   allowRealTime?: string;
   allowConnections?: string;
-<<<<<<< HEAD
   allTicketsQueuesWaiting?: string;
-=======
->>>>>>> organizacional/main
 }
 
 interface Response {
@@ -49,10 +43,7 @@ const CreateUserService = async ({
   password,
   name,
   queueIds = [],
-<<<<<<< HEAD
   tagsIds = [],
-=======
->>>>>>> organizacional/main
   companyId,
   profile = "admin",
   startWork,
@@ -68,12 +59,8 @@ const CreateUserService = async ({
   showDashboard,
   defaultTicketsManagerWidth = 550,
   allowRealTime,
-<<<<<<< HEAD
   allowConnections,
   allTicketsQueuesWaiting
-=======
-  allowConnections
->>>>>>> organizacional/main
 }: Request): Promise<Response> => {
   if (companyId !== undefined) {
     const company = await Company.findOne({
@@ -144,7 +131,6 @@ const CreateUserService = async ({
       showDashboard,
       defaultTicketsManagerWidth,
       allowRealTime,
-<<<<<<< HEAD
       allowConnections,
       allTicketsQueuesWaiting
     },
@@ -153,14 +139,6 @@ const CreateUserService = async ({
 
   await user.$set("queues", queueIds);
   await user.$set("tags", tagsIds);
-=======
-      allowConnections
-    },
-    { include: ["queues", "company"] }
-  );
-
-  await user.$set("queues", queueIds);
->>>>>>> organizacional/main
 
   await user.reload();
 

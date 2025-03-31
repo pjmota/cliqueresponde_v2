@@ -27,10 +27,7 @@ interface Request {
   timeUseBotQueues?: string;
   expiresTicket?: number;
   allowGroup?: boolean;
-<<<<<<< HEAD
   allowCampaign?: boolean;
-=======
->>>>>>> organizacional/main
   sendIdQueue?: number;
   timeSendQueue?: number;
   timeInactiveMessage?: string;
@@ -58,10 +55,7 @@ interface Request {
   business_id?: string;
   phone_number?: string;
   waba_webhook?: string;
-<<<<<<< HEAD
   ignoreQueue?: boolean;
-=======
->>>>>>> organizacional/main
 }
 
 interface Response {
@@ -89,10 +83,7 @@ const CreateWhatsAppService = async ({
   timeUseBotQueues,
   expiresTicket,
   allowGroup = false,
-<<<<<<< HEAD
   allowCampaign = false,
-=======
->>>>>>> organizacional/main
   timeSendQueue,
   sendIdQueue,
   timeInactiveMessage,
@@ -121,10 +112,7 @@ const CreateWhatsAppService = async ({
   business_id,
   phone_number,
   waba_webhook,
-<<<<<<< HEAD
   ignoreQueue = false,
-=======
->>>>>>> organizacional/main
 }: Request): Promise<Response> => {
   const company = await Company.findOne({
     where: {
@@ -237,10 +225,7 @@ const CreateWhatsAppService = async ({
       timeUseBotQueues,
       expiresTicket,
       allowGroup,
-<<<<<<< HEAD
       allowCampaign,
-=======
->>>>>>> organizacional/main
       timeSendQueue,
       sendIdQueue,
       timeInactiveMessage,
@@ -267,12 +252,8 @@ const CreateWhatsAppService = async ({
       send_token,
       business_id,
       phone_number,
-<<<<<<< HEAD
       waba_webhook,
       ignoreQueue
-=======
-      waba_webhook
->>>>>>> organizacional/main
     },
     { include: ["queues", "company"] }
   );

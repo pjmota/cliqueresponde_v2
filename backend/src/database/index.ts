@@ -19,10 +19,7 @@ import UserRating from "../models/UserRating";
 import Schedule from "../models/Schedule";
 import Tag from "../models/Tag";
 import TicketTag from "../models/TicketTag";
-<<<<<<< HEAD
 import UserTag from "../models/UserTags";
-=======
->>>>>>> organizacional/main
 import ContactList from "../models/ContactList";
 import ContactListItem from "../models/ContactListItem";
 import Campaign from "../models/Campaign";
@@ -51,14 +48,11 @@ import ScheduledMessages from "../models/ScheduledMessages";
 import ScheduledMessagesEnvio from "../models/ScheduledMessagesEnvio";
 import Versions from "../models/Versions";
 import QuickMessageComponent from "../models/QuickMessageComponent";
-<<<<<<< HEAD
 import Rotations from "../models/Rotations"
 import RotationUsers from "../models/RotationUsers"
 import ScheduleTagIntegration from "../models/ScheduleTagIntegration";
 import ScheduleTagIntegrationWhatsapp from "../models/ScheduleTagIntegrationWhatsapp";
 import LogRolette from "../models/LogRolette";
-=======
->>>>>>> organizacional/main
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -87,10 +81,7 @@ const models = [
   Schedule,
   Tag,
   TicketTag,
-<<<<<<< HEAD
   UserTag,
-=======
->>>>>>> organizacional/main
   ContactList,
   ContactListItem,
   Campaign,
@@ -117,16 +108,12 @@ const models = [
   ScheduledMessages,
   ScheduledMessagesEnvio,
   Versions,
-<<<<<<< HEAD
   QuickMessageComponent,
   Rotations,
   RotationUsers,
   ScheduleTagIntegration,
   ScheduleTagIntegrationWhatsapp,
   LogRolette
-=======
-  QuickMessageComponent
->>>>>>> organizacional/main
 ];
 
 sequelize.addModels(models);

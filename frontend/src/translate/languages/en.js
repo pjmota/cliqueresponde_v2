@@ -155,17 +155,12 @@ const messages = {
 			},
 			queueModal: {
 				title: {
-<<<<<<< HEAD
 					queueData: "Queue data",
           text: "Opening hours",
 					add: "Add queue",
 					edit: "Edit queue",
 					confirmationDelete: "He is sure? All integration options will be deleted.",
           rotation: "Configure rotation"
-=======
-					add: "Add queue",
-					edit: "Edit queue",
->>>>>>> organizacional/main
 				},
 				form: {
 					name: "Name",

@@ -10,10 +10,7 @@ import { Facebook, Instagram, WhatsApp } from "@material-ui/icons";
 import { Badge, Tooltip, Typography, Button, TextField, Box } from "@material-ui/core";
 import { format, isSameDay, parseISO } from "date-fns";
 import { Can } from "../../components/Can";
-<<<<<<< HEAD
 import toastError from "../../errors/toastError";
-=======
->>>>>>> organizacional/main
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -86,14 +83,10 @@ const Kanban = () => {
     try {
       const response = await api.get("/tag/kanban/");
       const fetchedTags = response.data.lista || [];
-<<<<<<< HEAD
 
       const userTagIds = user.tags.map(tag => tag.id);
       const filteredTags = fetchedTags.filter(tag => userTagIds.includes(tag.id));
       setTags(filteredTags);
-=======
-      setTags(fetchedTags);
->>>>>>> organizacional/main
       fetchTickets();
     } catch (error) {
       console.log(error);
@@ -158,7 +151,6 @@ const Kanban = () => {
   };
 
   const popularCards = (jsonString) => {
-<<<<<<< HEAD
     const filteredTickets = tickets.filter(ticket => {
       const hasNoQueues = ticket.tags.length === 0;
       
@@ -169,9 +161,6 @@ const Kanban = () => {
     
       return hasNoQueues; // Se não estiver "disable", mantém todos os sem fila
     });
-=======
-    const filteredTickets = tickets.filter(ticket => ticket.tags.length === 0);
->>>>>>> organizacional/main
 
     const lanes = [
       {
@@ -274,32 +263,23 @@ const Kanban = () => {
     popularCards(jsonString);
   }, [tags, tickets]);
 
-<<<<<<< HEAD
   const handleCardMove = async (cardId, sourceLaneId, targetLaneId, event) => {
-=======
-  const handleCardMove = async (cardId, sourceLaneId, targetLaneId) => {
->>>>>>> organizacional/main
     try {
       await api.delete(`/ticket-tags/${targetLaneId}`);
       toast.success('Ticket Tag Removido!');
       await api.put(`/ticket-tags/${targetLaneId}/${sourceLaneId}`);
       toast.success('Ticket Tag Adicionado com Sucesso!');
       await fetchTickets(jsonString);
-<<<<<<< HEAD
       const { data } = await api.get(`/tags/list`, { params: { kanban: 1 } });
 
       popularCards(jsonString);
 
       await syncTags({ ticketId: targetLaneId, tags: data.filter(e => e.id === Number(sourceLaneId)) });
-=======
-      popularCards(jsonString);
->>>>>>> organizacional/main
     } catch (err) {
       console.log(err);
     }
   };
 
-<<<<<<< HEAD
   const syncTags = async (data) => {
     try {
       const { data: responseData } = await api.post(`/tags/syncLane`, data);
@@ -309,8 +289,6 @@ const Kanban = () => {
     }
   };
 
-=======
->>>>>>> organizacional/main
   const handleAddConnectionClick = () => {
     history.push('/tagsKanban');
   };

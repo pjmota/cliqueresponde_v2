@@ -31,10 +31,7 @@ import { Avatar, Grid, Input, Paper, Tab, Tabs } from "@material-ui/core";
 import { getBackendUrl } from "../../config";
 import TabPanel from "../TabPanel";
 import AvatarUploader from "../AvatarUpload";
-<<<<<<< HEAD
 import TagSelect from "../TagSelect";
-=======
->>>>>>> organizacional/main
 
 const backendUrl = getBackendUrl();
 
@@ -142,10 +139,7 @@ const UserModal = ({ open, onClose, userId }) => {
 		showDashboard: "disabled",
 		allowRealTime: "disabled",
 		allowConnections: "disabled",
-<<<<<<< HEAD
 		allTicketsQueuesWaiting: "disable",
-=======
->>>>>>> organizacional/main
 	};
 
 	const { user: loggedInUser } = useContext(AuthContext);
@@ -160,10 +154,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	const [avatar, setAvatar] = useState(null);
 	const startWorkRef = useRef();
 	const endWorkRef = useRef();
-<<<<<<< HEAD
 	const [selectedTagIds, setSelectedTagIds] = useState([]);
-=======
->>>>>>> organizacional/main
 
 
 
@@ -181,13 +172,9 @@ const UserModal = ({ open, onClose, userId }) => {
 				setProfileUrl(`${backendUrl}/public/company${data.companyId}/user/${profileImage}`);
 
 				const userQueueIds = data.queues?.map(queue => queue.id);
-<<<<<<< HEAD
 				const userTagIds = data.tags?.map(tag => tag.id);
 				setSelectedQueueIds(userQueueIds);
 				setSelectedTagIds(userTagIds)
-=======
-				setSelectedQueueIds(userQueueIds);
->>>>>>> organizacional/main
 				setWhatsappId(data.whatsappId ? data.whatsappId : '');
 			} catch (err) {
 				toastError(err);
@@ -225,16 +212,10 @@ const UserModal = ({ open, onClose, userId }) => {
 		const userData = {
 			...values,
 			whatsappId,
-<<<<<<< HEAD
 			queueIds: selectedQueueIds,
 			tagIds: selectedTagIds
 		};
 
-=======
-			queueIds: selectedQueueIds
-		};
-		console.log("userData", userData)
->>>>>>> organizacional/main
 		try {
 			if (userId) {
 				const { data } = await api.put(`/users/${userId}`, userData);
@@ -430,7 +411,6 @@ const UserModal = ({ open, onClose, userId }) => {
 											<Grid item xs={12} md={12} xl={12}>
 												<Can
 													role={loggedInUser.profile}
-<<<<<<< HEAD
 													perform="user-modal:editTags"
 													yes={() => (
 														<TagSelect
@@ -449,8 +429,6 @@ const UserModal = ({ open, onClose, userId }) => {
 											<Grid item xs={12} md={12} xl={12}>
 												<Can
 													role={loggedInUser.profile}
-=======
->>>>>>> organizacional/main
 													perform="user-modal:editProfile"
 													yes={() => (
 														<FormControl variant="outlined" margin="dense" className={classes.maxWidth} fullWidth>
@@ -822,7 +800,6 @@ const UserModal = ({ open, onClose, userId }) => {
 															</FormControl>
 														</Grid>
 													</Grid>
-<<<<<<< HEAD
 													<Grid container spacing={1}>
 														<Grid item xs={12} md={6} xl={6}>
 															<FormControl
@@ -875,8 +852,6 @@ const UserModal = ({ open, onClose, userId }) => {
 															</FormControl>
 														</Grid> */}
 													</Grid>
-=======
->>>>>>> organizacional/main
 												</>
 											}
 										/>
