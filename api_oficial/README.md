@@ -145,9 +145,7 @@ Para utilizar está API após terminar a instalação você ira precisar instala
 
 Após realizar o download do Postman, va em import e cole o link abaixo
 
-```
-https://api.postman.com/collections/8351387-31ce44bc-39d8-4844-969e-da685f1a1032?access_key=PMAT-01HZN852WQXPHQAQX6SNJ0M1EG
-```
+
 
 Configure sua environments, crie uma nova, coloque qualquer nome que quiser, na a direta você pode criar as variaveis.
 
