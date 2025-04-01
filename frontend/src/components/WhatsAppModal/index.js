@@ -104,6 +104,7 @@ const SessionSchema = Yup.object().shape({
 const WhatsAppModal = ({ open, onClose, whatsAppId, channel }) => {
   const classes = useStyles();
   const [autoToken, setAutoToken] = useState("");
+  const [cellNumber, setCellNumber] = useState("");
 
   const inputFileRef = useRef(null);
 
@@ -194,6 +195,7 @@ const WhatsAppModal = ({ open, onClose, whatsAppId, channel }) => {
       setAutoToken(generateRandomCode(30));
     } else {
       setAutoToken(whatsApp.token);
+      setCellNumber(whatsApp.number);
     }
   }, [whatsAppId, whatsApp.token]);
 
@@ -871,7 +873,7 @@ const WhatsAppModal = ({ open, onClose, whatsAppId, channel }) => {
 
                     {/* TOKEN */}
                     <Box display="flex" alignItems="center">
-                      <Grid xs={6} md={12} item>
+                      <Grid xs={6} md={8} item>
                         <Field
                           as={TextField}
                           label={i18n.t("whatsappModal.form.token")}
@@ -897,6 +899,19 @@ const WhatsAppModal = ({ open, onClose, whatsAppId, channel }) => {
                         variant="text"
                         startIcon={<FileCopy style={{ color: copied ? "blue" : "inherit" }} />}
                       />
+                      <Grid xs={6} md={4} item>
+                        <Field
+                          as={TextField}
+                          label={i18n.t("whatsappModal.form.cellNumber")}
+                          type="token"
+                          fullWidth
+                          // name="token"
+                          value={cellNumber}
+                          variant="outlined"
+                          margin="dense"
+                          disabled
+                        />
+                      </Grid>
                     </Box>
 
                     <div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 import * as Yup from "yup";
 import { Formik, Form, Field } from "formik";
@@ -18,6 +18,7 @@ import { i18n } from "../../translate/i18n";
 
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
+import { AuthContext } from "../../context/Auth/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,7 +59,7 @@ const ContactListSchema = Yup.object().shape({
 
 const ContactListModal = ({ open, onClose, contactListId }) => {
   const classes = useStyles();
-
+  const { user } = useContext(AuthContext);
   const initialState = {
     name: "",
   };
@@ -87,7 +88,7 @@ const ContactListModal = ({ open, onClose, contactListId }) => {
   };
 
   const handleSaveContactList = async (values) => {
-    const contactListData = { ...values };
+    const contactListData = { ...values, userId: user.id };
     try {
       if (contactListId) {
         await api.put(`/contact-lists/${contactListId}`, contactListData);

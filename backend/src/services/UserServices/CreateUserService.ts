@@ -29,6 +29,8 @@ interface Request {
   allowRealTime?: string;
   allowConnections?: string;
   allTicketsQueuesWaiting?: string;
+  sendWhatsAppInLeadMessage?: string;
+  leadMessage?: string;
 }
 
 interface Response {
@@ -60,7 +62,9 @@ const CreateUserService = async ({
   defaultTicketsManagerWidth = 550,
   allowRealTime,
   allowConnections,
-  allTicketsQueuesWaiting
+  allTicketsQueuesWaiting,
+  sendWhatsAppInLeadMessage,
+  leadMessage,
 }: Request): Promise<Response> => {
   if (companyId !== undefined) {
     const company = await Company.findOne({
@@ -132,7 +136,9 @@ const CreateUserService = async ({
       defaultTicketsManagerWidth,
       allowRealTime,
       allowConnections,
-      allTicketsQueuesWaiting
+      allTicketsQueuesWaiting,
+      sendWhatsAppInLeadMessage,
+      leadMessage
     },
     { include: ["queues", "company", "tags"] }
   );

@@ -507,10 +507,10 @@ const TicketsManagerTabs = () => {
     setTab("search");
   };
 
-  const [open, setOpen] = React.useState(false);
-  const [hidden, setHidden] = React.useState(false);
+  //const [open, setOpen] = React.useState(false);
+  //const [hidden, setHidden] = React.useState(false);
 
-  const handleVisibility = () => {
+  /* const handleVisibility = () => {
     setHidden((prevHidden) => !prevHidden);
   };
 
@@ -524,7 +524,7 @@ const TicketsManagerTabs = () => {
 
   const tooltipTitleStyle = {
     fontSize: "10px",
-  };
+  }; */
 
   return (
     <Paper elevation={0} variant="outlined" className={classes.ticketsWrapper}>

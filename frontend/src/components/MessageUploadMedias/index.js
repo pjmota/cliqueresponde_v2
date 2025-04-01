@@ -1,21 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-    Button,
     Dialog,
     DialogContent,
     DialogActions,
     Typography,
     IconButton,
-    TextField,
     Card,
     CardContent,
 } from '@mui/material';
-import { Cancel, Search, Send, SkipNext, SkipPrevious } from '@material-ui/icons';
+import { Cancel, Send, SkipNext, SkipPrevious } from '@material-ui/icons';
 import AudioModal from '../AudioModal';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { makeStyles } from "@material-ui/core/styles";
 import { grey } from '@material-ui/core/colors';
-import { InputAdornment, InputBase } from '@material-ui/core';
+import { InputBase } from '@material-ui/core';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -48,9 +46,9 @@ const MessageUploadMedias = ({ isOpen, files, onClose, onSend, onCancelSelection
     const classes = useStyles();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [captions, setCaptions] = useState(files.map(() => ''));
-    const [numPages, setNumPages] = React.useState(null);
+    //const [numPages, setNumPages] = React.useState(null);
     const [componentMounted, setComponentMounted] = useState(false);
-    const [isTyping, setIsTyping] = useState(false);
+    //const [isTyping, setIsTyping] = useState(false);
     const [firstTyping, setFirstTyping] = useState(false);
 
     useEffect(() => {
@@ -59,7 +57,7 @@ const MessageUploadMedias = ({ isOpen, files, onClose, onSend, onCancelSelection
     }, []);
 
     const onDocumentLoadSuccess = ({ numPages }) => {
-        setNumPages(numPages);
+        //setNumPages(numPages);
     };
 
     const handleClose = () => {
@@ -81,7 +79,7 @@ const MessageUploadMedias = ({ isOpen, files, onClose, onSend, onCancelSelection
     };
 
     const handleTextFieldBlur = () => {
-        setIsTyping(false);
+        //setIsTyping(false);
     };
 
     const handleCaptionChange = (e) => {
@@ -92,7 +90,7 @@ const MessageUploadMedias = ({ isOpen, files, onClose, onSend, onCancelSelection
             return updatedCaptions;
         });
         if (firstTyping) {
-            setIsTyping(true);
+            //setIsTyping(true);
         }
     };
 

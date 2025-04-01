@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import * as Yup from "yup";
+//import * as Yup from "yup";
 import { Formik, Form, Field } from "formik";
 import { toast } from "react-toastify";
 
@@ -56,7 +56,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const PromptSchema = Yup.object().shape({
+/* const PromptSchema = Yup.object().shape({
     name: Yup.string().min(5, "Muito curto!").max(100, "Muito longo!").required("Obrigatório"),
     prompt: Yup.string().min(50, "Muito curto!").required("Descreva o treinamento para Inteligência Artificial"),
     voice: Yup.string().required("Informe o modo para Voz"),
@@ -65,7 +65,7 @@ const PromptSchema = Yup.object().shape({
     apikey: Yup.string().required("Informe a API Key"),
     queueId: Yup.number().required("Informe a fila"),
     max_messages: Yup.number().required("Informe o número máximo de mensagens")
-});
+}); */
 
 const PromptModal = ({ open, onClose, promptId }) => {
     const classes = useStyles();

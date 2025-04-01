@@ -169,7 +169,11 @@ const Campaigns = () => {
   const fetchCampaigns = async () => {
     try {
       const { data } = await api.get("/campaigns/", {
-        params: { searchParam, pageNumber },
+        params: { 
+          searchParam, 
+          pageNumber, 
+          ...(user.profile === 'user' ? {userId: user.id} : {}) 
+        },
       });
       dispatch({ type: "LOAD_CAMPAIGNS", payload: data.records });
       setHasMore(data.hasMore);

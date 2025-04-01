@@ -25,8 +25,8 @@ import { toast } from "react-toastify";
 import useCompanies from "../../hooks/useCompanies";
 import usePlans from "../../hooks/usePlans";
 import ModalUsers from "../ModalUsers";
-import api from "../../services/api";
-import { head, isArray, has } from "lodash";
+//import api from "../../services/api";
+//import { head, isArray } from "lodash";
 import { useDate } from "../../hooks/useDate";
 
 import moment from "moment";
@@ -124,7 +124,7 @@ export function CompanyForm(props) {
     setRecord({ ...initialValue, dueDate: "" });
   };
 
-  const handleOpenModalUsers = async () => {
+  /* const handleOpenModalUsers = async () => {
     try {
       const { data } = await api.get("/users/list", {
         params: {
@@ -138,7 +138,7 @@ export function CompanyForm(props) {
     } catch (e) {
       toast.error(e);
     }
-  };
+  }; */
 
   const handleCloseModalUsers = () => {
     setFirstUser({});

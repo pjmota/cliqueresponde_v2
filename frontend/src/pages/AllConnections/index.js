@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import { toast } from "react-toastify";
-import { format, parseISO, set } from "date-fns";
+//import { format, parseISO, set } from "date-fns";
 
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
+import PopupState, { bindMenu } from "material-ui-popup-state";
 import { Stack } from "@mui/material";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
@@ -20,17 +20,14 @@ import {
   Paper,
   Tooltip,
   Typography,
-  CircularProgress,
-  Divider
+  CircularProgress
 } from "@material-ui/core";
 import {
   Edit,
-  CheckCircle,
   SignalCellularConnectedNoInternet2Bar,
   SignalCellularConnectedNoInternet0Bar,
   SignalCellular4Bar,
   CropFree,
-  DeleteOutline,
   Facebook,
   Instagram,
   WhatsApp
@@ -41,17 +38,17 @@ import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props
 import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
 import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
-import Title from "../../components/Title";
+//import Title from "../../components/Title";
 import TableRowSkeleton from "../../components/TableRowSkeleton";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import useCompanies from "../../hooks/useCompanies";
 import api from "../../services/api";
-import WhatsAppModal from "../../components/WhatsAppModal";
+//import WhatsAppModal from "../../components/WhatsAppModal";
 import WhatsAppModalCompany from "../../components/CompanyWhatsapps";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import QrcodeModal from "../../components/QrcodeModal";
 import { i18n } from "../../translate/i18n";
-import { WhatsAppsContext } from "../../context/WhatsApp/WhatsAppsContext";
+//import { WhatsAppsContext } from "../../context/WhatsApp/WhatsAppsContext";
 import toastError from "../../errors/toastError";
 import ForbiddenPage from "../../components/ForbiddenPage";
 
@@ -113,7 +110,7 @@ const CustomToolTip = ({ title, content, children }) => {
   );
 };
 
-const IconChannel = channel => {
+/* const IconChannel = channel => {
   switch (channel) {
     case "facebook":
       return <Facebook />;
@@ -124,14 +121,14 @@ const IconChannel = channel => {
     default:
       return "error";
   }
-};
+}; */
 
 const AllConnections = () => {
   const classes = useStyles();
-  const { user, socket } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { list } = useCompanies();
   const [loadingWhatsapp, setLoadingWhatsapp] = useState(true);
-  const [loadingComp, setLoadingComp] = useState(false);
+  //const [loadingComp, setLoadingComp] = useState(false);
   const [whats, setWhats] = useState([]);
   const [whatsAppModalOpen, setWhatsAppModalOpen] = useState(false);
   const [companies, setCompanies] = useState([]);
@@ -193,14 +190,14 @@ const AllConnections = () => {
     loadCompanies();
   }, []);
   const loadCompanies = async () => {
-    setLoadingComp(true);
+    //setLoadingComp(true);
     try {
       const companyList = await list();
       setCompanies(companyList);
     } catch (e) {
       toast.error("Não foi possível carregar a lista de registros");
     }
-    setLoadingComp(false);
+    //setLoadingComp(false);
   }
 
   const responseInstagram = response => {

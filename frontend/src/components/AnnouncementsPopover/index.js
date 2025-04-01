@@ -169,7 +169,7 @@ export default function AnnouncementsPopover() {
 
   useEffect(() => {
     if (user.companyId) {
-      const companyId = user.companyId;
+      //const companyId = user.companyId;
 //    const socket = socketManager.GetSocket();
 
       const onCompanyAnnouncement = (data) => {

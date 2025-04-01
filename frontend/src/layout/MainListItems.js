@@ -37,7 +37,6 @@ import ForumIcon from "@material-ui/icons/Forum";
 import LocalAtmIcon from "@material-ui/icons/LocalAtm";
 import BusinessIcon from "@material-ui/icons/Business";
 import {
-  Alarm,
   AllInclusive,
   AttachFile,
   Dashboard,

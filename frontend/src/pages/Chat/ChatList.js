@@ -59,7 +59,7 @@ export default function ChatList({
 }) {
   const classes = useStyles();
   const history = useHistory();
-  const { user, socket } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { datetimeToClient } = useDate();
 
   const [confirmationModal, setConfirmModalOpen] = useState(false);

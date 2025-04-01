@@ -72,7 +72,7 @@ export const options = {
 };
 
 export const ChatsUser = () => {
-    const classes = useStyles();
+    //const classes = useStyles();
     const theme = useTheme();
     const [initialDate, setInitialDate] = useState(new Date());
     const [finalDate, setFinalDate] = useState(new Date());

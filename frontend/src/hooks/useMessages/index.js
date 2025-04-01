@@ -4,11 +4,11 @@ import toastError from "../../errors/toastError";
 import api from "../../services/api";
 
 const useMessages = ({ fromMe, dateStart, dateEnd }) => {
-    const [loading, setLoading] = useState(true);
+    //const [loading, setLoading] = useState(true);
     const [count, setCount] = useState(0);
 
     useEffect(() => {
-        setLoading(true);
+        //setLoading(true);
         const delayDebounceFn = setTimeout(() => {
             const fetchMessages = async () => {
                 try {
@@ -20,9 +20,9 @@ const useMessages = ({ fromMe, dateStart, dateEnd }) => {
                         },
                     });
                     setCount(data.count[0].count);
-                    setLoading(false);
+                    //setLoading(false);
                 } catch (err) {
-                    setLoading(false);
+                    //setLoading(false);
                     toastError(err);
                 }
             };

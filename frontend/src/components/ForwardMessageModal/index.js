@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import TextField from "@material-ui/core/TextField";
@@ -27,7 +27,7 @@ const ForwardMessageModal = ({ messages, onClose, modalOpen }) => {
 	const [selectedContact, setSelectedContact] = useState(null);
 	const [newContact, setNewContact] = useState({});
 	const [contactModalOpen, setContactModalOpen] = useState(false);
-	const { user } = useContext(AuthContext);
+	//const { user } = useContext(AuthContext);
 	const [sending, setSending] = useState(false);
 	const [messageSending, setMessageSending] = useState('');
 	const [signMessage, setSignMessage] = useState(true);

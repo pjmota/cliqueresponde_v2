@@ -118,7 +118,11 @@ const ContactLists = () => {
       const fetchContactLists = async () => {
         try {
           const { data } = await api.get("/contact-lists/", {
-            params: { searchParam, pageNumber },
+            params: { 
+              searchParam,
+              pageNumber,
+              ...(user.profile === 'user' ? {userId: user.id} : {})
+            },
           });
           dispatch({ type: "LOAD_CONTACTLISTS", payload: data.records });
           setHasMore(data.hasMore);

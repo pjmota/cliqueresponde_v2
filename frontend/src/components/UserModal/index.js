@@ -140,6 +140,8 @@ const UserModal = ({ open, onClose, userId }) => {
 		allowRealTime: "disabled",
 		allowConnections: "disabled",
 		allTicketsQueuesWaiting: "disable",
+		sendWhatsAppInLeadMessage: "disable",
+		leadMessage: ""
 	};
 
 	const { user: loggedInUser } = useContext(AuthContext);
@@ -826,6 +828,55 @@ const UserModal = ({ open, onClose, userId }) => {
 																</>
 															</FormControl>
 														</Grid>
+														<Grid item xs={12} md={6} xl={6}>
+															<FormControl
+																variant="outlined"
+																className={classes.maxWidth}
+																margin="dense"
+																fullWidth
+															>
+																<>
+																	<InputLabel >
+																		{i18n.t("userModal.form.sendWhatsAppInLeadMessage")}
+																	</InputLabel>
+
+																	<Field
+																		as={Select}
+																		label={i18n.t("userModal.form.sendWhatsAppInLeadMessage")}
+																		name="sendWhatsAppInLeadMessage"
+																		type="sendWhatsAppInLeadMessage"
+																		required
+																	>
+																		<MenuItem value={"enable"}>{i18n.t("userModal.form.sendWhatsAppInLeadMessageEnable")}</MenuItem>
+																		<MenuItem value={"disable"}>{i18n.t("userModal.form.sendWhatsAppInLeadMessageDisable")}</MenuItem>
+																	</Field>
+																</>
+															</FormControl>
+														</Grid>
+														{/* <Grid item xs={12} md={12} xl={12}> */}
+															<FormControl
+																variant="outlined"
+																className={classes.maxWidth}
+																margin="dense"
+																fullWidth
+															>
+																<>
+																	<Field
+																		as={TextField}
+																		label={i18n.t("userModal.form.leadMessage")}
+																		type="leadMessage"
+																		multiline
+																		rows={2}
+																		fullWidth
+																		name="leadMessage"
+																		error={touched.leadMessage && Boolean(errors.leadMessage)}
+																		helperText={touched.leadMessage && errors.leadMessage}
+																		variant="outlined"
+																		margin="dense"
+																	/>
+																</>
+															</FormControl>
+														{/* </Grid> */}
 														{/* <Grid item xs={12} md={6} xl={6}>
 															<FormControl
 																variant="outlined"

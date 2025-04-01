@@ -6,6 +6,7 @@ import Whatsapp from "../../models/Whatsapp";
 
 interface Request {
   companyId: number | string;
+  userId?: number | string;
   searchParam?: string;
   pageNumber?: string;
 }
@@ -19,10 +20,12 @@ interface Response {
 const ListService = async ({
   searchParam = "",
   pageNumber = "1",
-  companyId
+  companyId,
+  userId
 }: Request): Promise<Response> => {
   let whereCondition: any = {
-    companyId
+    companyId,
+    ...(userId ? {userId} : {})
   };
 
   if (!isEmpty(searchParam)) {

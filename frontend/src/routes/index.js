@@ -38,7 +38,7 @@ import Reports from "../pages/Reports";
 // import Integrations from '../pages/Integrations';
 // import GoogleCalendarComponent from '../pages/Integrations/components/GoogleCalendarComponent';
 
-import Subscription from "../pages/Subscription/";
+//import Subscription from "../pages/Subscription/";
 import QueueIntegration from "../pages/QueueIntegration";
 import Files from "../pages/Files/";
 import ToDoList from "../pages/ToDoList/";

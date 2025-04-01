@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+//import { useHistory } from "react-router-dom";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -16,11 +16,11 @@ import api from "../../services/api";
 import ButtonWithSpinner from "../ButtonWithSpinner";
 import ContactModal from "../ContactModal";
 import toastError from "../../errors/toastError";
-import { AuthContext } from "../../context/Auth/AuthContext";
-import { Grid, ListItemText, MenuItem, Select } from "@material-ui/core";
-import { toast } from "react-toastify";
-import { Facebook, Instagram, WhatsApp } from "@material-ui/icons";
-import ShowTicketOpen from "../ShowTicketOpenModal";
+//import { AuthContext } from "../../context/Auth/AuthContext";
+import { Grid } from "@material-ui/core";
+//import { toast } from "react-toastify";
+//import { Facebook, Instagram, WhatsApp } from "@material-ui/icons";
+//import ShowTicketOpen from "../ShowTicketOpenModal";
 
 const useStyles = makeStyles((theme) => ({
   online: {
@@ -38,7 +38,7 @@ const filter = createFilterOptions({
 });
 
 const ContactSendModal = ({ modalOpen, onClose }) => {
-  const classes = useStyles();
+  //const classes = useStyles();
   const [options, setOptions] = useState([]);
 
   const [loading, setLoading] = useState(false);
@@ -47,8 +47,8 @@ const ContactSendModal = ({ modalOpen, onClose }) => {
   const [newContact, setNewContact] = useState({});
   
   const [contactModalOpen, setContactModalOpen] = useState(false);
-  const { user, socket } = useContext(AuthContext);
-  const { companyId, whatsappId } = user;
+  //const { user } = useContext(AuthContext);
+  //const { companyId, whatsappId } = user;
 
   useEffect(() => {
     if (!modalOpen || searchParam.length < 3) {

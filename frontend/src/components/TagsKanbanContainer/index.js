@@ -1,20 +1,18 @@
 import {
   Chip,
-  Paper,
   Select,
   MenuItem,
-  Grid,
   InputLabel,
   FormControl,
 } from "@material-ui/core";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { isString } from "lodash";
+import React, { useContext, useEffect, useState } from "react";
+//import { isString } from "lodash";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
-import { toast } from "react-toastify";
+//import { toast } from "react-toastify";
 import { makeStyles } from "@material-ui/core/styles";
 import { i18n } from "../../translate/i18n";
-import { Field, Form } from "formik";
+//import { Field, Form } from "formik";
 import { AuthContext } from "../../context/Auth/AuthContext";
 const useStyles = makeStyles((theme) => ({
   menuListItem: {
@@ -35,8 +33,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export function TagsKanbanContainer({ ticket }) {
-  const classes = useStyles();
-  const { user, socket } = useContext(AuthContext);
+  //const classes = useStyles();
+  const { user } = useContext(AuthContext);
 
   const [tags, setTags] = useState([]);
   const [selected, setSelected] = useState(""); // Alterado de null para ""

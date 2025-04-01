@@ -332,6 +332,7 @@ const messages = {
           lgpdSendMessage: "Sempre solicitar confirmação do contato",
           ratingMessage: "Mensagem de avaliaçao - Escala deve ser de 0 a 10",
           token: "Token para integração externa",
+          cellNumber: "Fone para integração externa",
           sendIdQueue: "Fila",
           inactiveMessage: "Mensagem de inatividade",
           timeInactiveMessage:
@@ -670,8 +671,12 @@ const messages = {
           allowRealTime: "Ver Painel de Atendimentos",
           allowConnections: "Permitir ações nas conexões",
           allTicketsQueuesWaiting: "Visualiza Todos [Fila]",
+          sendWhatsAppInLeadMessage: "Enviar WhatsApp do lead?",
           allTicketsQueuesWaitingEnable: "Habilitado",
-          allTicketsQueuesWaitingDisable: "Desabilitado"
+          allTicketsQueuesWaitingDisable: "Desabilitado",
+          sendWhatsAppInLeadMessageEnable: "Habilitado",
+          sendWhatsAppInLeadMessageDisable: "Desabilitado",
+          leadMessage: "Mensagem padrão para o lead"
         },
         tabs: {
           general: "Geral",

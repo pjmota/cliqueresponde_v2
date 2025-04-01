@@ -1,6 +1,6 @@
 import React from "react";
 
-import { grey } from "@material-ui/core/colors";
+//import { grey } from "@material-ui/core/colors";
 import WhatsAppIcon from "@material-ui/icons/WhatsApp";
 import InstagramIcon from "@material-ui/icons/Instagram";
 import FacebookIcon from "@material-ui/icons/Facebook";

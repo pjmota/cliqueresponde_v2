@@ -194,6 +194,12 @@ class User extends Model<User> {
   @Column
   allTicketsQueuesWaiting: string;
 
+  @Column
+  sendWhatsAppInLeadMessage: string;
+
+  @Column
+  leadMessage: string;
+
   @BeforeDestroy
   static async updateChatbotsUsersReferences(user: User) {
     // Atualizar os registros na tabela Chatbots onde optQueueId é igual ao ID da fila que será excluída

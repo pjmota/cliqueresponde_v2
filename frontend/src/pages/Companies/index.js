@@ -5,7 +5,6 @@ import { useHistory } from "react-router-dom";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -25,7 +24,6 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import toastError from "../../errors/toastError";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { useDate } from "../../hooks/useDate";
-import usePlans from "../../hooks/usePlans";
 import moment from "moment";
 
 const reducer = (state, action) => {
@@ -98,8 +96,7 @@ const Companies = () => {
 
     // const { getPlanCompany } = usePlans();
   //   const socketManager = useContext(SocketContext);
-    const { user, socket } = useContext(AuthContext);
-
+    const { user } = useContext(AuthContext);
 
     useEffect(() => {
         async function fetchData() {
@@ -149,24 +146,24 @@ const Companies = () => {
 //         };
 //     }, []);
 
-    const handleOpenCompanyModal = () => {
+    /* const handleOpenCompanyModal = () => {
         setSelectedCompany(null);
         setCompanyModalOpen(true);
-    };
+    }; */
 
     const handleCloseCompanyModal = () => {
         setSelectedCompany(null);
         setCompanyModalOpen(false);
     };
 
-    const handleSearch = (event) => {
+    /* const handleSearch = (event) => {
         setSearchParam(event.target.value.toLowerCase());
     };
 
     const handleEditCompany = (company) => {
         setSelectedCompany(company);
         setCompanyModalOpen(true);
-    };
+    }; */
 
     const handleDeleteCompany = async (companyId) => {
         try {

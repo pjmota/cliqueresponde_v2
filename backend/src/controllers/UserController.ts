@@ -70,7 +70,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     defaultTicketsManagerWidth = 550,
     allowRealTime,
     allowConnections,
-    allTicketsQueuesWaiting
+    allTicketsQueuesWaiting,
+    sendWhatsAppInLeadMessage,
+    leadMessage
   } = req.body;
   let userCompanyId: number | null = null;
 
@@ -126,7 +128,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       defaultTicketsManagerWidth: 550,
       allowRealTime: 'disabled',
       allowConnections: 'disabled',
-      allTicketsQueuesWaiting: 'disabled'
+      allTicketsQueuesWaiting: 'disabled',
+      sendWhatsAppInLeadMessage: 'disabled',
+      leadMessage: ""
     };
 
     const user = await CreateCompanyService(companyData);
@@ -185,7 +189,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       defaultTicketsManagerWidth,
       allowRealTime,
       allowConnections,
-      allTicketsQueuesWaiting
+      allTicketsQueuesWaiting,
+      sendWhatsAppInLeadMessage,
+      leadMessage
     });
 
     const io = getIO();

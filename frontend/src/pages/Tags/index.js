@@ -3,7 +3,6 @@ import React, {
   useEffect,
   useReducer,
   useContext,
-  useRef,
 } from "react";
 import { toast } from "react-toastify";
 
@@ -76,7 +75,7 @@ const Tags = () => {
   const classes = useStyles();
   const { user, socket } = useContext(AuthContext);
 
-  const [selectedTagContacts, setSelectedTagContacts] = useState([]);
+  //const [selectedTagContacts, setSelectedTagContacts] = useState([]);
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
@@ -88,7 +87,7 @@ const Tags = () => {
   const [searchParam, setSearchParam] = useState("");
   const [tags, dispatch] = useReducer(reducer, []);
   const [tagModalOpen, setTagModalOpen] = useState(false);
-  const pageNumberRef = useRef(1);
+  //const pageNumberRef = useRef(1);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -153,14 +152,14 @@ const Tags = () => {
   };
 
   const handleShowContacts = (contacts, tag) => {
-    setSelectedTagContacts(contacts);
+    //setSelectedTagContacts(contacts);
     setContactModalOpen(true);
     setSelectedTagName(tag);
   };
 
   const handleCloseContactModal = () => {
     setContactModalOpen(false);
-    setSelectedTagContacts([]);
+    //setSelectedTagContacts([]);
     setSelectedTagName("");
   };
 

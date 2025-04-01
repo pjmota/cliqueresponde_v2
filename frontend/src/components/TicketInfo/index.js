@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { i18n } from "../../translate/i18n";
-import { Avatar, CardHeader, Grid, TextField, Input, InputAdornment, InputLabel } from "@material-ui/core";
-import { TagsKanbanContainer } from "../TagsKanbanContainer";
+import { Avatar, CardHeader, Grid } from "@material-ui/core";
+//import { TagsKanbanContainer } from "../TagsKanbanContainer";
 
 const TicketInfo = ({ contact, ticket, onClick }) => {
-	const [amount, setAmount] = useState("");
+	//const [amount, setAmount] = useState("");
 
 	const renderCardReader = () => {
 		return (
@@ -24,11 +24,11 @@ const TicketInfo = ({ contact, ticket, onClick }) => {
 		);
 	}
 
-	const handleChange = (event) => {
+	/* const handleChange = (event) => {
 		const value = event.target.value;
 
 		setAmount(value);
-	}
+	} */
 
 
 	return (

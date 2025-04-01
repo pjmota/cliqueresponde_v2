@@ -63,12 +63,12 @@ const useStyles = makeStyles(theme => ({
 
 const Kanban = () => {
   const classes = useStyles();
-  const theme = useTheme(); // Obter o tema atual
+  //const theme = useTheme(); // Obter o tema atual
   const history = useHistory();
   const { user, socket } = useContext(AuthContext);
   const [tags, setTags] = useState([]);
   const [tickets, setTickets] = useState([]);
-  const [ticketNot, setTicketNot] = useState(0);
+  //const [ticketNot, setTicketNot] = useState(0);
   const [file, setFile] = useState({ lanes: [] });
   const [startDate, setStartDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(new Date(), "yyyy-MM-dd"));

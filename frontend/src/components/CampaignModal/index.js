@@ -88,7 +88,7 @@ const CampaignModal = ({
 }) => {
   const classes = useStyles();
   const isMounted = useRef(true);
-  const { user, socket } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { companyId } = user;
 
   const initialState = {
@@ -117,7 +117,7 @@ const CampaignModal = ({
   const [campaign, setCampaign] = useState(initialState);
   const [whatsapps, setWhatsapps] = useState([]);
   const [selectedWhatsapps, setSelectedWhatsapps] = useState([]);
-  const [whatsappId, setWhatsappId] = useState(false);
+  const [whatsappId, setWhatsappId] = useState('');
 
   const [contactLists, setContactLists] = useState([]);
   const [tagLists, setTagLists] = useState([]);
@@ -283,7 +283,7 @@ const CampaignModal = ({
       const dataValues = {
         ...values,  // Merge the existing values object
         whatsappId: whatsappId,
-        userId: selectedUser?.id || null,
+        userId: selectedUser ? selectedUser?.id : user.id,
         queueId: selectedQueue || null
       };
 
@@ -298,7 +298,9 @@ const CampaignModal = ({
         }
       });
 
+      console.log('dataValues', campaignId)
       if (campaignId) {
+
         await api.put(`/campaigns/${campaignId}`, dataValues);
 
         if (attachment != null) {
@@ -306,10 +308,10 @@ const CampaignModal = ({
           formData.append("file", attachment);
           await api.post(`/campaigns/${campaignId}/media-upload`, formData);
         }
+
         handleClose();
       } else {
         const { data } = await api.post("/campaigns", dataValues);
-
         if (attachment != null) {
           const formData = new FormData();
           formData.append("file", attachment);
@@ -517,6 +519,7 @@ const CampaignModal = ({
                           touched.contactListId && Boolean(errors.contactListId)
                         }
                         disabled={!campaignEditable}
+                        value=''
                       >
                         <MenuItem value="">Nenhuma</MenuItem>
                         {contactLists &&
@@ -550,8 +553,9 @@ const CampaignModal = ({
                         name="tagListId"
                         error={touched.tagListId && Boolean(errors.tagListId)}
                         disabled={!campaignEditable}
+                        value=''
                       >
-                        {/* <MenuItem value="">Nenhuma</MenuItem> */}
+                        <MenuItem value="">Nenhuma</MenuItem>
                         {Array.isArray(tagLists) &&
                           tagLists.map((tagList) => (
                             <MenuItem key={tagList.id} value={tagList.id}>
@@ -596,6 +600,7 @@ const CampaignModal = ({
                         //   </div>
                         // )}
                       >
+                        <MenuItem value="">Nenhuma</MenuItem>
                         {whatsapps &&
                           whatsapps.map((whatsapp) => (
                             <MenuItem key={whatsapp.id} value={whatsapp.id}>

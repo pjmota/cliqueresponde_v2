@@ -37,7 +37,9 @@ const ShowUserService = async (id: string | number, companyId?: string | number)
         "allHistoric",
         "allowRealTime",
         "allowConnections",
-        "allTicketsQueuesWaiting"
+        "allTicketsQueuesWaiting",
+        "sendWhatsAppInLeadMessage",
+        "leadMessage"
       ],
       include: [
         { model: Queue, as: "queues", attributes: ["id", "name", "color"] },

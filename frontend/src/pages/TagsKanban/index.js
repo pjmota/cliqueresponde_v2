@@ -2,7 +2,6 @@ import React, {
   useState,
   useEffect,
   useReducer,
-  useCallback,
   useContext,
 } from "react";
 import { toast } from "react-toastify";
@@ -38,7 +37,7 @@ import toastError from "../../errors/toastError";
 import { Chip } from "@material-ui/core";
 // import { SocketContext } from "../../context/Socket/SocketContext";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import { CheckCircle } from "@material-ui/icons";
+//import { CheckCircle } from "@material-ui/icons";
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_TAGS") {

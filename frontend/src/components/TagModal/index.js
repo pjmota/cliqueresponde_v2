@@ -71,7 +71,7 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 	const [lanes, setLanes] = useState([]);
 	const [whatsapps, setWhatsapps] = useState([]);
 	const [queueIntegrations, setQueueIntegrations] = useState([]);
-	const [loading, setLoading] = useState(false);
+	//const [loading, setLoading] = useState(false);
 	const [selectedLane, setSelectedLane] = useState([]);
 	const [selectedWhatsapps, setSelectedWhatsapps] = useState([]);
 	const [selectedQueueIntegrations, setSelectedQueueIntegrations] = useState([]);
@@ -92,7 +92,7 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 
 	useEffect(() => {
 		setTag({...initialState});
-		setLoading(true);
+		//setLoading(true);
 		const delayDebounceFn = setTimeout(() => {
 			const fetchTags = async () => {
 				try {
@@ -110,7 +110,7 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 	}, [open]);
 
 	useEffect(() => {
-		setLoading(true);
+		//setLoading(true);
 		const delayDebounceFn = setTimeout(() => {
 			const fetchWhatsapps = async () => {
 				try {
@@ -126,7 +126,7 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 	}, []);
 
 	useEffect(() => {
-		setLoading(true);
+		//setLoading(true);
 		const delayDebounceFn = setTimeout(() => {
 			const fetchQueueIntegration = async () => {
 				try {

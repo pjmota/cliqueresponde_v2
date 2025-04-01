@@ -31,6 +31,8 @@ interface UserData {
   allowConnections?: string;
   profileImage?: string;
   allTicketsQueuesWaiting?: string;
+  sendWhatsAppInLeadMessage?: string;
+  leadMessage?: string
 }
 
 interface Request {
@@ -94,7 +96,9 @@ const UpdateUserService = async ({
     defaultTicketsManagerWidth = 550,
     allowRealTime,
     profileImage,
-    allTicketsQueuesWaiting
+    allTicketsQueuesWaiting,
+    sendWhatsAppInLeadMessage,
+    leadMessage,
   } = userData;
 
   try {
@@ -124,7 +128,9 @@ const UpdateUserService = async ({
     allowRealTime,
     profileImage,
     allowConnections,
-    allTicketsQueuesWaiting
+    allTicketsQueuesWaiting,
+    sendWhatsAppInLeadMessage,
+    leadMessage,
   });
 
   await user.$set("queues", queueIds);
@@ -164,7 +170,9 @@ const UpdateUserService = async ({
     allowRealTime: user.allowRealTime,
     allowConnections: user.allowConnections,
     profileImage: user.profileImage,
-    allTicketsQueuesWaiting: user.allTicketsQueuesWaiting
+    allTicketsQueuesWaiting: user.allTicketsQueuesWaiting,
+    sendWhatsAppInLeadMessage: user.sendWhatsAppInLeadMessage,
+    leadMessage: user.leadMessage,
   };
 
   return serializedUser;

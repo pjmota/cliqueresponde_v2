@@ -46,16 +46,16 @@ const ContactImportWpModal = ({ isOpen, handleClose, selectedTags, hideNum, user
   const { user } = useContext(AuthContext);
   const history = useHistory();
 
-  const initialContact = { name: "", number: "", error: "" }
+  //const initialContact = { name: "", number: "", error: "" }
 
   const [contactsToImport, setContactsToImport] = useState([])
-  const [statusMessage, setStatusMessage] = useState("")
-  const [currentContact, setCurrentContact] = useState(initialContact)
+  //const [statusMessage, setStatusMessage] = useState("")
+  //const [currentContact, setCurrentContact] = useState(initialContact)
 
   const handleClosed = () => {
     setContactsToImport([])
-    setStatusMessage("")
-    setCurrentContact(initialContact)
+    //setStatusMessage("")
+    //setCurrentContact(initialContact)
     handleClose()
   }
 
@@ -66,9 +66,9 @@ const ContactImportWpModal = ({ isOpen, handleClose, selectedTags, hideNum, user
         setTimeout(async () => {
           try {
             if (index >= contactsToImport?.length - 1) {
-              setStatusMessage(`importação concluída com exito a importação`)
+              //setStatusMessage(`importação concluída com exito a importação`)
               //setContactsToImport([])
-              setCurrentContact(initialContact)
+              //setCurrentContact(initialContact)
 
               setTimeout(() => {
                 handleClosed()
@@ -76,7 +76,7 @@ const ContactImportWpModal = ({ isOpen, handleClose, selectedTags, hideNum, user
             }
             if (index % 5 === 0) {
 
-              setStatusMessage(`importação em andamento ${index} de ${contactsToImport?.length} não saia desta tela até concluir a importação`)
+              //setStatusMessage(`importação em andamento ${index} de ${contactsToImport?.length} não saia desta tela até concluir a importação`)
               // toast.info(
               // );
             }
@@ -87,9 +87,9 @@ const ContactImportWpModal = ({ isOpen, handleClose, selectedTags, hideNum, user
               email: item.email,
             });
 
-            setCurrentContact({ name: item.name, number: item.number, error: "success" })
+            //setCurrentContact({ name: item.name, number: item.number, error: "success" })
           } catch (err) {
-            setCurrentContact({ name: item.name, number: item.number, error: err })
+            //setCurrentContact({ name: item.name, number: item.number, error: err })
           }
         }, 330 * index);
       });
@@ -136,7 +136,7 @@ const ContactImportWpModal = ({ isOpen, handleClose, selectedTags, hideNum, user
     XLSX.writeFile(wb, "backup_contatos.xlsx");
   };
 
-  const handleImportChange = (e) => {
+  /* const handleImportChange = (e) => {
     const [file] = e.target.files;
     const reader = new FileReader();
 
@@ -154,7 +154,7 @@ const ContactImportWpModal = ({ isOpen, handleClose, selectedTags, hideNum, user
       }
     };
     reader.readAsArrayBuffer(file);
-  };
+  }; */
   const handleimportContact = async () => {
     try {
       history.push('/contacts/import');

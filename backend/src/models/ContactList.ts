@@ -12,6 +12,7 @@ import {
 } from "sequelize-typescript";
 import Company from "./Company";
 import ContactListItem from "./ContactListItem";
+import User from "./User";
 
 @Table({ tableName: "ContactLists" })
 class ContactList extends Model<ContactList> {
@@ -42,6 +43,10 @@ class ContactList extends Model<ContactList> {
     hooks: true
   })
   contacts: ContactListItem[];
+
+  @ForeignKey(() => User)
+  @Column
+  userId: number;
 }
 
 export default ContactList;

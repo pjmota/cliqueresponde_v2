@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Field } from "formik";
+//import { Field } from "formik";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
 import Title from "../../components/Title";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+//import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import api from "../../services/api";
 import usePlans from "../../hooks/usePlans";
 import toastError from "../../errors/toastError";
@@ -68,11 +68,11 @@ const CampaignsConfig = () => {
   const history = useHistory();
 
   const [settings, setSettings] = useState(initialSettings);
-  const [showVariablesForm, setShowVariablesForm] = useState(false);
+  //const [showVariablesForm, setShowVariablesForm] = useState(false);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [selectedKey, setSelectedKey] = useState(null);
   const [variable, setVariable] = useState({ key: "", value: "" });
-  const { user, socket } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const [sabado, setSabado] = React.useState(false);
   const [domingo, setDomingo] = React.useState(false);
@@ -115,13 +115,13 @@ const CampaignsConfig = () => {
     });
   }, []);
 
-  const handleOnChangeVariable = (e) => {
+  /* const handleOnChangeVariable = (e) => {
     if (e.target.value !== null) {
       const changedProp = {};
       changedProp[e.target.name] = e.target.value;
       setVariable((prev) => ({ ...prev, ...changedProp }));
     }
-  };
+  }; */
 
   const handleOnChangeSettings = (e) => {
     const changedProp = {};
@@ -129,7 +129,7 @@ const CampaignsConfig = () => {
     setSettings((prev) => ({ ...prev, ...changedProp }));
   };
 
-  const addVariable = () => {
+  /* const addVariable = () => {
     setSettings((prev) => {
       if (!Array.isArray(prev.variables)) {
         // Lidar com o caso em que prev.variables não é um array
@@ -145,7 +145,7 @@ const CampaignsConfig = () => {
       }
       return { ...prev, variables };
     });
-  };
+  }; */
 
   const removeVariable = () => {
     const newList = settings.variables.filter((v) => v.key !== selectedKey);
@@ -158,16 +158,16 @@ const CampaignsConfig = () => {
     toast.success("Configurações salvas");
   };
 
-  const handleChange = (event) => {
+  /* const handleChange = (event) => {
     if (event.target.name === "sabado") {
       setSabado(event.target.checked);
     }
     if (event.target.name === "domingo") {
       setDomingo(event.target.checked);
     }
-  };
+  }; */
 
-  const handleSaveTimeMass = async () => {
+  /* const handleSaveTimeMass = async () => {
     let settings = {
       sabado: sabado,
       domingo: domingo,
@@ -182,7 +182,7 @@ const CampaignsConfig = () => {
     } catch (err) {
       toastError(err);
     }
-  };
+  }; */
 
   return (
     <MainContainer>

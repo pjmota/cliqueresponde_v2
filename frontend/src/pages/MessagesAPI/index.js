@@ -40,7 +40,7 @@ const MessagesAPI = () => {
   const [formMessageTextData,] = useState({ token: '', number: '', body: '', userId: '', queueId: '' })
   const [formMessageMediaData,] = useState({ token: '', number: '', medias: '', body:'', userId: '', queueId: '' })
   const [file, setFile] = useState({})
-  const { user, socket } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const { getPlanCompany } = usePlans();
 

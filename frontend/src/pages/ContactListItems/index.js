@@ -43,9 +43,8 @@ import useContactLists from "../../hooks/useContactLists";
 import { Grid } from "@material-ui/core";
 
 import planilhaExemplo from "../../assets/planilha.xlsx";
-import ForbiddenPage from "../../components/ForbiddenPage";
+//import ForbiddenPage from "../../components/ForbiddenPage";
 // import { SocketContext } from "../../context/Socket/SocketContext";
-
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_CONTACTS") {
