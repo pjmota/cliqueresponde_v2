@@ -1,0 +1,57 @@
+FOLDER_DOCKER_YAMLS := docker
+FOLDER_BACKEND := backend
+FOLDER_FRONTEND := frontend
+
+
+# Target to build and start the Docker containers in detached mode
+build_and_up_containers:
+	@echo "Building and starting containers..."
+	docker compose -f ${FOLDER_DOCKER_YAMLS}/config.yml -f ${FOLDER_DOCKER_YAMLS}/development.yml up -d
+
+# Target to stop and remove the running Docker containers
+stop_containers:
+	@echo "Stopping containers..."
+	docker compose -f ${FOLDER_DOCKER_YAMLS}/config.yml -f ${FOLDER_DOCKER_YAMLS}/development.yml down
+
+
+# Target to stop containers and remove images and volumes !! ONLY RUN THIS IF YOU WANT TO CLEAR EVERYTHING !!
+# YOU CAN LOSE DATA
+clear_images_and_volumes: 
+	@echo "Clearing images and volumes..."
+	docker compose -f ${FOLDER_DOCKER_YAMLS}/config.yml -f ${FOLDER_DOCKER_YAMLS}/development.yml down --rmi all --volumes
+	docker system prune -f --volumes
+
+# Target to install backend dependencies and run database migrations
+install_and_migrate_database:
+	@echo "Installing and migrating database..."
+	cd ${FOLDER_BACKEND} && \
+		npm install
+	cd ${FOLDER_BACKEND} && \
+		npm run build
+	cd ${FOLDER_BACKEND} && \
+		npm run db:migrate
+
+build_front_end:
+	@echo "Building frontend..."
+	cd ${FOLDER_FRONTEND} && \
+		npm install
+
+run_front_end:
+	@echo "Running frontend with PM2..."
+	cd ${FOLDER_FRONTEND} && \
+		pm2 start npm --name "frontend" -- run start:dev
+
+run_backend:
+	@echo "Running backend with PM2..."
+	cd ${FOLDER_BACKEND} && \
+		pm2 start npm --name "backend" -- run dev:server
+
+run_development: run_backend run_front_end
+	echo "Running development..."
+
+down_development:
+	@echo "Stopping development..."
+	cd ${FOLDER_BACKEND} && \
+		pm2 stop backend
+	cd ${FOLDER_FRONTEND} && \
+		pm2 stop frontend

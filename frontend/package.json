@@ -83,10 +83,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start:dev": "set NODE_OPTIONS=--openssl-legacy-provider && set \"REACT_APP_BACKEND_URL=http://localhost:8082\" && set PORT=3001 && react-scripts start",
-    "build": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
-    "buildWin": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
-    "builddev": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
+    "start:dev": "cross-env NODE_OPTIONS=--openssl-legacy-provider REACT_APP_BACKEND_URL=http://localhost:8080 PORT=3000 react-scripts start",
+    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+    "buildWin": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+    "builddev": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -104,5 +104,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
