@@ -269,8 +269,10 @@ const ContactLists = () => {
         <Table size="small">
           <TableHead>
             <TableRow>
+              <TableCell align="center">{i18n.t("contactLists.table.id")}</TableCell>
               <TableCell align="center">{i18n.t("contactLists.table.name")}</TableCell>
               <TableCell align="center">{i18n.t("contactLists.table.contacts")}</TableCell>
+              <TableCell align="center">{i18n.t("contactLists.table.user")}</TableCell>
               <TableCell align="center">{i18n.t("contactLists.table.actions")}</TableCell>
             </TableRow>
           </TableHead>
@@ -278,8 +280,10 @@ const ContactLists = () => {
             <>
               {contactLists.map((contactList) => (
                 <TableRow key={contactList.id}>
+                  <TableCell align="center">{contactList.id}</TableCell>
                   <TableCell align="center">{contactList.name}</TableCell>
                   <TableCell align="center">{contactList.contactsCount || 0}</TableCell>
+                  <TableCell align="center">{contactList?.user?.name || `Indefinido`}</TableCell>
                   <TableCell align="center">
                     <a href={planilhaExemplo} download="planilha.xlsx">
                       <IconButton size="small" title="Baixar Planilha Exemplo">

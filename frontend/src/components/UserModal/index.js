@@ -828,7 +828,7 @@ const UserModal = ({ open, onClose, userId }) => {
 																</>
 															</FormControl>
 														</Grid>
-														<Grid item xs={12} md={6} xl={6}>
+														{/* <Grid item xs={12} md={6} xl={6}>
 															<FormControl
 																variant="outlined"
 																className={classes.maxWidth}
@@ -853,30 +853,28 @@ const UserModal = ({ open, onClose, userId }) => {
 																</>
 															</FormControl>
 														</Grid>
-														{/* <Grid item xs={12} md={12} xl={12}> */}
-															<FormControl
-																variant="outlined"
-																className={classes.maxWidth}
-																margin="dense"
-																fullWidth
-															>
-																<>
-																	<Field
-																		as={TextField}
-																		label={i18n.t("userModal.form.leadMessage")}
-																		type="leadMessage"
-																		multiline
-																		rows={2}
-																		fullWidth
-																		name="leadMessage"
-																		error={touched.leadMessage && Boolean(errors.leadMessage)}
-																		helperText={touched.leadMessage && errors.leadMessage}
-																		variant="outlined"
-																		margin="dense"
-																	/>
-																</>
-															</FormControl>
-														{/* </Grid> */}
+														<FormControl
+															variant="outlined"
+															className={classes.maxWidth}
+															margin="dense"
+															fullWidth
+														>
+															<>
+																<Field
+																	as={TextField}
+																	label={i18n.t("userModal.form.leadMessage")}
+																	type="leadMessage"
+																	multiline
+																	rows={2}
+																	fullWidth
+																	name="leadMessage"
+																	error={touched.leadMessage && Boolean(errors.leadMessage)}
+																	helperText={touched.leadMessage && errors.leadMessage}
+																	variant="outlined"
+																	margin="dense"
+																/>
+															</>
+														</FormControl> */}
 														{/* <Grid item xs={12} md={6} xl={6}>
 															<FormControl
 																variant="outlined"
