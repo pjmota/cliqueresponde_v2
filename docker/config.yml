@@ -1,0 +1,4 @@
+networks:
+  whaticket_network:
+    name: whaticket_network
+    driver: bridge

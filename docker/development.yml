@@ -1,0 +1,40 @@
+services:
+  whaticket_redis:
+    container_name: whaticket_redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./volumes/redis:/data
+    environment:
+      - TZ=UTC
+    networks:
+      - whaticket_network
+
+  whaticket_database:
+    container_name: whaticket_database
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    user: postgres
+    volumes:
+      - whaticket_database_volume:/var/lib/postgresql/data
+    env_file: ./env/.env.database
+    networks:
+      - whaticket_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "whaticket_database"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+
+volumes:
+  whaticket_database_volume:
+    name: whaticket_database_volume
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./volumes/postgres/data

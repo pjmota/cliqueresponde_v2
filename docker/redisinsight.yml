@@ -1,0 +1,12 @@
+services:
+  whaticket_redis_insight:
+    container_name: whaticket_redis_insight
+    image: redis/redisinsight:latest
+    tty: true
+    stdin_open: true
+    volumes:
+       - ./volumes/redisinsight:/data
+    ports:
+       - '5540:5540'
+    networks:
+      - whaticket_network

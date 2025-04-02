@@ -1,0 +1,17 @@
+services:
+
+  whaticket_pgadmin:
+    container_name: whaticket_pgadmin
+    image: dpage/pgadmin4:latest
+    tty: true
+    stdin_open: true
+    volumes:
+       - ./volumes/pgadmin:/var/lib/pgadmin
+    env_file:
+       - ./env/.env.pgadmin
+    ports:
+       - '81:80'
+    depends_on:
+      - whaticket_database
+    networks:
+      - whaticket_network

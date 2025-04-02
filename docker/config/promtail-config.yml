@@ -1,0 +1,18 @@
+server:
+  http_listen_port: 9080
+
+clients:
+  - url: http://whaticket_loki:3100/loki/api/v1/push
+
+positions:
+  filename: /tmp/positions.yaml
+
+scrape_configs:
+  - job_name: whaticket_app
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: "whaticket_app"
+          __path__: /logs/*.log
+

@@ -1,0 +1,93 @@
+services:
+  whaticket_loki:
+    container_name: whaticket_loki
+    image: grafana/loki:latest
+    # ports:
+    #   - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: unless-stopped
+    volumes:
+      - ./config/loki-config.yml:/etc/loki/local-config.yaml
+      - ./volumes/loki/data:/tmp/loki/
+    networks:
+      - whaticket_network
+
+  whaticket_promtail:
+    container_name: whaticket_promtail
+    image: grafana/promtail:latest
+    volumes:
+      - ./config/promtail-config.yml:/etc/promtail/config.yml
+      - ./../backend/logs:/logs
+    command: -config.file=/etc/promtail/config.yml
+    restart: unless-stopped
+    networks:
+      - whaticket_network
+
+  whaticket_grafana:
+    container_name: whaticket_grafana 
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - "3300:3000"
+    volumes:
+      - ./volumes/grafana/provisioning:/etc/grafana/provisioning
+      - ./volumes/grafana/data:/var/lib/grafana
+    networks:
+      - whaticket_network
+
+  whaticket_prometheus:
+    image: prom/prometheus:latest
+    container_name: whaticket_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - whaticket_prometheus_volume:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - whaticket_network
+    restart: unless-stopped
+
+  whaticket_postgres_exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    container_name: whaticket_postgres_exporter
+    env_file: ./env/.env.postgres-exporter
+    ports:
+      - "9187:9187"
+    networks:
+      - whaticket_network
+    restart: unless-stopped
+
+  whaticket_node_exporter:
+    image: prom/node-exporter:latest
+    container_name: whaticket_node_exporter
+    # ports:
+    #   - "9100:9100"
+    networks:
+      - whaticket_network
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+
+volumes:
+  whaticket_prometheus_volume:
+    name: whaticket_prometheus_volume
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./volumes/prometheus
