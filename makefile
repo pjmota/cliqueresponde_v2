@@ -39,19 +39,21 @@ build_front_end:
 run_front_end:
 	@echo "Running frontend with PM2..."
 	cd ${FOLDER_FRONTEND} && \
-		pm2 start npm --name "frontend" -- run start:dev
+		pm2 start npm --name "frontend-v2" -- run start:dev
 
 run_backend:
 	@echo "Running backend with PM2..."
 	cd ${FOLDER_BACKEND} && \
-		pm2 start npm --name "backend" -- run dev:server
+		pm2 start npm --name "backend-v2" -- run dev:server
 
 run_development: run_backend run_front_end
 	echo "Running development..."
 
-down_development:
+down_and_clean_development:
 	@echo "Stopping development..."
 	cd ${FOLDER_BACKEND} && \
-		pm2 stop backend
+		pm2 stop backend-v2 && \
+		pm2 delete backend-v2
 	cd ${FOLDER_FRONTEND} && \
-		pm2 stop frontend
+		pm2 stop frontend-v2 && \
+		pm2 delete frontend-v2
