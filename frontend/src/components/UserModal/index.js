@@ -140,8 +140,11 @@ const UserModal = ({ open, onClose, userId }) => {
 		allowRealTime: "disabled",
 		allowConnections: "disabled",
 		allTicketsQueuesWaiting: "disable",
+		allTicketsQueuesAttending: "disable",
 		sendWhatsAppInLeadMessage: "disable",
-		leadMessage: ""
+		leadMessage: "",
+		tokenWhats: "",
+		userWhats: ""
 	};
 
 	const { user: loggedInUser } = useContext(AuthContext);
@@ -582,6 +585,56 @@ const UserModal = ({ open, onClose, userId }) => {
 												</FormControl>
 											</Grid>
 										</Grid>
+										{/* <Grid container spacing={1}>
+											<Grid item xs={12} md={6} xl={6}>
+												<FormControl
+													variant="outlined"
+													className={classes.maxWidth}
+													margin="dense"
+													fullWidth
+												>
+													<>
+														<Field
+															as={TextField}
+															label={i18n.t("userModal.form.tokenWhats")}
+															type="tokenWhats"
+															multiline
+															rows={1}
+															fullWidth
+															name="tokenWhats"
+															error={touched.tokenWhats && Boolean(errors.tokenWhats)}
+															helperText={touched.tokenWhats && errors.tokenWhats}
+															variant="outlined"
+															margin="dense"
+														/>
+													</>
+												</FormControl>
+											</Grid>
+											<Grid item xs={12} md={6} xl={6}>
+												<FormControl
+													variant="outlined"
+													className={classes.maxWidth}
+													margin="dense"
+													fullWidth
+												>
+													<>
+														<Field
+															as={TextField}
+															label={i18n.t("userModal.form.userWhats")}
+															type="userWhats"
+															multiline
+															rows={1}
+															fullWidth
+															name="userWhats"
+															error={touched.userWhats && Boolean(errors.userWhats)}
+															helperText={touched.userWhats && errors.userWhats}
+															variant="outlined"
+															margin="dense"
+														/>
+													</>
+												</FormControl>
+											</Grid>
+										</Grid> */}
 									</TabPanel>
 									<TabPanel
 										className={classes.container}
@@ -828,7 +881,32 @@ const UserModal = ({ open, onClose, userId }) => {
 																</>
 															</FormControl>
 														</Grid>
-														{/* <Grid item xs={12} md={6} xl={6}>
+														<Grid item xs={12} md={6} xl={6}>
+															<FormControl
+																variant="outlined"
+																className={classes.maxWidth}
+																margin="dense"
+																fullWidth
+															>
+																<>
+																	<InputLabel >
+																		{i18n.t("userModal.form.allTicketsQueuesAttending")}
+																	</InputLabel>
+
+																	<Field
+																		as={Select}
+																		label={i18n.t("userModal.form.allTicketsQueuesAttending")}
+																		name="allTicketsQueuesAttending"
+																		type="allTicketsQueuesAttending"
+																		required
+																	>
+																		<MenuItem value={"enable"}>{i18n.t("userModal.form.allTicketsQueuesAttendingEnable")}</MenuItem>
+																		<MenuItem value={"disable"}>{i18n.t("userModal.form.allTicketsQueuesAttendingDisable")}</MenuItem>
+																	</Field>
+																</>
+															</FormControl>
+														</Grid>
+{/* 														<Grid item xs={12} md={6} xl={6}>
 															<FormControl
 																variant="outlined"
 																className={classes.maxWidth}

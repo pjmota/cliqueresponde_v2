@@ -29,6 +29,7 @@ interface Request {
   allowRealTime?: string;
   allowConnections?: string;
   allTicketsQueuesWaiting?: string;
+  allTicketsQueuesAttending?: string;
   sendWhatsAppInLeadMessage?: string;
   leadMessage?: string;
 }
@@ -63,6 +64,7 @@ const CreateUserService = async ({
   allowRealTime,
   allowConnections,
   allTicketsQueuesWaiting,
+  allTicketsQueuesAttending,
   sendWhatsAppInLeadMessage,
   leadMessage,
 }: Request): Promise<Response> => {
@@ -137,6 +139,7 @@ const CreateUserService = async ({
       allowRealTime,
       allowConnections,
       allTicketsQueuesWaiting,
+      allTicketsQueuesAttending,
       sendWhatsAppInLeadMessage,
       leadMessage
     },

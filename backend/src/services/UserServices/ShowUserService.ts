@@ -38,6 +38,7 @@ const ShowUserService = async (id: string | number, companyId?: string | number)
         "allowRealTime",
         "allowConnections",
         "allTicketsQueuesWaiting",
+        "allTicketsQueuesAttending",
         "sendWhatsAppInLeadMessage",
         "leadMessage"
       ],
