@@ -114,7 +114,6 @@ const Campaigns = () => {
   //   const socketManager = useContext(SocketContext);
   const { user, socket } = useContext(AuthContext);
 
-
   const { datetimeToClient } = useDate();
   const { getPlanCompany } = usePlans();
 
@@ -341,12 +340,15 @@ const Campaigns = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">
+                      {i18n.t("campaigns.table.id")}
+                    </TableCell>
+                    <TableCell align="center">
                       {i18n.t("campaigns.table.name")}
                     </TableCell>
                     <TableCell align="center">
                       {i18n.t("campaigns.table.status")}
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell align="center" style={{ whiteSpace: "nowrap" }}>
                       {i18n.t("campaigns.table.contactList")}
                     </TableCell>
                     <TableCell align="center">
@@ -362,6 +364,9 @@ const Campaigns = () => {
                       {i18n.t("campaigns.table.confirmation")}
                     </TableCell>
                     <TableCell align="center">
+                      {i18n.t("campaigns.table.user")}
+                    </TableCell>
+                    <TableCell align="center">
                       {i18n.t("campaigns.table.actions")}
                     </TableCell>
                   </TableRow>
@@ -370,34 +375,37 @@ const Campaigns = () => {
                   <>
                     {campaigns.map((campaign) => (
                       <TableRow key={campaign.id}>
-                        <TableCell align="center">{campaign.name}</TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center">{campaign.id}</TableCell>
+                        <TableCell align="center" style={{ whiteSpace: "nowrap" }}>{campaign.name}</TableCell>
+                        <TableCell align="center" style={{ whiteSpace: "nowrap" }}>
                           {formatStatus(campaign.status)}
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center" style={{ whiteSpace: "nowrap" }}>
                           {campaign.contactListId
                             ? campaign.contactList.name
                             : "Não definida"}
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center" style={{ whiteSpace: "nowrap" }}>
                           {campaign.whatsappId
                             ? campaign.whatsapp.name
                             : "Não definido"}
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center" style={{ whiteSpace: "nowrap" }}>
                           {campaign.scheduledAt
                             ? datetimeToClient(campaign.scheduledAt)
                             : "Sem agendamento"}
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center" style={{ whiteSpace: "nowrap" }}>
                           {campaign.completedAt
                             ? datetimeToClient(campaign.completedAt)
                             : "Não concluída"}
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center" style={{ whiteSpace: "nowrap" }}>
                           {campaign.confirmation ? "Habilitada" : "Desabilitada"}
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center" style={{ whiteSpace: "nowrap" }}>{campaign?.user?.name ?? `Indefinido`}
+                        </TableCell>
+                        <TableCell align="center" style={{ whiteSpace: "nowrap" }}>
                           {campaign.status === "EM_ANDAMENTO" && (
                             <IconButton
                               onClick={() => cancelCampaign(campaign)}

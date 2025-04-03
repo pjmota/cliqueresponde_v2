@@ -1076,8 +1076,10 @@ const messages = {
       contactLists: {
         title: "Listas de Contatos",
         table: {
+          id: "ID",
           name: "Nome",
           contacts: "Contatos",
+          user: "Usuário",
           actions: "Ações",
         },
         buttons: {
@@ -1173,6 +1175,7 @@ const messages = {
           contactLists: "Listas de Contatos",
         },
         table: {
+          id: "ID",
           name: "Nome",
           whatsapp: "Conexão",
           contactList: "Lista de Contatos",
@@ -1184,6 +1187,7 @@ const messages = {
           completedAt: "Concluída",
           confirmation: "Confirmação",
           actions: "Ações",
+          user: "Usuário"
         },
         dialog: {
           new: "Nova Campanha",

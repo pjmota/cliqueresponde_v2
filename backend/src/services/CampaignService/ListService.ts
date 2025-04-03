@@ -3,6 +3,7 @@ import Campaign from "../../models/Campaign";
 import { isEmpty } from "lodash";
 import ContactList from "../../models/ContactList";
 import Whatsapp from "../../models/Whatsapp";
+import User from "../../models/User";
 
 interface Request {
   companyId: number | string;
@@ -53,7 +54,8 @@ const ListService = async ({
     order: [["status", "ASC"], ["scheduledAt", "DESC"]],
     include: [
       { model: ContactList },
-      { model: Whatsapp, attributes: ["id", "name"] }
+      { model: Whatsapp, attributes: ["id", "name"] },
+      { model: User, attributes: ["id", "name"] }
     ]
   });
 

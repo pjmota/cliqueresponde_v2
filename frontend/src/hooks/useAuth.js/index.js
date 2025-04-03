@@ -184,17 +184,18 @@ Entre em contato com o Suporte para mais informações! `);
 
   const handleLogout = async () => {
     setLoading(true);
-
+    localStorage.removeItem("token");
+    localStorage.removeItem("userData"); 
+    localStorage.removeItem("cshow");
+    localStorage.clear();
     try {
       // socket.disconnect();
       await api.delete("/auth/logout");
       setIsAuth(false);
       setUser({});
-      localStorage.removeItem("token");
-      localStorage.removeItem("cshow");
-      // localStorage.removeItem("public-token");
       api.defaults.headers.Authorization = undefined;
       setLoading(false);
+      
       history.push("/login");
     } catch (err) {
       toastError(err);

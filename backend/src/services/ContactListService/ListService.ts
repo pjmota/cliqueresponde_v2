@@ -3,6 +3,7 @@ import ContactList from "../../models/ContactList";
 import ContactListItem from "../../models/ContactListItem";
 import { isEmpty } from "lodash";
 import removeAccents from "remove-accents"
+import User from "../../models/User";
 interface Request {
   companyId: number | string;
   userId?: number | string;
@@ -59,14 +60,16 @@ const ListService = async ({
         as: "contacts",
         attributes: [],
         required: false
-      }
+      },
+      { model: User, attributes: ["id", "name"] }
     ],
     attributes: [
       "id",
       "name",
       [fn("count", col("contacts.id")), "contactsCount"]
     ],
-    group: ["ContactList.id"]
+    group: ["ContactList.id", "user.id"],
+    //logging: console.log
   });
 
   const hasMore = count > offset + records.length;

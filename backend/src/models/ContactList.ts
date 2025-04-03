@@ -47,6 +47,9 @@ class ContactList extends Model<ContactList> {
   @ForeignKey(() => User)
   @Column
   userId: number;
+
+  @BelongsTo(() => User)
+  user: User;
 }
 
 export default ContactList;
