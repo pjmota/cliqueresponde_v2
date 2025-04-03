@@ -9,3 +9,4 @@ api_oficial/
 =======
 >>>>>>> organizacional/main
 docker/volumes/redis/dump.rdb
+.vscode/settings.json
