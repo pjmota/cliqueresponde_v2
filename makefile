@@ -30,11 +30,13 @@ install_and_migrate_database:
 		npm run build
 	cd ${FOLDER_BACKEND} && \
 		npm run db:migrate
+	cd ${FOLDER_BACKEND} && \
+		npm run db:seed
 
 build_front_end:
 	@echo "Building frontend..."
 	cd ${FOLDER_FRONTEND} && \
-		npm install
+		npm install -f
 
 run_front_end:
 	@echo "Running frontend with PM2..."
