@@ -8,3 +8,4 @@ backend/logs/preparingImportMessagesWppId31.txt
 api_oficial/
 =======
 >>>>>>> organizacional/main
+docker/volumes/redis/dump.rdb
