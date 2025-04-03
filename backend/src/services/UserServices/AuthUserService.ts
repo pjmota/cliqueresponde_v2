@@ -9,6 +9,7 @@ import Queue from "../../models/Queue";
 import Company from "../../models/Company";
 import Setting from "../../models/Setting";
 import CompaniesSettings from "../../models/CompaniesSettings";
+import Tag from "../../models/Tag";
 
 interface SerializedUser {
   id: number;
@@ -16,6 +17,7 @@ interface SerializedUser {
   email: string;
   profile: string;
   queues: Queue[];
+  tags: Tag[];
   companyId: number;
   allTicket: string;
   defaultTheme: string;
@@ -46,7 +48,11 @@ const AuthUserService = async ({
 }: Request): Promise<Response> => {
   const user = await User.findOne({
     where: { email },
-    include: ["queues", { model: Company, include: [{ model: CompaniesSettings }] }]
+    include: [
+      "queues",
+      "tags",
+      { model: Company, include: [{ model: CompaniesSettings }] }
+    ]
   });
 
   if (!user) {

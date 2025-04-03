@@ -2,6 +2,7 @@ import Queue from "../models/Queue";
 import Company from "../models/Company";
 import User from "../models/User";
 import jwt from "jsonwebtoken";
+import Tag from "../models/Tag";
 
 interface SerializedUser {
   id: number;
@@ -12,6 +13,7 @@ interface SerializedUser {
   company: Company | null;
   super: boolean;
   queues: Queue[];
+  tags: Tag[];
   startWork: string;
   endWork: string;
   allTicket: string;
@@ -47,6 +49,7 @@ export const SerializeUser = async (user: User): Promise<SerializedUser> => {
     company: user.company,
     super: user.super,
     queues: user.queues,
+    tags: user.tags,
     startWork: user.startWork,
     endWork: user.endWork,
     allTicket: user.allTicket,
