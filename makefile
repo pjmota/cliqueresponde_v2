@@ -41,7 +41,7 @@ build_front_end:
 run_front_end:
 	@echo "Running frontend with PM2..."
 	cd ${FOLDER_FRONTEND} && \
-		pm2 start npm --name "frontend-v2" -- run start:dev
+		pm2 start npm --name "frontend-v2" -- run start:devlinux
 
 run_backend:
 	@echo "Running backend with PM2..."
