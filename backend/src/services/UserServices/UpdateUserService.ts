@@ -31,6 +31,7 @@ interface UserData {
   allowConnections?: string;
   profileImage?: string;
   allTicketsQueuesWaiting?: string;
+  allTicketsQueuesAttending?: string;
   sendWhatsAppInLeadMessage?: string;
   leadMessage?: string
 }
@@ -97,6 +98,7 @@ const UpdateUserService = async ({
     allowRealTime,
     profileImage,
     allTicketsQueuesWaiting,
+    allTicketsQueuesAttending,
     sendWhatsAppInLeadMessage,
     leadMessage,
   } = userData;
@@ -129,6 +131,7 @@ const UpdateUserService = async ({
     profileImage,
     allowConnections,
     allTicketsQueuesWaiting,
+    allTicketsQueuesAttending,
     sendWhatsAppInLeadMessage,
     leadMessage,
   });
@@ -171,6 +174,7 @@ const UpdateUserService = async ({
     allowConnections: user.allowConnections,
     profileImage: user.profileImage,
     allTicketsQueuesWaiting: user.allTicketsQueuesWaiting,
+    allTicketsQueuesAttending: user.allTicketsQueuesAttending,
     sendWhatsAppInLeadMessage: user.sendWhatsAppInLeadMessage,
     leadMessage: user.leadMessage,
   };

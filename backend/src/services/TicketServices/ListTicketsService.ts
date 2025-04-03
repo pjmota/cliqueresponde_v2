@@ -95,10 +95,20 @@ const ListTicketsService = async ({
   let whereCondition: Filterable["where"];
 
   whereCondition = {
-    [Op.or]: [{ userId }, { status: "pending" }],
-    queueId: showTicketWithoutQueue
-      ? { [Op.or]: [queueIds, null] }
-      : { [Op.or]: [queueIds] },
+    ...(status === "open" &&
+    user.allTicketsQueuesAttending === "enable" &&
+    user.profile === "user"
+      ? {}
+      : { [Op.or]: [{ userId }, { status: "pending" }] }),
+    ...(status === "open" &&
+    user.allTicketsQueuesAttending === "enable" &&
+    user.profile === "user"
+      ? {}
+      : {
+          queueId: showTicketWithoutQueue
+            ? { [Op.or]: [queueIds, null] }
+            : { [Op.or]: [queueIds] }
+        }),
     companyId
   };
 
@@ -148,8 +158,10 @@ const ListTicketsService = async ({
   if (status === "open") {
     whereCondition = {
       ...whereCondition,
-      userId,
-      queueId: { [Op.in]: queueIds }
+      ...(user.allTicketsQueuesAttending === "enable" && user.profile === "user"
+        ? {}
+        : { userId }),
+      queueId: { [Op.in]: queueIds },
     };
   } else if (status === "group" && user.allowGroup && user.whatsappId) {
     whereCondition = {
@@ -215,7 +227,9 @@ const ListTicketsService = async ({
       ticketsIds = await Ticket.findAll({
         where: {
           companyId,
-          ...(user.allTicketsQueuesWaiting === "disable" ? {userId: { [Op.or]: [user.id, null] }} : {}),
+          ...(user.allTicketsQueuesWaiting === "disable"
+            ? { userId: { [Op.or]: [user.id, null] } }
+            : {}),
           status: "pending",
           queueId: { [Op.in]: queueIds }
         }
@@ -239,7 +253,15 @@ const ListTicketsService = async ({
     }
 
     if (ticketsIds) {
-      TicketsUserFilter.push(ticketsIds.filter(e => (user.allTicketsQueuesWaiting === "disable" ? e.userId === user.id : e)).map(t => t.id));
+      TicketsUserFilter.push(
+        ticketsIds
+          .filter(e =>
+            user.allTicketsQueuesWaiting === "disable"
+              ? e.userId === user.id
+              : e
+          )
+          .map(t => t.id)
+      );
     }
     // }
 
@@ -293,14 +315,15 @@ const ListTicketsService = async ({
           userId
         };
       } else {
-
         whereCondition2 = {
           ...whereCondition2,
           queueId:
             showAll === "true" || showTicketWithoutQueue
               ? { [Op.or]: [queueIds, null] }
               : queueIds,
-          ...(user.allTicketsQueuesWaiting === "disable" ? {userId: user.id } : {}),
+          ...(user.allTicketsQueuesWaiting === "disable"
+            ? { userId: user.id }
+            : {})
         };
       }
 
@@ -315,7 +338,6 @@ const ListTicketsService = async ({
         group: ["companyId", "contactId", "whatsappId"]
       });
     } else {
-      logger.warn(`entrou no else`)
       let whereCondition2: Filterable["where"] = {
         companyId,
         status: "closed"
@@ -554,7 +576,6 @@ const ListTicketsService = async ({
       };
     }
   } else if (withUnreadMessages === "true") {
-    // console.log(showNotificationPendingValue)
     whereCondition = {
       [Op.or]: [
         {
@@ -591,8 +612,7 @@ const ListTicketsService = async ({
 
   whereCondition = {
     ...whereCondition,
-    companyId,
-    //queueId: [118,119,120,121,198]
+    companyId
   };
 
   const limitBase = 40;
@@ -624,7 +644,7 @@ const ListTicketsService = async ({
       offset,
       order: [["updatedAt", sortTickets]],
       subQuery: false,
-      //...(status === 'closed' ? {logging: console.log} : {})
+      //...(status === 'open' ? {logging: console.log} : {})
     });
 
     count = result.count;
@@ -634,7 +654,7 @@ const ListTicketsService = async ({
     //logger.warn(`Consulta retornou ${result.rows.length} novos registros, total acumulado: ${tickets.length}`);
 
     // Se ainda não temos registros suficientes, aumentamos o limit e repetimos
-    if (status === 'open' && count > limit && tickets.length < limitBase) {
+    if (status === "open" && count > limit && tickets.length < limitBase) {
       limit += 10;
       offset += limit; // Ajustar offset para não trazer os mesmos registros
     } else {

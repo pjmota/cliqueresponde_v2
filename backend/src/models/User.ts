@@ -194,6 +194,10 @@ class User extends Model<User> {
   @Column
   allTicketsQueuesWaiting: string;
 
+  @Default("disabled")
+  @Column
+  allTicketsQueuesAttending: string;
+
   @Column
   sendWhatsAppInLeadMessage: string;
 

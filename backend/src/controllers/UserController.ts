@@ -71,6 +71,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     allowRealTime,
     allowConnections,
     allTicketsQueuesWaiting,
+    allTicketsQueuesAttending,
     sendWhatsAppInLeadMessage,
     leadMessage
   } = req.body;
@@ -129,6 +130,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       allowRealTime: 'disabled',
       allowConnections: 'disabled',
       allTicketsQueuesWaiting: 'disabled',
+      allTicketsQueuesAttending: 'disabled',
       sendWhatsAppInLeadMessage: 'disabled',
       leadMessage: ""
     };
@@ -190,6 +192,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       allowRealTime,
       allowConnections,
       allTicketsQueuesWaiting,
+      allTicketsQueuesAttending,
       sendWhatsAppInLeadMessage,
       leadMessage
     });

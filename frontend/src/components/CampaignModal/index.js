@@ -118,6 +118,7 @@ const CampaignModal = ({
   const [whatsapps, setWhatsapps] = useState([]);
   const [selectedWhatsapps, setSelectedWhatsapps] = useState([]);
   const [whatsappId, setWhatsappId] = useState('');
+  const [contactListId, setContactListId] = useState('');
 
   const [contactLists, setContactLists] = useState([]);
   const [tagLists, setTagLists] = useState([]);
@@ -189,8 +190,13 @@ const CampaignModal = ({
       }
 
       api
-        .get(`/contact-lists/list`, { params: { companyId } })
-        .then(({ data }) => setContactLists(data));
+        .get(`/contact-lists/list`, { params: { 
+          companyId,
+          ...(user.profile === 'user' ? {userId: user.id} : {})
+        } })
+        .then(({ data }) => {
+          setContactLists(data);
+        });
 
       api
         .get(`/whatsapp`, { params: { companyId, session: 0 } })
@@ -519,7 +525,10 @@ const CampaignModal = ({
                           touched.contactListId && Boolean(errors.contactListId)
                         }
                         disabled={!campaignEditable}
-                        value=''
+                        value={contactListId}
+                        onChange={(event) => {
+                          setContactListId(event.target.value)
+                        }}
                       >
                         <MenuItem value="">Nenhuma</MenuItem>
                         {contactLists &&
@@ -589,7 +598,6 @@ const CampaignModal = ({
                         disabled={!campaignEditable}
                         value={whatsappId}
                         onChange={(event) => {
-                          console.log(event.target.value)
                           setWhatsappId(event.target.value)
                         }}
                         // renderValue={(selected) => (
