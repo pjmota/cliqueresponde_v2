@@ -4,10 +4,7 @@
 .DS_Store
 package-lock.json
 backend/logs/preparingImportMessagesWppId31.txt
-<<<<<<< HEAD
 api_oficial/
-=======
->>>>>>> organizacional/main
 docker/volumes/redis/dump.rdb
 .vscode/settings.json
 .vscode/launch.json
