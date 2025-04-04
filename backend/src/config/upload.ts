@@ -3,6 +3,7 @@ import multer from "multer";
 import fs from "fs";
 import Whatsapp from "../models/Whatsapp";
 import { isEmpty, isNil } from "lodash";
+import { Json } from "sequelize/types/lib/utils";
 
 const publicFolder = path.resolve(__dirname, "..", "..", "public");
 
@@ -10,7 +11,7 @@ export default {
   directory: publicFolder,
   storage: multer.diskStorage({
     destination: async function (req, file, cb) {
-
+      console.log("Requisição para salvar arquivo: ", JSON.stringify(req.user));
       let companyId;
       companyId = req.user?.companyId
       const { typeArch, fileId } = req.body;

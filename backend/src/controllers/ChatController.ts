@@ -1,4 +1,3 @@
-import * as Yup from "yup";
 import { Request, Response } from "express";
 import { getIO } from "../libs/socket";
 
@@ -126,15 +125,31 @@ export const saveMessage = async (
   res: Response
 ): Promise<Response> => {
   const { companyId } = req.user;
-  const { message } = req.body;
+  const { body } = req.body;
   const { id } = req.params;
   const senderId = +req.user.id;
   const chatId = +id;
 
+  const file = req.file as Express.Multer.File;
+
+  let mediaType;
+
+  if (file && ['.jpeg', '.gif', '.png'].some(item => body.endsWith(item))){
+    mediaType = 'image';
+  } else if (file && ['.mp3', '.ogg'].some(item => body.endsWith(item))) {
+    mediaType = 'audio';
+  } else if (file && ['.mp4'].some(item => body.endsWith(item))) {
+    mediaType = 'video';
+  }
+
+ 
+
   const newMessage = await CreateMessageService({
     chatId,
     senderId,
-    message
+    body,
+    mediaType,
+    mediaUrl: file?.filename,
   });
 
   const chat = await Chat.findByPk(chatId, {
@@ -203,6 +218,7 @@ export const messages = async (
   const { pageNumber } = req.query as unknown as IndexQuery;
   const { id: chatId } = req.params;
   const ownerId = +req.user.id;
+  const profile = req.user.profile;
 
   const { records, count, hasMore } = await FindMessages({
     chatId,
@@ -211,4 +227,19 @@ export const messages = async (
   });
 
   return res.json({ records, count, hasMore });
+};
+
+export const getFile = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+
+
+  return new Promise((resolve, reject) => {
+    
+      res.json({
+        file: req.query.filename,
+      })
+  
+  });
 };

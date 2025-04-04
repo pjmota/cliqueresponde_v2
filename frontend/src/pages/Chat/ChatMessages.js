@@ -10,13 +10,15 @@ import {
   Typography,
 } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
-import MessageInput from './../../components/MessageInputCustom/';
+import ModalImageCors from "../../components/ModalImageCors";
+
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { useDate } from "../../hooks/useDate";
 import api from "../../services/api";
+import MessageInput from './../../components/MessageInputCustom/';
 import { ReplyMessageProvider } from "../../context/ReplyingMessage/ReplyingMessageContext";
-import ModalImageCors from "../../components/ModalImageCors";
 
+//import { green } from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({
   mainContainer: {
@@ -34,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "auto",
     height: "100%",
     ...theme.scrollbarStyles,
-    backgroundColor: theme.mode === 'light' ? "#f2f2f2" : "#7f7f7f",
+    backgroundColor: theme.palette.chatlist, //DARK MODE PLW DESIGN//
   },
   inputArea: {
     position: "relative",
@@ -50,8 +52,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 10px 5px",
     margin: "10px",
     position: "relative",
-    backgroundColor: "#ffffff",
-    color: "#303030",
+    backgroundColor: theme.mode === "dark" ? "#202C33" : "white",
     maxWidth: 300,
     borderRadius: 10,
     borderBottomLeftRadius: 0,
@@ -61,13 +62,19 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 10px 5px",
     margin: "10px 10px 10px auto",
     position: "relative",
-    backgroundColor: "#dcf8c6",
-    color: "#303030",
+    backgroundColor: theme.mode === "dark" ? "#005C4B" : "#D9FDD3", // "green", //DARK MODE PLW DESIGN//
     textAlign: "right",
     maxWidth: 300,
     borderRadius: 10,
     borderBottomRightRadius: 0,
     border: "1px solid rgba(0, 0, 0, 0.12)",
+  },
+  downloadMedia: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "inherit",
+    padding: 10,
   },
 }));
 
@@ -105,8 +112,6 @@ export default function ChatMessages({
     localStorage.setItem('playbackRate', event.target.playbackRate);
   }
 
-  const [contentMessage, setContentMessage] = useState("");
-
   const scrollToBottom = () => {
     if (baseRef.current) {
       baseRef.current.scrollIntoView({});
@@ -125,7 +130,7 @@ export default function ChatMessages({
     if (unreadMessages(chat) > 0) {
       try {
         api.post(`/chats/${chat.id}/read`, { userId: user.id });
-      } catch (err) { }
+      } catch (err) {}
     }
     scrollToBottomRef.current = scrollToBottom;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,129 +144,63 @@ export default function ChatMessages({
     }
   };
 
+  const isCurrentUserSender = (item, user) => {
+    return item.senderId === user.id;
+  };
+
+  const renderMessageBox = (item, key, classes, user, datetimeToClient, setPlaybackRate, onChangePlaybackRate) => {
+    const isSender = isCurrentUserSender(item, user);
+    
+    function resolveMediaUrl(mediaUrl) {
+        const companyId = user.companyId;
+        item.mediaUrl = mediaUrl.replace("/public/", `/public/company${companyId}/`);
+        return item.mediaUrl;
+    }
+
+
+    return (
+      <Box key={key} className={isSender ? classes.boxRight : classes.boxLeft}>
+        <Typography variant="subtitle2">
+          {item.sender.name}
+        </Typography>
+
+        {!item.mediaType ? item.body?.replace(/\*\w+\:\*/g, '') : undefined}
+
+        {item.mediaType === "image" && (<ModalImageCors imageUrl={resolveMediaUrl(item.mediaUrl)} /> || item.body)}
+
+        {item.mediaType === "audio" && (
+          <div className={classes.downloadMedia}>
+            <audio id={`audio_${item.id}`} controls onPlay={() => setPlaybackRate(`audio_${item.id}`)} onRateChange={onChangePlaybackRate}>
+              {isSender ? (
+                <source src={item.mediaUrl} type="audio/mpeg"></source>
+              ) : (
+                item.quotedMsg?.mediaUrl && (
+                  <source src={item.quotedMsg.mediaUrl} type="audio/mpeg"></source>
+                )
+              )}
+            </audio>
+          </div>
+        )}
+
+        <Typography variant="caption" display="block">
+          {datetimeToClient(item.createdAt)}
+        </Typography>
+      </Box>
+    );
+  };
+
   return (
-    <Paper className={classes.mainContainer}>
-      <div onScroll={handleScroll} className={classes.messageList}>
-        {Array.isArray(messages) &&
-          messages.map((item, key) => {
-            if (item.senderId === user.id) {
-              return (
-                <Box key={key} className={classes.boxRight}>
-                  <Typography variant="subtitle2">
-                    {item.sender.name}
-                  </Typography>
-                  {item.message}
-                  <Typography variant="caption" display="block">
-                    {datetimeToClient(item.createdAt)}
-                  </Typography>
-                </Box>
-              );
-            } else {
-              return (
-                <Box key={key} className={classes.boxLeft}>
-                  <Typography variant="subtitle2">
-                    {item.sender.name}
-                  </Typography>
-                  {item.message}
-                  <Typography variant="caption" display="block">
-                    {datetimeToClient(item.createdAt)}
-                  </Typography>
-                </Box>
-              );
-            }
-          })}
-        <div ref={baseRef}></div>
-      </div>
-      <div className={classes.inputArea}>
+    <>
+      <Paper className={classes.mainContainer}>
         <div onScroll={handleScroll} className={classes.messageList}>
           {Array.isArray(messages) &&
-            messages.map((item, key) => {
-              if (item.senderId === user.id) {
-                return (
-                  <Box key={key} className={classes.boxRight}>
-                    <Typography variant="subtitle2">
-                      {item.sender.name}
-                    </Typography>
-
-                    {!item.mediaType ? item.body?.replace(/\*\w+\:\*/g, '') : undefined}
-
-                    {item.mediaType === "image" && (<ModalImageCors imageUrl={item.mediaUrl} /> || item.body)}
-
-                    {item.mediaType === "audio" && (
-                      <div className={classes.downloadMedia}>
-                        <audio id={`audio_${item.id}`} controls onPlay={() => setPlaybackRate(`audio_${item.id}`)} onRateChange={onChangePlaybackRate}>
-                          <source src={item.mediaUrl} type="audio/mpeg"></source>
-                        </audio>
-                      </div>
-                    )}
-                    <Typography variant="caption" display="block">
-                      {datetimeToClient(item.createdAt)}
-                    </Typography>
-                  </Box>
-                );
-              } else {
-                return (
-                  <Box key={key} className={classes.boxLeft}>
-                    <Typography variant="subtitle2">
-                      {item.sender.name}
-                    </Typography>
-
-                    {!item.mediaType ? item.body?.replace(/\*\w+\:\*/g, '') : undefined}
-
-                    {item.mediaType === "image" && (<ModalImageCors imageUrl={item.mediaUrl} /> || item.body)}
-
-                    {item.mediaType === "audio" && (
-                      <div className={classes.downloadMedia}>
-                        <audio id={`audio_${item.id}`} controls onPlay={() => setPlaybackRate(`audio_${item.id}`)} onRateChange={onChangePlaybackRate}>
-                          {item.quotedMsg?.mediaUrl && (
-                            <source src={item.quotedMsg.mediaUrl} type="audio/mpeg"></source>
-                          )}
-                        </audio>
-                      </div>
-                    )}
-
-                    <Typography variant="caption" display="block">
-                      {datetimeToClient(item.createdAt)}
-                    </Typography>
-                  </Box>
-                );
-              }
-            })}
+            messages.map((item, key) => renderMessageBox(item, key, classes, user, datetimeToClient, setPlaybackRate, onChangePlaybackRate))}
           <div ref={baseRef}></div>
         </div>
         <ReplyMessageProvider>
-          <MessageInput ticketStatus={'open'} showIntegrationOptions={false} baseUrl={`/chats/${chat.id}/messages`} />
+          <MessageInput ticketStatus={'open'} showIntegrationOptions={false} baseUrl={`/chats/${chat.id}/messages`}/>
         </ReplyMessageProvider>
-        {/* <FormControl variant="outlined" fullWidth>
-          <Input
-            multiline
-            value={contentMessage}
-            onKeyUp={(e) => {
-              if (e.key === "Enter" && contentMessage.trim() !== "") {
-                handleSendMessage(contentMessage);
-                setContentMessage("");
-              }
-            }}
-            onChange={(e) => setContentMessage(e.target.value)}
-            className={classes.input}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => {
-                    if (contentMessage.trim() !== "") {
-                      handleSendMessage(contentMessage);
-                      setContentMessage("");
-                    }
-                  }}
-                  className={classes.buttonSend}
-                >
-                  <SendIcon />
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-        </FormControl> */}
-      </div>
-    </Paper>
+      </Paper>
+    </>
   );
 }
