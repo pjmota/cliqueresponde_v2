@@ -1689,9 +1689,9 @@ const messages = {
       },
       messagesInput: {
         placeholderPrivateMessage:
-          "Digite uma mensagem ou aperte / para respostas rápidas",
+          "Digite uma mensagem",
         placeholderOpen:
-          "Digite uma mensagem ou aperte / para respostas rápidas",
+          "Digite uma mensagem",
         placeholderClosed:
           "Reabra ou aceite esse ticket para enviar uma mensagem.",
         signMessage: "Assinar",
