@@ -8,6 +8,7 @@ interface Request {
   pageNumber?: string;
   users?: number[];
   limitChat?: number;
+  
 }
 
 interface Response {
@@ -20,7 +21,8 @@ const ListService = async ({
   ownerId,
   pageNumber = "1",
   limitChat,
-  users
+  users,
+  
 }: Request): Promise<Response> => {
   const user = await User.findOne({where: { id: ownerId }});
   let chatUsers = [];
@@ -34,7 +36,8 @@ const ListService = async ({
     chatUsers = await ChatUser.findAll({
       where: { userId: {
         [Op.in]: users
-        }
+        },
+        
       }
     });
   } else {
@@ -51,7 +54,8 @@ const ListService = async ({
     where: {
       id: {
         [Op.in]: chatIds
-      }
+      },
+      companyId: user.companyId
     },
     include: [
       { model: User, as: "owner" },
