@@ -59,3 +59,11 @@ down_and_clean_development:
 	cd ${FOLDER_FRONTEND} && \
 		pm2 stop frontend-v2 && \
 		pm2 delete frontend-v2
+
+clean_node_modules:
+	@echo "Cleaning node_modules..."
+	cd ${FOLDER_BACKEND} && \
+		rm -rf node_modules
+	cd ${FOLDER_FRONTEND} && \
+		rm -rf node_modules
+	cd ${FOLDER_BACKEND} && \
