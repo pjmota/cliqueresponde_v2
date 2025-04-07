@@ -160,11 +160,13 @@ export default function ChatMessages({
 
     return (
       <Box key={key} className={isSender ? classes.boxRight : classes.boxLeft}>
-        <Typography variant="subtitle2">
+        <Typography variant="subtitle2"
+          style={{ fontWeight: "bold" }}
+        >
           {item.sender.name}
         </Typography>
 
-        {!item.mediaType ? item.body?.replace(/\*\w+\:\*/g, '') : undefined}
+        {!item.mediaType ? item.body : undefined}
 
         {item.mediaType === "image" && (<ModalImageCors imageUrl={resolveMediaUrl(item.mediaUrl)} /> || item.body)}
 
