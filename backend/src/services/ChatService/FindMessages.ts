@@ -8,6 +8,7 @@ import { sortBy } from "lodash";
 interface Request {
   chatId: string;
   ownerId: number;
+  profile: string;
   pageNumber?: string;
 }
 
@@ -20,12 +21,21 @@ interface Response {
 const FindMessages = async ({
   chatId,
   ownerId,
+  profile,
   pageNumber = "1"
 }: Request): Promise<Response> => {
-  const userInChat = await ChatUser.count({
-    where: { chatId, userId: ownerId }
-  });
 
+  let userInChat = 0 as number
+  if (profile === 'admin') {
+    userInChat = await ChatUser.count({
+      where: { chatId }
+    });
+  } else {
+    userInChat = await ChatUser.count({
+      where: { chatId, userId: ownerId }
+    });
+  }
+  
   if (userInChat === 0) {
     throw new AppError("UNAUTHORIZED", 400);
   }

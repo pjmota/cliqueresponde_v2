@@ -17,6 +17,7 @@ type IndexQuery = {
   pageNumber: string;
   companyId: string | number;
   ownerId?: number;
+  users?: string
 };
 
 type StoreData = {
@@ -30,17 +31,18 @@ type FindParams = {
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const { pageNumber } = req.query as unknown as IndexQuery;
+  const { pageNumber, users } = req.query as unknown as IndexQuery;
   const ownerId = +req.user.id;
 
   const { records, count, hasMore } = await ListService({
     ownerId,
-    pageNumber
+    pageNumber,
+    limitChat: 500,
+    users: JSON.parse(users || '[]')
   });
 
   return res.json({ records, count, hasMore });
 };
-
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { companyId } = req.user;
   const ownerId = +req.user.id;
@@ -223,7 +225,8 @@ export const messages = async (
   const { records, count, hasMore } = await FindMessages({
     chatId,
     ownerId,
-    pageNumber
+    pageNumber,
+    profile
   });
 
   return res.json({ records, count, hasMore });
