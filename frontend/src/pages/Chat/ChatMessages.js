@@ -121,7 +121,7 @@ export default function ChatMessages({
   const unreadMessages = (chat) => {
     if (chat !== undefined) {
       const currentUser = chat.users.find((u) => u.userId === user.id);
-      return currentUser.unreads > 0;
+      return currentUser?.unreads > 0 ? currentUser.unreads : 0;
     }
     return 0;
   };

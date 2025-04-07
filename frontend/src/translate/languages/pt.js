@@ -20,6 +20,7 @@ const messages = {
           login: "Já tem uma conta? Entre!",
         },
       },
+      
       login: {
         title: "Login",
         form: {
@@ -1147,6 +1148,7 @@ const messages = {
       kanban: {
         title: "Kanban",
         searchPlaceholder: "Pesquisa",
+        user: "Usuário",
         subMenus: {
           list: "Painel",
           tags: "Lanes",

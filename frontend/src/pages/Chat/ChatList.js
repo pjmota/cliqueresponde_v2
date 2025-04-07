@@ -86,7 +86,7 @@ export default function ChatList({
 
   const unreadMessages = (chat) => {
     const currentUser = chat.users.find((u) => u.userId === user.id);
-    return currentUser.unreads;
+    return currentUser?.unreads > 0 ? currentUser.unreads : 0;
   };
 
   const getPrimaryText = (chat) => {

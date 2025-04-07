@@ -14,6 +14,10 @@ import {
   Tab,
   Tabs,
   TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import ChatList from "./ChatList";
 import ChatMessages from "./ChatMessages";
@@ -162,6 +166,40 @@ function Chat(props) {
   const isMounted = useRef(true);
   const scrollToBottomRef = useRef();
   const { id } = useParams();
+  const [users, setUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const isAdmin = React.useMemo((_) => user.super || user.profile === "admin");
+
+
+
+  const fetchUsers = () => {
+    const controller = new AbortController();
+
+    if (!isAdmin) {
+      return controller;
+    }
+
+    api
+      .get("/users", { signal: controller.signal })
+      .then((response) => {
+        setUsers(response.data.users || []);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    return controller;
+  };
+
+
+  useEffect(() => {
+    const controller = fetchUsers();
+    setSelectedUsers([user.id]);
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -186,6 +224,29 @@ function Chat(props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+
+  const handleFindChats = (params) => {
+    if (isMounted.current) {
+      findChats(params).then((data) => {
+        if (!data) {
+          return;
+        }
+
+        const { records } = data;
+        if (records?.length > 0) {
+          setChats(records);
+          setChatsPageInfo(data);
+
+          if (id && records.length) {
+            const chat = records.find((r) => r.uuid === id);
+            selectChat(chat);
+          }
+        }
+      });
+    }
+  };
+
 
   useEffect(() => {
     if (isObject(currentChat) && has(currentChat, "id")) {
@@ -324,9 +385,9 @@ function Chat(props) {
     }
   };
 
-  const findChats = async () => {
+  const findChats = async (params) => {
     try {
-      const { data } = await api.get("/chats");
+      const { data } = await api.get("/chats", {params});
       return data;
     } catch (err) {
       console.log(err);
@@ -338,19 +399,49 @@ function Chat(props) {
       <Grid className={classes.gridContainer} container>
         <Grid className={classes.gridItem} md={3} item>
           {/* {user.profile === "admin" && ( */}
-          <div className={classes.btnContainer}>
-            <Button
-              onClick={() => {
-                setDialogType("new");
-                setShowDialog(true);
-              }}
-              color="primary"
-              variant="contained"
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: 12,
+
+          }}>
+
+            {isAdmin && (<FormControl
+              margin="dense"
+              variant="outlined"
+              style={{ minWidth: "10vw" }}
             >
-              {i18n.t("chatInternal.new")}
-            </Button>
+              <InputLabel>{i18n.t("kanban.user")}</InputLabel>
+              <Select
+                id="type-select"
+                labelWidth={60}
+                name="user"
+                onChange={(event) => handleChangeUser(event.target.value)}
+                value={selectedUsers}
+                multiple={true}
+              >
+                {users.map((user) => (
+                  <MenuItem key={user.id} value={user.id}>
+                    {user.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>)}
+            <div className={classes.btnContainer}>
+
+              <Button
+                onClick={() => {
+                  setDialogType("new");
+                  setShowDialog(true);
+                }}
+                color="primary"
+                variant="contained"
+              >
+                {i18n.t("chatInternal.new")}
+              </Button>
+            </div>
           </div>
-          {/* )} */}
+
           <ChatList
             chats={chats}
             pageInfo={chatsPageInfo}
@@ -380,6 +471,12 @@ function Chat(props) {
     );
   };
 
+  const handleChangeUser = (selected) => {
+    const params = { users: JSON.stringify(selected) };
+    handleFindChats(params);
+    setSelectedUsers(selected);
+  };
+
   const renderTab = () => {
     return (
       <Grid className={classes.gridContainer} container>
@@ -397,6 +494,29 @@ function Chat(props) {
         </Grid>
         {tab === 0 && (
           <Grid className={classes.gridItemTab} md={12} item>
+            {isAdmin && (
+              <FormControl
+                margin="dense"
+                variant="outlined"
+                style={{ minWidth: "10vw" }}
+              >
+                <InputLabel>{i18n.t("kanban.user")}</InputLabel>
+                <Select
+                  id="type-select"
+                  labelWidth={60}
+                  name="user"
+                  onChange={(event) => handleChangeUser(event.target.value)}
+                  value={selectedUsers}
+                  multiple={true}
+                >
+                  {users.map((user) => (
+                    <MenuItem key={user.id} value={user.id}>
+                      {user.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
             <div className={classes.btnContainer}>
               <Button
                 onClick={() => setShowDialog(true)}
