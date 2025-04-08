@@ -7,18 +7,24 @@ import User from "../../models/User";
 export interface ChatMessageData {
   senderId: number;
   chatId: number;
-  message: string;
+  body: string;
+  mediaType?: string;
+  mediaUrl?: string;
 }
 
 export default async function CreateMessageService({
   senderId,
   chatId,
-  message
+  body,
+  mediaType,
+  mediaUrl
 }: ChatMessageData) {
   const newMessage = await ChatMessage.create({
     senderId,
     chatId,
-    message
+    body,
+    mediaType,
+    mediaUrl
   });
 
   await newMessage.reload({
@@ -34,7 +40,7 @@ export default async function CreateMessageService({
 
   const sender = await User.findByPk(senderId);
 
-  await newMessage.chat.update({ lastMessage: `${sender.name}: ${message}` });
+  await newMessage.chat.update({ lastMessage: `${sender.name}: ${body}` });
 
   const chatUsers = await ChatUser.findAll({
     where: { chatId }

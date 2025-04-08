@@ -20,6 +20,7 @@ const messages = {
           login: "Já tem uma conta? Entre!",
         },
       },
+      
       login: {
         title: "Login",
         form: {
@@ -1150,6 +1151,7 @@ const messages = {
       kanban: {
         title: "Kanban",
         searchPlaceholder: "Pesquisa",
+        user: "Usuário",
         subMenus: {
           list: "Painel",
           tags: "Lanes",
@@ -1692,9 +1694,9 @@ const messages = {
       },
       messagesInput: {
         placeholderPrivateMessage:
-          "Digite uma mensagem ou aperte / para respostas rápidas",
+          "Digite uma mensagem",
         placeholderOpen:
-          "Digite uma mensagem ou aperte / para respostas rápidas",
+          "Digite uma mensagem",
         placeholderClosed:
           "Reabra ou aceite esse ticket para enviar uma mensagem.",
         signMessage: "Assinar",

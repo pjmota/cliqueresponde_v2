@@ -32,6 +32,8 @@ type IndexQuery = {
   tags?: string;
   users?: string;
   whatsapps: string;
+  whatsappIds?: string;
+  contactNumber?: string;
   statusFilter: string;
   isGroup?: string;
   sortTickets?: string;
@@ -78,11 +80,13 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     users: userIdsStringified,
     withUnreadMessages,
     whatsapps: whatsappIdsStringified,
+    whatsappIds:whatsAppIdsList,
     statusFilter: statusStringfied,
     sortTickets,
-    searchOnMessages
+    searchOnMessages,
+    contactNumber,
   } = req.query as IndexQuery;
-
+  
   const userId = Number(req.user.id);
   const { companyId } = req.user;
 
@@ -103,10 +107,19 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
   if (userIdsStringified) {
     usersIds = JSON.parse(userIdsStringified);
   }
-
+  
+  
   if (whatsappIdsStringified) {
     whatsappIds = JSON.parse(whatsappIdsStringified);
   }
+
+  if (whatsAppIdsList) {
+    whatsappIds = [...whatsappIds, ...JSON.parse(whatsAppIdsList)];
+  }
+
+  whatsappIds = Array.from(new Set(whatsappIds))
+
+  
 
   if (statusStringfied) {
     statusFilters = JSON.parse(statusStringfied);
@@ -130,7 +143,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     statusFilters,
     companyId,
     sortTickets,
-    searchOnMessages
+    searchOnMessages,
+    contactNumber
   });
 
   return res.status(200).json({ tickets, count, hasMore });
