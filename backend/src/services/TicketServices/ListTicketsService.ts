@@ -18,7 +18,7 @@ import User from "../../models/User";
 import ShowUserService from "../UserServices/ShowUserService";
 import Tag from "../../models/Tag";
 
-import { intersection } from "lodash";
+import { intersection, isEmpty } from "lodash";
 import Whatsapp from "../../models/Whatsapp";
 import ContactTag from "../../models/ContactTag";
 
@@ -53,6 +53,7 @@ interface Request {
   allTicket?: string;
   sortTickets?: string;
   searchOnMessages?: string;
+  contactNumber?: string;
 }
 
 interface Response {
@@ -79,10 +80,19 @@ const ListTicketsService = async ({
   statusFilters,
   companyId,
   sortTickets = "DESC",
-  searchOnMessages = "false"
+  searchOnMessages = "false",
+  contactNumber
 }: Request): Promise<Response> => {
   const user = await ShowUserService(userId, companyId);
-
+  const userQueueIds = user.queues.map(queue => queue.id);
+  
+  //Isto é porque a rota exige nessa versão que o queueIds seja enviado
+  queueIds = (!queueIds || isEmpty(queueIds)) ? (contactNumber || (whatsappIds && !isEmpty(whatsappIds)) ? userQueueIds : queueIds) : queueIds;
+  
+  
+  
+  
+  
   const showTicketAllQueues = user.allHistoric === "enabled";
   const showTicketWithoutQueue = user.allTicket === "enable";
   const showGroups = user.allowGroup === true;
@@ -153,8 +163,7 @@ const ListTicketsService = async ({
     }
   ];
 
-  const userQueueIds = user.queues.map(queue => queue.id);
-
+  
   if (status === "open") {
     whereCondition = {
       ...whereCondition,
@@ -561,7 +570,7 @@ const ListTicketsService = async ({
         userId: users
       };
     }
-
+    
     if (Array.isArray(whatsappIds) && whatsappIds.length > 0) {
       whereCondition = {
         ...whereCondition,
@@ -614,13 +623,39 @@ const ListTicketsService = async ({
     ...whereCondition,
     companyId
   };
+  
+  if (contactNumber) {
+    
+    whereCondition = {
+      ...whereCondition,
+      [Op.or]: [
+        {
+          "$contact.name$": where(
+            fn("LOWER", col("contact.name")),
+            "ilike",
+            `%${contactNumber}%`
+          )
+        },
+        { "$contact.number$": { [Op.like]: `%${contactNumber}%` } }
+      ]
+    }
+
+    if (Array.isArray(whatsappIds) && whatsappIds.length > 0) {
+      whereCondition = {
+        ...whereCondition,
+        whatsappId: {
+          [Op.in]: whatsappIds
+        }
+      };
+    }
+  }
 
   const limitBase = 40;
   let limit = limitBase;
   let offset = limit * (+pageNumber - 1);
   let tickets = [];
   let count = 0;
-
+  
   do {
     const result = await Ticket.findAndCountAll({
       where: whereCondition,
