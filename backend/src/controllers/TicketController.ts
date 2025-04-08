@@ -80,7 +80,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     users: userIdsStringified,
     withUnreadMessages,
     whatsapps: whatsappIdsStringified,
-    whatsappIds:whatsAppidsList,
+    whatsappIds:whatsAppIdsList,
     statusFilter: statusStringfied,
     sortTickets,
     searchOnMessages,
@@ -113,8 +113,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     whatsappIds = JSON.parse(whatsappIdsStringified);
   }
 
-  if (whatsAppidsList) {
-    whatsappIds = [...whatsappIds, ...JSON.parse(whatsAppidsList)];
+  if (whatsAppIdsList) {
+    whatsappIds = [...whatsappIds, ...JSON.parse(whatsAppIdsList)];
   }
 
   whatsappIds = Array.from(new Set(whatsappIds))
