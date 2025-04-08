@@ -4,6 +4,7 @@ import Queue from "../../models/Queue";
 import Company from "../../models/Company";
 import Plan from "../../models/Plan";
 import Tag from "../../models/Tag";
+import Permission from "../../models/Permission";
 
 const ShowUserService = async (id: string | number, companyId?: string | number): Promise<User> => {
   const user = await User.findOne(
@@ -40,11 +41,18 @@ const ShowUserService = async (id: string | number, companyId?: string | number)
         "allTicketsQueuesWaiting",
         "allTicketsQueuesAttending",
         "sendWhatsAppInLeadMessage",
-        "leadMessage"
+        "leadMessage",
+        "tokenWhats",
+        "userWhats",
       ],
       include: [
         { model: Queue, as: "queues", attributes: ["id", "name", "color"] },
         { model: Tag, as: "tags", attributes: ["id", "name", "color"] },
+        {
+          model: Permission,
+          as: "permissions",
+          attributes: ["id", "name", "code"]
+        },
         {
           model: Company,
           as: "company",
@@ -69,7 +77,8 @@ const ShowUserService = async (id: string | number, companyId?: string | number)
             },
           ]
         },
-      ]
+      ],
+      //logging: console.log
     });
 
   if (!user) {

@@ -564,7 +564,7 @@ const Contacts = () => {
                                 {i18n.t("contacts.table.name")}
                             </TableCell>
                             <TableCell align="center">
-                                {i18n.t("contacts.table.whatsapp")}
+                                {i18n.t("contacts.table.number")}
                             </TableCell>
                             <TableCell align="center">
                                 {i18n.t("contacts.table.email")}
@@ -574,6 +574,12 @@ const Contacts = () => {
                             </TableCell> */}
                             <TableCell align="center">
                                 {i18n.t("contacts.table.whatsapp")}
+                            </TableCell>
+                            <TableCell align="center">
+                                {i18n.t("contacts.table.createdBy")}
+                            </TableCell>
+                            <TableCell align="center">
+                                {i18n.t("contacts.table.attendant")}
                             </TableCell>
                             <TableCell align="center">{"Status"}</TableCell>
                             <TableCell align="center">
@@ -604,7 +610,9 @@ const Contacts = () => {
                                     {/* <TableCell align="center">
                                         {getDateLastMessage(contact)}
                                     </TableCell> */}
-                                    <TableCell>{contact?.whatsapp?.name}</TableCell>
+                                    <TableCell align="center">{contact?.sellerConection}</TableCell>
+                                    <TableCell align="center">{contact?.createdByName}</TableCell>
+                                    <TableCell align="center">{contact?.sellerName}</TableCell>
                                     <TableCell align="center">
                                         {contact.active ? (
                                             <CheckCircleIcon

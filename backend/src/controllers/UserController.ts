@@ -73,7 +73,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     allTicketsQueuesWaiting,
     allTicketsQueuesAttending,
     sendWhatsAppInLeadMessage,
-    leadMessage
+    leadMessage,
+    tokenWhats,
+    userWhats
   } = req.body;
   let userCompanyId: number | null = null;
 
@@ -132,7 +134,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       allTicketsQueuesWaiting: 'disabled',
       allTicketsQueuesAttending: 'disabled',
       sendWhatsAppInLeadMessage: 'disabled',
-      leadMessage: ""
+      leadMessage: "",
+      tokenWhats: "",
+      userWhats: ""
     };
 
     const user = await CreateCompanyService(companyData);
@@ -194,7 +198,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       allTicketsQueuesWaiting,
       allTicketsQueuesAttending,
       sendWhatsAppInLeadMessage,
-      leadMessage
+      leadMessage,
+      tokenWhats,
+      userWhats
     });
 
     const io = getIO();

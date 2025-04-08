@@ -26,6 +26,8 @@ import Whatsapp from "./Whatsapp";
 import Chatbot from "./Chatbot";
 import Tag from "./Tag";
 import UserTag from "./UserTags";
+import Permission from "./Permission";
+import UserPermission from "./UserPermission";
 
 @Table
 class User extends Model<User> {
@@ -203,6 +205,15 @@ class User extends Model<User> {
 
   @Column
   leadMessage: string;
+
+  @Column
+  tokenWhats: string;
+
+  @Column
+  userWhats: string;
+
+  @BelongsToMany(() => Permission, () => UserPermission)
+  permissions: Permission[];
 
   @BeforeDestroy
   static async updateChatbotsUsersReferences(user: User) {

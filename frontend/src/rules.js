@@ -14,6 +14,7 @@ const rules = {
 			"user-modal:editProfile",
 			"user-modal:editQueues",
 			"user-modal:editTags",
+			"user-modal:editPermissions",
 			"ticket-options:deleteTicket",
 			"contacts-page:deleteContact",
 			"connections-page:actionButtons",

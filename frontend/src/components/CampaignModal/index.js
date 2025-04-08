@@ -107,8 +107,8 @@ const CampaignModal = ({
     confirmation: false,
     scheduledAt: "",
     //whatsappId: "",
-    contactListId: "",
-    tagListId: "Nenhuma",
+    //contactListId: "",
+    //tagListId: "Nenhuma",
     companyId,
     statusTicket: "closed",
     openTicket: "disabled"
@@ -119,6 +119,7 @@ const CampaignModal = ({
   const [selectedWhatsapps, setSelectedWhatsapps] = useState([]);
   const [whatsappId, setWhatsappId] = useState('');
   const [contactListId, setContactListId] = useState('');
+  const [tagListId, setTagListId] = useState('');
 
   const [contactLists, setContactLists] = useState([]);
   const [tagLists, setTagLists] = useState([]);
@@ -221,7 +222,7 @@ const CampaignModal = ({
               name: `${tag.name} (${tag.contacts.length})`,
             }));
 
-          setTagLists(formattedTagLists);
+          setTagLists(fetchedTags);
         })
         .catch((error) => {
           console.error("Error retrieving tags:", error);
@@ -241,6 +242,15 @@ const CampaignModal = ({
           // const selectedWhatsapps = data.whatsappId.split(",");
           setWhatsappId(data.whatsappId);
         }
+
+        if (data?.contactListId) {
+          setContactListId(data.contactListId);
+        }
+
+        if (data?.tagListId) {
+          setTagListId(data.tagListId);
+        }
+
         setCampaign((prev) => {
           let prevCampaignData = Object.assign({}, prev);
 
@@ -290,11 +300,13 @@ const CampaignModal = ({
         ...values,  // Merge the existing values object
         whatsappId: whatsappId,
         userId: selectedUser ? selectedUser?.id : user.id,
-        queueId: selectedQueue || null
+        queueId: selectedQueue || null,
+        contactListId: contactListId,
+        tagListId: tagListId
       };
 
       //console.log(values);
-      //console.log(selectedWhatsapps);
+      //console.log(tagListId);
 
       Object.entries(values).forEach(([key, value]) => {
         if (key === "scheduledAt" && value !== "" && value !== null) {
@@ -304,7 +316,7 @@ const CampaignModal = ({
         }
       });
 
-      console.log('dataValues', campaignId)
+      console.log('dataValues', dataValues, tagListId, values)
       if (campaignId) {
 
         await api.put(`/campaigns/${campaignId}`, dataValues);
@@ -519,14 +531,15 @@ const CampaignModal = ({
                           "campaigns.dialog.form.contactList"
                         )}
                         labelId="contactList-selection-label"
-                        id="contactListId"
-                        name="contactListId"
+                        id="contactLists"
+                        name="contactLists"
                         error={
                           touched.contactListId && Boolean(errors.contactListId)
                         }
                         disabled={!campaignEditable}
                         value={contactListId}
                         onChange={(event) => {
+                          console.log('contactListId', event.target)
                           setContactListId(event.target.value)
                         }}
                       >
@@ -562,7 +575,10 @@ const CampaignModal = ({
                         name="tagListId"
                         error={touched.tagListId && Boolean(errors.tagListId)}
                         disabled={!campaignEditable}
-                        value=''
+                        value={tagListId}
+                        onChange={(event) => {
+                          setTagListId(event.target.value)
+                        }}
                       >
                         <MenuItem value="">Nenhuma</MenuItem>
                         {Array.isArray(tagLists) &&

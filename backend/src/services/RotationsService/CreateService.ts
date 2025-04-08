@@ -16,7 +16,7 @@ const CreateService = async ({
   rotationId
 }: Request): Promise<Rotations> => {
   if(rotationId) {
-    console.log('rotationId', rotationId)
+    //console.log('rotationId', rotationId)
     const getRotation = ShowService(rotationId)
     return getRotation
   }

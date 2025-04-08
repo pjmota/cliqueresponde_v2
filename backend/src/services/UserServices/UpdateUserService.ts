@@ -14,6 +14,7 @@ interface UserData {
   companyId?: number;
   queueIds?: number[];
   tagIds?: number[];
+  permissionsIds?: number[];
   startWork?: string;
   endWork?: string;
   farewellMessage?: string;
@@ -33,7 +34,9 @@ interface UserData {
   allTicketsQueuesWaiting?: string;
   allTicketsQueuesAttending?: string;
   sendWhatsAppInLeadMessage?: string;
-  leadMessage?: string
+  leadMessage?: string;
+  tokenWhats?: string;
+  userWhats?: string;
 }
 
 interface Request {
@@ -81,6 +84,7 @@ const UpdateUserService = async ({
     name,
     queueIds = [],
     tagIds = [],
+    permissionsIds = [],
     startWork,
     endWork,
     farewellMessage,
@@ -101,6 +105,8 @@ const UpdateUserService = async ({
     allTicketsQueuesAttending,
     sendWhatsAppInLeadMessage,
     leadMessage,
+    tokenWhats,
+    userWhats,
   } = userData;
 
   try {
@@ -134,10 +140,13 @@ const UpdateUserService = async ({
     allTicketsQueuesAttending,
     sendWhatsAppInLeadMessage,
     leadMessage,
+    tokenWhats,
+    userWhats,
   });
 
   await user.$set("queues", queueIds);
   await user.$set("tags", tagIds);
+  await user.$set("permissions", permissionsIds);
 
   await user.reload();
 
@@ -159,6 +168,7 @@ const UpdateUserService = async ({
     company,
     queues: user.queues,
     tags: user.tags,
+    permissions: user.permissions,
     startWork: user.startWork,
     endWork: user.endWork,
     greetingMessage: user.farewellMessage,
@@ -177,6 +187,7 @@ const UpdateUserService = async ({
     allTicketsQueuesAttending: user.allTicketsQueuesAttending,
     sendWhatsAppInLeadMessage: user.sendWhatsAppInLeadMessage,
     leadMessage: user.leadMessage,
+    
   };
 
   return serializedUser;

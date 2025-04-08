@@ -22,8 +22,8 @@ type IndexQuery = {
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const { contactId, userId, pageNumber, searchParam } = req.query as IndexQuery;
-  const { companyId } = req.user;
+  const { contactId, pageNumber, searchParam } = req.query as IndexQuery;
+  const { companyId, id: userId } = req.user;
 
   const { schedules, count, hasMore } = await ListService({
     searchParam,

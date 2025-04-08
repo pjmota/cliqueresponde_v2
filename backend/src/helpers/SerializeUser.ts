@@ -3,6 +3,7 @@ import Company from "../models/Company";
 import User from "../models/User";
 import jwt from "jsonwebtoken";
 import Tag from "../models/Tag";
+import Permission from "../models/Permission";
 
 interface SerializedUser {
   id: number;
@@ -14,6 +15,7 @@ interface SerializedUser {
   super: boolean;
   queues: Queue[];
   tags: Tag[];
+  permissions: Permission[];
   startWork: string;
   endWork: string;
   allTicket: string;
@@ -50,6 +52,7 @@ export const SerializeUser = async (user: User): Promise<SerializedUser> => {
     super: user.super,
     queues: user.queues,
     tags: user.tags,
+    permissions: user.permissions,
     startWork: user.startWork,
     endWork: user.endWork,
     allTicket: user.allTicket,

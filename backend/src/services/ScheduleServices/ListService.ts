@@ -21,13 +21,15 @@ interface Response {
 const ListService = async ({
   searchParam,
   contactId = "",
-  userId = "",
+  userId,
   pageNumber = "1",
   companyId
 }: Request): Promise<Response> => {
   let whereCondition = {};
   const limit = 20;
   const offset = limit * (+pageNumber - 1);
+
+  const user = await User.findOne({ where: { id: userId } });
 
   if (searchParam) {
     whereCondition = {
@@ -57,10 +59,10 @@ const ListService = async ({
     }
   }
 
-  if (userId !== "") {
+  if (!user?.super && user?.profile !== "admin") {
     whereCondition = {
       ...whereCondition,
-      userId
+      userId: user.id
     }
   }
 
@@ -80,7 +82,8 @@ const ListService = async ({
       { model: Contact, as: "contact", attributes: ["id", "name", "companyId", "urlPicture"] },
       { model: User, as: "user", attributes: ["id", "name"] },
       { model: Whatsapp, as: "whatsapp", attributes: ["id", "name", "channel"] }
-    ]
+    ],
+    logging: console.log
   });
 
   const hasMore = count > offset + schedules.length;

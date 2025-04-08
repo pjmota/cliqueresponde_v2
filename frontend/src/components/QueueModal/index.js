@@ -1526,6 +1526,7 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                               name="lastSequence"
                               variant="outlined"
                               margin="dense"
+                              inputProps={{ min: 1 }}
                               //disabled
                             />
                           </Grid>

@@ -432,7 +432,18 @@ const TicketsListCustom = (props) => {
 
   useEffect(() => {
     if (typeof updateCount === "function") {
-      updateCount(ticketsList.length);
+
+      const filteredTickets = ticketsList.filter(
+        (ticket) => !(
+          ticket.status === "pending" &&
+          user.allTicketsQueuesWaiting !== 'enable' &&
+          user.id !== ticket.userId &&
+          user.profile === "user"
+        )
+      );
+
+
+      updateCount(filteredTickets.length);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketsList]);
@@ -477,7 +488,10 @@ const TicketsListCustom = (props) => {
           ) : (
             <>
               {ticketsList.map((ticket) => {
-                // <List key={ticket.id}>
+                if(ticket.status === 'pending' && user.allTicketsQueuesWaiting !== 'enable' && user.id !== ticket.userId && user.profile === 'user') {
+                  return;
+                }
+
                 return (
                   <TicketListItem
                     ticket={ticket}

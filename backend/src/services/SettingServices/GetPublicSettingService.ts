@@ -28,7 +28,7 @@ const GetPublicSettingService = async ({
       key
     }
   });
-  console.log(setting)
+  //console.log(setting)
   return setting?.value;
 };
 

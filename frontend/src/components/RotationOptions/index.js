@@ -308,10 +308,7 @@ export function RotationOptionStepper({
             size="small"
             className={classes.input}
             placeholder="Sequência"
-            /* inputProps={{
-              max: userLength,
-              min: 1
-            }} */
+            inputProps={{ min: 1 }}
           />
         </>
       );

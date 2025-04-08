@@ -209,7 +209,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     ...newContact,
     number: validNumber,
     // profilePicUrl,
-    companyId
+    companyId,
+    userId
   });
 
   const io = getIO();

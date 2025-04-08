@@ -337,7 +337,7 @@ const typebotListener = async ({
                     }
                   }
                   let origin = 'type bote - api'
-                  await handleRandomUser( params, ticket.id, origin )
+                  await handleRandomUser( params, ticket.id, origin );
 
                   return;
                 }

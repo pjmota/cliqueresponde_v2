@@ -14,16 +14,12 @@ import { verifyMessage } from "../WbotServices/wbotMessageListener";
 import { isNil } from "lodash";
 import { sendFacebookMessage } from "../FacebookServices/sendFacebookMessage";
 import { verifyMessageFace } from "../FacebookServices/facebookMessageListener";
-import ShowUserService from "../UserServices/ShowUserService";
 import User from "../../models/User";
 import CompaniesSettings from "../../models/CompaniesSettings";
 import CreateLogTicketService from "./CreateLogTicketService";
-import TicketTag from "../../models/TicketTag";
-import Tag from "../../models/Tag";
 import CreateMessageService from "../MessageServices/CreateMessageService";
 import FindOrCreateTicketService from "./FindOrCreateTicketService";
 import formatBody from "../../helpers/Mustache";
-import { Mutex } from "async-mutex";
 import logger from "../../utils/logger";
 import handleRandomUser from "../../queues";
 
@@ -828,6 +824,7 @@ const UpdateTicketService = async ({
 
       let origin = 'tranferência'
       await handleRandomUser(params, ticket.id, origin);
+
     }
 
     ticketTraking.queuedAt = moment().toDate();

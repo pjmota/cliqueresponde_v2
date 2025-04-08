@@ -2,7 +2,7 @@ import AppError from "../../errors/AppError";
 import RotationUsers from "../../models/RotationUsers";
 
 const RotationUserService = async (id: string | number): Promise<RotationUsers> => {
-  console.log('id', id)
+  //console.log('id', id)
   const rotationUser = await RotationUsers.findByPk(id);
 
   if (!rotationUser) {

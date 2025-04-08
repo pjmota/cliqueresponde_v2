@@ -47,6 +47,7 @@ import statisticsRoutes from "./statisticsRoutes";
 import scheduleMessageRoutes from "./ScheduledMessagesRoutes";
 import rotationsRoutes from "./rotationsRoutes";
 import rotationUsersRoutes from "./rotationUsersRoute";
+import permissionRoutes from "./permissionRoutes";
 
 import scheduleTagIntegrationRoutes from "./scheduleTagIntegrationRoutes";
 
@@ -102,4 +103,5 @@ routes.use(companySettingsRoutes);
 routes.use(scheduleMessageRoutes);
 routes.use(rotationsRoutes);
 routes.use(rotationUsersRoutes);
+routes.use(permissionRoutes);
 export default routes;

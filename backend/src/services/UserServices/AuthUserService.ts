@@ -10,6 +10,7 @@ import Company from "../../models/Company";
 import Setting from "../../models/Setting";
 import CompaniesSettings from "../../models/CompaniesSettings";
 import Tag from "../../models/Tag";
+import Permission from "../../models/Permission";
 
 interface SerializedUser {
   id: number;
@@ -51,7 +52,8 @@ const AuthUserService = async ({
     include: [
       "queues",
       "tags",
-      { model: Company, include: [{ model: CompaniesSettings }] }
+      { model: Company, include: [{ model: CompaniesSettings }] },
+      { model: Permission, as: "permissions", attributes: ["id", "name", "code"] }
     ]
   });
 

@@ -12,6 +12,7 @@ interface Request {
   name: string;
   queueIds?: number[];
   tagsIds?: number[];
+  permissionsIds?: number[];
   companyId?: number;
   profile?: string;
   startWork?: string;
@@ -32,6 +33,8 @@ interface Request {
   allTicketsQueuesAttending?: string;
   sendWhatsAppInLeadMessage?: string;
   leadMessage?: string;
+  tokenWhats?: string;
+  userWhats?: string;
 }
 
 interface Response {
@@ -47,6 +50,7 @@ const CreateUserService = async ({
   name,
   queueIds = [],
   tagsIds = [],
+  permissionsIds = [],
   companyId,
   profile = "admin",
   startWork,
@@ -67,6 +71,8 @@ const CreateUserService = async ({
   allTicketsQueuesAttending,
   sendWhatsAppInLeadMessage,
   leadMessage,
+  tokenWhats,
+  userWhats,
 }: Request): Promise<Response> => {
   if (companyId !== undefined) {
     const company = await Company.findOne({
@@ -141,13 +147,16 @@ const CreateUserService = async ({
       allTicketsQueuesWaiting,
       allTicketsQueuesAttending,
       sendWhatsAppInLeadMessage,
-      leadMessage
+      leadMessage,
+      tokenWhats,
+      userWhats,
     },
-    { include: ["queues", "company", "tags"] }
+    { include: ["queues", "company", "tags", "permissions"] }
   );
 
   await user.$set("queues", queueIds);
   await user.$set("tags", tagsIds);
+  await user.$set("permissions", permissionsIds);
 
   await user.reload();
 

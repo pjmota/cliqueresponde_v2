@@ -28,6 +28,7 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import EditIcon from "@material-ui/icons/Edit";
 
 import "./Schedules.css"; // Importe o arquivo CSS
+import { Tooltip } from "@mui/material";
 
 // Defina a função getUrlParam antes de usá-la
 function getUrlParam(paramName) {
@@ -135,6 +136,17 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  tooltip: {
+    backgroundColor: '#f1ec87 !important', // amarelo (material yellow 500)
+    color: '#000000 !important', // texto preto
+    fontWeight: 'bold !important'
+  },
+  arrow: {
+    color: '#f1ec87 !important' // Seta amarela
+  },
+  tooltipPopper: {
+    zIndex: 1300
+  }
 }));
 
 const Schedules = () => {
@@ -352,20 +364,33 @@ const Schedules = () => {
           localizer={localizer}
           events={schedules.map((schedule) => ({
             title: (
-              <div key={schedule.id} className="event-container">
-                <div style={eventTitleStyle}>{schedule?.contact?.name}</div>
-                <DeleteOutlineIcon
-                  onClick={() => handleDeleteSchedule(schedule.id)}
-                  className="delete-icon"
-                />
-                <EditIcon
-                  onClick={() => {
-                    handleEditSchedule(schedule);
-                    setScheduleModalOpen(true);
+              <>
+                <Tooltip
+                  arrow
+                  placement="right"
+                  classes={{
+                    tooltip: classes.tooltip,
+                    arrow: classes.arrow,
+                    popper: classes.tooltipPopper
                   }}
-                  className="edit-icon"
-                />
-              </div>
+                  title={schedule?.user?.name}
+                >
+                  <div key={schedule.id} className="event-container">
+                    <div style={eventTitleStyle}>{schedule?.contact?.name}</div>
+                    <DeleteOutlineIcon
+                      onClick={() => handleDeleteSchedule(schedule.id)}
+                      className="delete-icon"
+                    />
+                    <EditIcon
+                      onClick={() => {
+                        handleEditSchedule(schedule);
+                        setScheduleModalOpen(true);
+                      }}
+                      className="edit-icon"
+                    />
+                  </div>
+                </Tooltip>
+              </>
             ),
             start: new Date(schedule.sendAt),
             end: new Date(schedule.sendAt),

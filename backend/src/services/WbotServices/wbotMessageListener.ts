@@ -725,7 +725,7 @@ export const verifyMediaMessage = async (
 
           // console.log("Arquivo salvo com sucesso!");
           if (media.mimetype.includes("audio")) {
-            console.log(media.mimetype)
+            //console.log(media.mimetype)
             const inputFile = path.join(folder, media.filename);
             let outputFile: string;
 
@@ -762,7 +762,7 @@ export const verifyMediaMessage = async (
       Sentry.setExtra('Erro media', { companyId: companyId, ticket, contact, media, quotedMsg });
       Sentry.captureException(err);
       logger.error(err);
-      console.log(msg)
+      //console.log(msg)
     }
 
     const body = getBodyMessage(msg);
@@ -1415,6 +1415,7 @@ const verifyQueue = async (
         randomUserId = userQueue.userId;
       }
 
+      logger.warn(`ticket  ---- ${JSON.stringify(ticket)}`)
     } catch (error) {
       console.error(error);
     }
@@ -1829,169 +1830,6 @@ const verifyQueue = async (
       }
     }
   };
-
-  // const botButton = async () => {
-
-  //   let msg = generateWAMessageFromContent(ticket.whatsapp.number, {
-  //     viewOnceMessage: {
-  //       message: {
-  //           "messageContextInfo": {
-  //             "deviceListMetadata": {},
-  //             "deviceListMetadataVersion": 2
-  //           },
-  //           interactiveMessage: proto.Message.InteractiveMessage.create({
-  //             body: proto.Message.InteractiveMessage.Body.create({
-  //               text: "teste"
-  //             }),
-  //             footer: proto.Message.InteractiveMessage.Footer.create({
-  //               text: "teste"
-  //             }),
-  //             header: proto.Message.InteractiveMessage.Header.create({
-  //                     title: ``,
-  //                     subtitle: "teste",
-  //                     hasMediaAttachment: false  
-  //                   }),
-  //             nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
-  //               buttons: [
-  //                 {
-  //                   "name": "quick_reply",
-  //                   "buttonParamsJson": `{"display_text":"Congratulations 🥳","id":"Biye ta kor taratri🎷🎺"}`
-  //                 }
-  //              ],
-
-  //     }),
-  //     contextInfo: {
-  //       mentionedJid: [ticket.contact.remoteJid], 
-  //       forwardingScore: 999,
-  //       isForwarded: true,
-
-  //     }
-
-  //           })
-  //       }
-  //     }
-  //   }, { userJid: ticket.contact.remoteJid })
-  //   await wbot.relayMessage(msg?.key.remoteJid, msg?.message, {
-  //     messageId: msg?.key.id
-  //   })
-
-  //   const buttons = [];
-  //   queues.forEach((queue) => {
-  //     buttons.push({
-  //       id: `${queue.id}`,
-  //       title: queue.name,
-  //       description: queue.name,
-  //       header: queue.name
-  //     });
-  //   });
-  //   buttons.push({
-  //     id: "#",
-  //     title: "Voltar Menu Inicial",
-  //     description: "Voltar Menu Inicial",
-  //     header: "#"
-  //   });
-  //   // await wbot.relayMessage(msg?.key.remoteJid, msg?.message, { messageId: msg?.key.id })
-  //   // await wbot.relayMessage(ticket.contact.remoteJid, {
-  //   //   interactiveMessage: {
-  //   //     body: {
-  //   //       text: 'test'
-  //   //     },
-  //   //     footer: {
-  //   //       text: 'test'
-  //   //     },
-  //   //     header: {
-  //   //       title: "test",
-  //   //       subtitle: "test",
-  //   //       // ...(await generateWAMessageContent({ image: { url: '' } }, { logger, upload: wbot.waUploadToServer })),
-  //   //       hasMediaAttachment: false
-  //   //     },
-  //   //     nativeFlowMessage: {
-  //   //       //messageVersion: 1,
-  //   //       buttons: [
-  //   //         {
-  //   //           "name": "quick_reply",
-  //   //           "buttonParamsJson": "{\"display_text\":\"quick_reply\",\"id\":\"message\"}"
-  //   //         }
-  //   //       ]
-  //   //     },
-  //   //     carouselMessage: {
-  //   //       cards: [
-  //   //         {
-  //   //           body: {
-  //   //             text: 'test'
-  //   //           },
-  //   //           footer: {
-  //   //             text: 'test'
-  //   //           },
-  //   //           header: {
-  //   //             title: "test",
-  //   //             subtitle: "test",
-  //   //             // ...(await generateWAMessageContent({ image: { url: '' } }, { logger, upload: wbot.waUploadToServer })),
-  //   //             hasMediaAttachment: true
-  //   //           },
-  //   //           nativeFlowMessage: {
-  //   //             //messageVersion: 1,
-  //   //             buttons: [
-  //   //               {
-  //   //                 "name": "quick_reply",
-  //   //                 "buttonParamsJson": "{\"display_text\":\"quick_reply\",\"id\":\"message\"}"
-  //   //               },
-  //   //             ],
-  //   //           },
-  //   //         },
-  //   //         {
-  //   //           body: {
-  //   //             text: 'test'
-  //   //           },
-  //   //           footer: {
-  //   //             text: 'test'
-  //   //           },
-  //   //           header: {
-  //   //             title: "test",
-  //   //             subtitle: "test",
-  //   //             // ...(await generateWAMessageContent({ image: { url: '' } }, { logger, upload: wbot.waUploadToServer })),
-  //   //             hasMediaAttachment: true
-  //   //           },
-  //   //           nativeFlowMessage: {
-  //   //             //messageVersion: 1,
-  //   //             buttons: [
-  //   //               {
-  //   //                 "name": "quick_reply",
-  //   //                 "buttonParamsJson": "{\"display_text\":\"quick_reply\",\"id\":\"message\"}"
-  //   //               },
-  //   //             ],
-  //   //           },
-  //   //         },
-  //   //         {
-  //   //           body: {
-  //   //             text: 'test'
-  //   //           },
-  //   //           footer: {
-  //   //             text: 'test'
-  //   //           },
-  //   //           header: {
-  //   //             title: "test",
-  //   //             subtitle: "test",
-  //   //             // ...(await generateWAMessageContent({ image: { url: '' } }, { logger, upload: wbot.waUploadToServer })),
-  //   //             hasMediaAttachment: true
-  //   //           },
-  //   //           nativeFlowMessage: {
-  //   //             //messageVersion: 1,
-  //   //             buttons: [
-  //   //               {
-  //   //                 "name": "quick_reply",
-  //   //                 "buttonParamsJson": "{\"display_text\":\"quick_reply\",\"id\":\"message\"}"
-  //   //               },
-  //   //             ],
-  //   //           },
-  //   //         }
-  //   //       ]
-  //   //     }
-  //   //   }
-  //   // }, {})
-
-  // }
-  // return botButton();
 
   if (typeBot === "text") {
     return botText();

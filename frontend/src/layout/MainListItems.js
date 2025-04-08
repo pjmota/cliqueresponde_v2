@@ -215,6 +215,12 @@ const MainListItems = ({ collapsed, drawerClose }) => {
   const [showKanban, setShowKanban] = useState(false);
   const [showOpenAi, setShowOpenAi] = useState(false);
   const [showIntegrations, setShowIntegrations] = useState(false);
+  
+  const [showService, setShowService] = useState(false);
+  const [showQuickMessages, setShowQuickMessages] = useState(false);
+  const [showContacts, setShowContacts] = useState(false);
+  const [showTags, setShowTags] = useState(false);
+
 
   // novas features
   const [showSchedules, setShowSchedules] = useState(false);
@@ -280,12 +286,20 @@ const MainListItems = ({ collapsed, drawerClose }) => {
       const companyId = user.companyId;
       const planConfigs = await getPlanCompany(undefined, companyId);
 
-      setShowCampaigns(planConfigs.plan.useCampaigns);
-      setShowKanban(planConfigs.plan.useKanban);
+      const permissions = user.permissions ?? [];
+
+      setShowService(permissions.some(permission => permission.code === 'atendimento'));
+      setShowQuickMessages(permissions.some(permission => permission.code === 'respostas-rapidas'));
+      setShowKanban(permissions.some(permission => permission.code === 'kanban'));
+      setShowContacts(permissions.some(permission => permission.code === 'contatos'));
+      setShowSchedules(permissions.some(permission => permission.code === 'agendamentos'));
+      setShowTags(permissions.some(permission => permission.code === 'tags'));
+      setShowInternalChat(permissions.some(permission => permission.code === 'chat-interno'));
+      setShowCampaigns(permissions.some(permission => permission.code === 'campanhas'));
       setShowOpenAi(planConfigs.plan.useOpenAi);
       setShowIntegrations(planConfigs.plan.useIntegrations);
-      setShowSchedules(planConfigs.plan.useSchedules);
-      setShowInternalChat(planConfigs.plan.useInternalChat);
+      //setShowSchedules(planConfigs.plan.useSchedules);
+      //setShowInternalChat(planConfigs.plan.useInternalChat);
       setShowExternalApi(planConfigs.plan.useExternalApi);
     }
     fetchData();
@@ -462,19 +476,23 @@ const MainListItems = ({ collapsed, drawerClose }) => {
           </>
         )}
       />
-      <ListItemLink
-        to="/tickets"
-        primary={i18n.t("mainDrawer.listItems.tickets")}
-        icon={<WhatsAppIcon />}
-        tooltip={collapsed}
-      />
+      {showService && (
+        <ListItemLink
+          to="/tickets"
+          primary={i18n.t("mainDrawer.listItems.tickets")}
+          icon={<WhatsAppIcon />}
+          tooltip={collapsed}
+        />
+      )}
 
-      <ListItemLink
-        to="/quick-messages"
-        primary={i18n.t("mainDrawer.listItems.quickMessages")}
-        icon={<FlashOnIcon />}
-        tooltip={collapsed}
-      />
+      {showQuickMessages && (
+        <ListItemLink
+          to="/quick-messages"
+          primary={i18n.t("mainDrawer.listItems.quickMessages")}
+          icon={<FlashOnIcon />}
+          tooltip={collapsed}
+        />
+      )}
 
       {showKanban && (
         <>
@@ -487,12 +505,14 @@ const MainListItems = ({ collapsed, drawerClose }) => {
         </>
       )}
 
-      <ListItemLink
-        to="/contacts"
-        primary={i18n.t("mainDrawer.listItems.contacts")}
-        icon={<ContactPhoneOutlinedIcon />}
-        tooltip={collapsed}
-      />
+      {showContacts && (
+        <ListItemLink
+          to="/contacts"
+          primary={i18n.t("mainDrawer.listItems.contacts")}
+          icon={<ContactPhoneOutlinedIcon />}
+          tooltip={collapsed}
+        />
+      )}
 
       {showSchedules && (
         <>
@@ -505,12 +525,14 @@ const MainListItems = ({ collapsed, drawerClose }) => {
         </>
       )}
 
-      <ListItemLink
-        to="/tags"
-        primary={i18n.t("mainDrawer.listItems.tags")}
-        icon={<LocalOfferIcon />}
-        tooltip={collapsed}
-      />
+      {showTags && (
+        <ListItemLink
+          to="/tags"
+          primary={i18n.t("mainDrawer.listItems.tags")}
+          icon={<LocalOfferIcon />}
+          tooltip={collapsed}
+        />
+      )}
 
       {showInternalChat && (
         <>
@@ -527,70 +549,71 @@ const MainListItems = ({ collapsed, drawerClose }) => {
         </>
       )}
 
-
-      <Can
-        role={user.profile}
-        perform="campaigns:view"
-        yes={() => (
-          <>
-            <Tooltip title={collapsed ? i18n.t("mainDrawer.listItems.campaigns") : ""} placement="right">
-              <ListItem
-                dense
-                button
-                onClick={() => setOpenCampaignSubmenuUser((prev) => !prev)}
-                onMouseEnter={() => setCampaignHoverUser(true)}
-                onMouseLeave={() => setCampaignHoverUser(false)}
+      {showCampaigns && (
+        <Can
+          role={user.profile}
+          perform="campaigns:view"
+          yes={() => (
+            <>
+              <Tooltip title={collapsed ? i18n.t("mainDrawer.listItems.campaigns") : ""} placement="right">
+                <ListItem
+                  dense
+                  button
+                  onClick={() => setOpenCampaignSubmenuUser((prev) => !prev)}
+                  onMouseEnter={() => setCampaignHoverUser(true)}
+                  onMouseLeave={() => setCampaignHoverUser(false)}
+                >
+                  <ListItemIcon>
+                    <Avatar
+                      className={`${classes.iconHoverActive} ${isCampaignRouteActive || campaignHoverUser ? "" : ""
+                        }`}
+                    >
+                      <EventAvailableIcon />
+                    </Avatar>
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Typography className={classes.listItemText}>
+                        {i18n.t("mainDrawer.listItems.campaigns")}
+                      </Typography>
+                    }
+                  />
+                  {openCampaignSubmenuUser ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItem>
+              </Tooltip>
+              <Collapse
+                in={openCampaignSubmenuUser}
+                timeout="auto"
+                unmountOnExit
+                style={{
+                  backgroundColor: theme.mode === "light" ? "rgba(120,120,120,0.1)" : "rgba(120,120,120,0.5)",
+                }}
               >
-                <ListItemIcon>
-                  <Avatar
-                    className={`${classes.iconHoverActive} ${isCampaignRouteActive || campaignHoverUser ? "" : ""
-                      }`}
-                  >
-                    <EventAvailableIcon />
-                  </Avatar>
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Typography className={classes.listItemText}>
-                      {i18n.t("mainDrawer.listItems.campaigns")}
-                    </Typography>
-                  }
-                />
-                {openCampaignSubmenuUser ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItem>
-            </Tooltip>
-            <Collapse
-              in={openCampaignSubmenuUser}
-              timeout="auto"
-              unmountOnExit
-              style={{
-                backgroundColor: theme.mode === "light" ? "rgba(120,120,120,0.1)" : "rgba(120,120,120,0.5)",
-              }}
-            >
-              <List dense component="div" disablePadding style={{ paddingLeft: "20px" }}>
-                <ListItemLink
-                  to="/campaigns"
-                  primary={i18n.t("campaigns.subMenus.list")}
-                  icon={<ListIcon />}
-                  tooltip={collapsed}
-                />
-                <ListItemLink
-                  to="/contact-lists"
-                  primary={i18n.t("campaigns.subMenus.listContacts")}
-                  icon={<PeopleIcon />}
-                  tooltip={collapsed}
-                />
-                <ListItemLink
-                  to="/campaigns-config"
-                  primary={i18n.t("campaigns.subMenus.settings")}
-                  icon={<SettingsOutlinedIcon />}
-                  tooltip={collapsed}
-                />
-              </List>
-            </Collapse>
-          </>
-        )}
-      />
+                <List dense component="div" disablePadding style={{ paddingLeft: "20px" }}>
+                  <ListItemLink
+                    to="/campaigns"
+                    primary={i18n.t("campaigns.subMenus.list")}
+                    icon={<ListIcon />}
+                    tooltip={collapsed}
+                  />
+                  <ListItemLink
+                    to="/contact-lists"
+                    primary={i18n.t("campaigns.subMenus.listContacts")}
+                    icon={<PeopleIcon />}
+                    tooltip={collapsed}
+                  />
+                  <ListItemLink
+                    to="/campaigns-config"
+                    primary={i18n.t("campaigns.subMenus.settings")}
+                    icon={<SettingsOutlinedIcon />}
+                    tooltip={collapsed}
+                  />
+                </List>
+              </Collapse>
+            </>
+          )}
+        />
+      )}
 
 
       {/* <ListItemLink

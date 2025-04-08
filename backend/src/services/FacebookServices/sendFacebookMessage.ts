@@ -44,7 +44,7 @@ const sendFacebookMessage = async ({ body, ticket, quotedMsg }: Request): Promis
       }
     }
 
-    console.log("tag", tag)
+    //console.log("tag", tag)
     const send = await sendText(
       number,
       formatBody(body, ticket),

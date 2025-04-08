@@ -32,6 +32,7 @@ import { getBackendUrl } from "../../config";
 import TabPanel from "../TabPanel";
 import AvatarUploader from "../AvatarUpload";
 import TagSelect from "../TagSelect";
+import PermissionSelect from "../PermissionSelect";
 
 const backendUrl = getBackendUrl();
 
@@ -160,6 +161,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	const startWorkRef = useRef();
 	const endWorkRef = useRef();
 	const [selectedTagIds, setSelectedTagIds] = useState([]);
+	const [selectedPermissionIds, setSelectedPermissionIds] = useState([]);
 
 
 
@@ -178,9 +180,11 @@ const UserModal = ({ open, onClose, userId }) => {
 
 				const userQueueIds = data.queues?.map(queue => queue.id);
 				const userTagIds = data.tags?.map(tag => tag.id);
+				const userPermissions = data.permissions?.map(per => per.id);
 				setSelectedQueueIds(userQueueIds);
 				setSelectedTagIds(userTagIds)
 				setWhatsappId(data.whatsappId ? data.whatsappId : '');
+				setSelectedPermissionIds(userPermissions);
 			} catch (err) {
 				toastError(err);
 			}
@@ -189,9 +193,19 @@ const UserModal = ({ open, onClose, userId }) => {
 		fetchUser();
 	}, [userId, open]);
 
+	/* useEffect(() => {
+    const selectedPermissionIds = user.permissions?.map(
+      (permission) => permission.id
+    ) ?? [];
+    setSelectedPermissionIds(selectedPermissionIds);
+  }, [user.permissions]); */
+
 	const handleClose = () => {
 		onClose();
 		setUser(initialState);
+		setSelectedQueueIds([]);
+    setSelectedTagIds([]);
+		setSelectedPermissionIds([]);
 	};
 
 	const handleTabChange = (event, newValue) => {
@@ -212,19 +226,17 @@ const UserModal = ({ open, onClose, userId }) => {
 
 		}
 
-
-
 		const userData = {
 			...values,
 			whatsappId,
 			queueIds: selectedQueueIds,
-			tagIds: selectedTagIds
+			tagIds: selectedTagIds,
+			permissionsIds: selectedPermissionIds
 		};
 
 		try {
 			if (userId) {
 				const { data } = await api.put(`/users/${userId}`, userData);
-				console.log("avatar", avatar, user?.profileImage, avatar?.name)
 				if (avatar && (!user?.profileImage || !user?.profileImage !== avatar.name))// getBasename(avatar)))
 					uploadAvatar(data)
 			} else {
@@ -434,6 +446,21 @@ const UserModal = ({ open, onClose, userId }) => {
 											<Grid item xs={12} md={12} xl={12}>
 												<Can
 													role={loggedInUser.profile}
+													perform="user-modal:editPermissions"
+													yes={() => (
+														<PermissionSelect
+															selectedPermissionIds={selectedPermissionIds}
+															onChange={values => setSelectedPermissionIds(values)}
+															fullWidth
+														/>
+													)}
+												/>
+											</Grid>
+										</Grid>
+										<Grid container spacing={1}>
+											<Grid item xs={12} md={12} xl={12}>
+												<Can
+													role={loggedInUser.profile}
 													perform="user-modal:editProfile"
 													yes={() => (
 														<FormControl variant="outlined" margin="dense" className={classes.maxWidth} fullWidth>
@@ -585,7 +612,7 @@ const UserModal = ({ open, onClose, userId }) => {
 												</FormControl>
 											</Grid>
 										</Grid>
-										{/* <Grid container spacing={1}>
+										<Grid container spacing={1}>
 											<Grid item xs={12} md={6} xl={6}>
 												<FormControl
 													variant="outlined"
@@ -634,7 +661,7 @@ const UserModal = ({ open, onClose, userId }) => {
 													</>
 												</FormControl>
 											</Grid>
-										</Grid> */}
+										</Grid>
 									</TabPanel>
 									<TabPanel
 										className={classes.container}
@@ -906,7 +933,7 @@ const UserModal = ({ open, onClose, userId }) => {
 																</>
 															</FormControl>
 														</Grid>
-{/* 														<Grid item xs={12} md={6} xl={6}>
+														<Grid item xs={12} md={6} xl={6}>
 															<FormControl
 																variant="outlined"
 																className={classes.maxWidth}
@@ -952,7 +979,7 @@ const UserModal = ({ open, onClose, userId }) => {
 																	margin="dense"
 																/>
 															</>
-														</FormControl> */}
+														</FormControl>
 														{/* <Grid item xs={12} md={6} xl={6}>
 															<FormControl
 																variant="outlined"

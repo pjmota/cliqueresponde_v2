@@ -161,7 +161,7 @@ const ListTicketsService = async ({
       ...(user.allTicketsQueuesAttending === "enable" && user.profile === "user"
         ? {}
         : { userId }),
-      queueId: { [Op.in]: queueIds },
+      queueId: { [Op.in]: queueIds }
     };
   } else if (status === "group" && user.allowGroup && user.whatsappId) {
     whereCondition = {
@@ -576,6 +576,7 @@ const ListTicketsService = async ({
       };
     }
   } else if (withUnreadMessages === "true") {
+    // console.log(showNotificationPendingValue)
     whereCondition = {
       [Op.or]: [
         {

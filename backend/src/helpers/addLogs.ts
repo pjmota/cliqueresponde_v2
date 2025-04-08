@@ -10,7 +10,7 @@ export async function addLogs({fileName, text, forceNewFile=false}) {
 
     try {
 
-        console.log(logs)
+        //console.log(logs)
         if (!fs.existsSync(logs)) {
           fs.mkdirSync(logs);
         }

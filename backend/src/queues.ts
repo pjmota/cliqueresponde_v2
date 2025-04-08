@@ -49,6 +49,8 @@ import ShowQueueIntegrationService from "./services/QueueIntegrationServices/Sho
 import { getWbot } from "./libs/wbot";
 import typebotListener from "./services/TypebotServices/typebotListener";
 import CreateLogRotationService from "./services/RotationsService/CreateLogRotationService";
+import ListUserQueueServices from "./services/UserQueueServices/ListUserQueueServices";
+import { senderMessages } from "./functions/SenderMessages/sendeMessages";
 
 const connection = process.env.REDIS_URI || "";
 const limiterMax = process.env.REDIS_OPT_LIMITER_MAX || 1;
@@ -1582,7 +1584,6 @@ export default async function handleRandomUser(param?, ticketId?, origin?) {
 }
 
 const executing = async (queue, ticketId?, origin?: '') => {
-  const iconv = require("iconv-lite");
   let getNextUserId: () => number | undefined = undefined;
   try {
     const companies = await Company.findAll({
@@ -1872,6 +1873,14 @@ const executing = async (queue, ticketId?, origin?: '') => {
                         };
 
                         await CreateLogRotationService(paramLog)
+
+                        const ticketToSend = await ShowTicketService(
+                          ticket.id,
+                          ticket.companyId
+                        );
+
+                        await senderMessages(data[0].userId, undefined, undefined, ticketToSend);
+
 
                         logger.info(
                           `Ticket ID ${ticket.id} atualizado para UserId ${randomUserId} - ${ticket.updatedAt}`

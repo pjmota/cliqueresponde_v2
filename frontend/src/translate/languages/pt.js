@@ -402,6 +402,9 @@ const messages = {
           email: "Email",
           actions: "Ações",
           lastMessage: "Última Mensagem",
+          number: "Número",
+          createdBy: "Criado por",
+          attendant: "Atendente"
         },
         menu: {
           importYourPhone: "Importar do aparelho padrão",

@@ -6,6 +6,7 @@ import Plan from "../../models/Plan";
 import Ticket from "../../models/Ticket";
 import logger from "../../utils/logger";
 import Tag from "../../models/Tag";
+import Permission from "../../models/Permission";
 
 interface Request {
   searchParam?: string;
@@ -66,28 +67,14 @@ const ListUsersService = async ({
       { model: Queue, as: "queues", attributes: ["id", "name", "color"] },
       { model: Tag, as: "tags", attributes: ["id", "name", "color"] },
       {
+        model: Permission,
+        as: "permissions",
+        attributes: ["id", "name", "code"]
+      },
+      {
         model: Company,
         as: "company",
-        attributes: ["id", "name", "dueDate", "document"],
-        // include: [
-        //   {
-        //     model: Plan, as: "plan",
-        //     attributes: ["id",
-        //       "name",
-        //       "amount",
-        //       "useWhatsapp",
-        //       "useFacebook",
-        //       "useInstagram",
-        //       "useCampaigns",
-        //       "useSchedules",
-        //       "useInternalChat",
-        //       "useExternalApi",
-        //       "useIntegrations",
-        //       "useOpenAi",
-        //       "useKanban"
-        //     ]
-        //   },
-        // ]
+        attributes: ["id", "name", "dueDate", "document"]
       }
     ],
     //logging: console.log
