@@ -33,7 +33,6 @@ type FindParams = {
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { pageNumber, users } = req.query as unknown as IndexQuery;
   const ownerId = +req.user.id;
-  console.log("req", req.user.companyId);
   const { records, count, hasMore } = await ListService({
     ownerId,
     pageNumber,

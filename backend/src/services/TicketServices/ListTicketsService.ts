@@ -89,10 +89,7 @@ const ListTicketsService = async ({
   //Isto é porque a rota exige nessa versão que o queueIds seja enviado
   queueIds = (!queueIds || isEmpty(queueIds)) ? (contactNumber || (whatsappIds && !isEmpty(whatsappIds)) ? userQueueIds : queueIds) : queueIds;
   
-  
-  
-  
-  
+ 
   const showTicketAllQueues = user.allHistoric === "enabled";
   const showTicketWithoutQueue = user.allTicket === "enable";
   const showGroups = user.allowGroup === true;
@@ -402,7 +399,7 @@ const ListTicketsService = async ({
           [literal('MAX("id")'), "id"]
         ],
         where: {
-          [Op.or]: [{ userId }, { status: ["pending", "closed", "group"] }],
+          [Op.or]: [{ userId }, { status: ["open", "pending", "closed", "group"] }],
           queueId:
             showAll === "true" || showTicketWithoutQueue
               ? { [Op.or]: [queueIds, null] }
@@ -411,6 +408,7 @@ const ListTicketsService = async ({
         },
         group: ["companyId", "contactId", "whatsappId"]
       });
+
     } else {
       let whereCondition2: Filterable["where"] = {
         companyId,
@@ -522,9 +520,9 @@ const ListTicketsService = async ({
           ]
         };
       } else {
-        whereCondition = {
+        /* whereCondition = {
           ...whereCondition,
-          [Op.or]: [
+          [Op.and]: [
             {
               "$contact.name$": where(
                 fn("LOWER", fn("unaccent", col("contact.name"))),
@@ -541,10 +539,28 @@ const ListTicketsService = async ({
             //   )
             // }
           ]
+        }; */
+
+        whereCondition = {
+          ...whereCondition,
+          [Op.or]: [
+            where(
+              fn("LOWER", fn("unaccent", col("contact.name"))),
+              {
+                [Op.like]: `%${sanitizedSearchParam}%`
+              }
+            ),
+            {
+              "$contact.number$": {
+                [Op.like]: `%${sanitizedSearchParam}%`
+              }
+            }
+          ]
         };
       }
     }
 
+    
     if (Array.isArray(tags) && tags.length > 0) {
       const contactTagFilter: any[] | null = [];
       // for (let tag of tags) {
@@ -585,7 +601,6 @@ const ListTicketsService = async ({
       };
     }
   } else if (withUnreadMessages === "true") {
-    // console.log(showNotificationPendingValue)
     whereCondition = {
       [Op.or]: [
         {
@@ -680,7 +695,7 @@ const ListTicketsService = async ({
       offset,
       order: [["updatedAt", sortTickets]],
       subQuery: false,
-      //...(status === 'open' ? {logging: console.log} : {})
+      //...(searchParam ? {logging: console.log} : {})
     });
 
     count = result.count;

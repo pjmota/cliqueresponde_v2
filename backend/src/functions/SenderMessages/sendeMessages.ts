@@ -7,10 +7,7 @@ import User from "../../models/User";
 export const senderMessages = async (userId: string | number, userNumber?: any, messages?: any, ticket?: Ticket) => {
   try { 
 
-    const user = await User.findByPk(userId)
-    logger.warn(`userId ${JSON.stringify(user)}`)
-    logger.warn(`ticket ${JSON.stringify(ticket)}`)
-    /* logger.warn(`aqui 1 ${user.id} eeeee ${user.leadMessage}`)
+    const user = await User.findByPk(userId);
 
     let _message: string;
 
@@ -20,8 +17,8 @@ export const senderMessages = async (userId: string | number, userNumber?: any, 
       _message = 'Novo contato no CRM Clique Responde';
     }
 
-    if (!messages && user.sendWhatsAppInLeadMessage) {
-      _message += ` https://wa.me/${ticket.contact.number}`;
+    if (!messages && user.sendWhatsAppInLeadMessage === 'enable') {
+      _message += `: https://wa.me/${ticket.contact.number}`;
     }
 
     const data = {
@@ -30,8 +27,9 @@ export const senderMessages = async (userId: string | number, userNumber?: any, 
       message: _message
     }
 
-    if (!data.token || !data.number) return
-      await axios.post(`${process.env.WHATSAPP_API}`,
+    if (!data.token || !data.number || user.sendWhatsAppInLeadMessage === 'disable') return
+
+    await axios.post(`${process.env.WHATSAPP_API}`,
       {
         number: data.number,
         body: data.message
@@ -42,7 +40,8 @@ export const senderMessages = async (userId: string | number, userNumber?: any, 
           'Authorization': `Bearer ${data.token}`
         }
       }
-    ) */
+    )
+
     } catch (error) {
       logger.error(`[senderMessages] (user: ${userId}) ${JSON.stringify(error)}`)
     }
