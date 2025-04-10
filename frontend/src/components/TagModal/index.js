@@ -321,7 +321,10 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 												/>
 											</div>
 										)}
-											<Field
+											
+									</Grid>
+									<Grid item xs={12} md={12} xl={12}>
+									<Field
 											as={TextField}
 											type="number"
 											fullWidth
@@ -331,16 +334,16 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 											error={touched.color && Boolean(errors.color)}
 											helperText={touched.color && errors.color}
 											onChange={(e) => {
-												const value = e.target.value; // Pegamos o valor antes de chamar setTag
+												const value = e.target.value; 
 												setTag(prev => ({ ...prev, sequence: value }));
 											}}
 											variant="outlined"
 											margin="dense"
-											value={tag.sequence}
-											
+											InputLabelProps={{
+												shrink: true,
+											}}
 										/>
 									</Grid>
-
 									{kanban === 1 && (
 										<>
 											<Grid item xs={12} md={6} xl={6}>
