@@ -352,7 +352,15 @@ const Kanban = () => {
     setSelectedStatus(selected);
   }
   const handleSearch = (e) => {
-    setSearchParam(e.target.value);
+    const params = {
+      queueIds: JSON.stringify(jsonString),
+      
+      searchParam: e.target.value
+    };
+
+    setSearchParam(e.target.value.toLowerCase());
+    fetchTickets(params, tags);
+
   }
   
   
