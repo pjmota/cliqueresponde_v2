@@ -27,12 +27,29 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "center",
     gap: theme.spacing(1.25),
   },
+  cardName: {
+    marginTop: theme.spacing(2),
+
+
+  },
+  
+  ticketLabel: {
+    backgroundColor: theme.palette.primary.main,
+    borderRadius: theme.shape.borderRadius,
+    display: "flex",
+    color: theme.palette.common.white,
+    justifyContent: "center",
+
+
+
+  }
+  ,
   kanbanContainer: {
     width: "100%",
     overflowY: "auto",
     overflowX: "auto",
     margin: "0 auto",
-    position: "static", 
+    position: "static",
   },
   connectionTag: {
     background: theme.palette.success.main,
@@ -90,7 +107,7 @@ const Kanban = () => {
   const [status, setStatus] = useState([{ id: 'pending', label: 'Pendente' }, { id: 'closed', label: 'Fechado' }, { id: 'open', label: 'Aberto' }]);
   const isAdmin = user.profile === "admin" || user.profile === "supervisor";
   const isSM = useMediaQuery(theme => theme.breakpoints.down('sm'));
-  
+
   const jsonString = user.queues.map(queue => queue.UserQueue.queueId);
 
   useEffect(() => {
@@ -112,7 +129,7 @@ const Kanban = () => {
     }
   };
 
-  const fetchTickets = async (params,tags) => {
+  const fetchTickets = async (params, tags) => {
     try {
       const { data } = await api.get("/ticket/kanban", {
         params: {
@@ -173,12 +190,12 @@ const Kanban = () => {
   const popularCards = (jsonString) => {
     const filteredTickets = tickets.filter(ticket => {
       const hasNoQueues = ticket.tags.length === 0;
-      
+
       if (user.allTicketsQueuesWaiting === "disable" && user.profile !== 'admin') {
         const userQueueIds = user.queues.map(queue => queue.id); // Obtém os IDs das filas do usuário
         return hasNoQueues && userQueueIds.includes(ticket.queueId); // Filtra apenas os tickets com queueId permitido
       }
-    
+
       return hasNoQueues; // Se não estiver "disable", mantém todos os sem fila
     });
 
@@ -219,58 +236,71 @@ const Kanban = () => {
             </div>
           ),
           title: <>
-            <Tooltip title={ticket.whatsapp?.name}>
-              {IconChannel(ticket.channel)}
-            </Tooltip> {ticket.contact.name}</>,
+            <div
+
+              className={classes.cardName}
+
+            >
+              <Tooltip title={ticket.whatsapp?.name}>
+                {IconChannel(ticket.channel)}
+              </Tooltip> {ticket.contact.name}
+            </div></>,
           draggable: true,
           href: "/tickets/" + ticket.uuid,
         })),
       },
       ...tags.sort(
         (a, b) => a.sequence - b.sequence).map(tag => {
-        const filteredTickets = tickets.filter(ticket => {
-          const tagIds = ticket.tags.map(tag => tag.id);
-          return tagIds.includes(tag.id);
-        });
+          const filteredTickets = tickets.filter(ticket => {
+            const tagIds = ticket.tags.map(tag => tag.id);
+            return tagIds.includes(tag.id);
+          });
 
-        return {
-          id: tag.id.toString(),
-          title: tag.name,
-          label: filteredTickets?.length.toString(),
-          cards: filteredTickets.map(ticket => ({
-            id: ticket.id.toString(),
-            label: "Ticket nº " + ticket.id.toString(),
-            description: (
-              <div>
-                <p>
-                  {ticket.contact.number}
-                  <br />
-                  {ticket.lastMessage || " "}
-                </p>
-                <Button
-                  className={`${classes.button} ${classes.cardButton}`}
-                  onClick={() => {
-                    handleCardClick(ticket.uuid)
-                  }}>
-                  Ver Ticket
-                </Button>
-                <span style={{ marginRight: '8px' }} />
-                <p>
-                  {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
-                </p>
-              </div>
-            ),
-            title: <>
-              <Tooltip title={ticket.whatsapp?.name}>
-                {IconChannel(ticket.channel)}
-              </Tooltip> {ticket.contact.name}
-            </>,
-            draggable: true,
-            href: "/tickets/" + ticket.uuid,
-          })),
-          style: { backgroundColor: tag.color, color: "white" }
-        };
-      }),
+          return {
+            id: tag.id.toString(),
+            title: tag.name,
+            label: filteredTickets?.length.toString(),
+            cards: filteredTickets.map(ticket => ({
+              id: ticket.id.toString(),
+              label:
+                <>
+                  <div
+
+                    className={classes.ticketLabel}>
+                    {"Ticket nº " + ticket.id.toString()}
+                  </div></>,
+              description: (
+                <div>
+                  <p>
+                    {ticket.contact.number}
+                    <br />
+                    {ticket.lastMessage || " "}
+                  </p>
+                  <Button
+                    className={`${classes.button} ${classes.cardButton}`}
+                    onClick={() => {
+                      handleCardClick(ticket.uuid)
+                    }}>
+                    Ver Ticket
+                  </Button>
+                  <span style={{ marginRight: '8px' }} />
+                  <p>
+                    {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
+                  </p>
+                </div>
+              ),
+              title: <>
+              <div className={classes.cardName}>
+                <Tooltip title={ticket.whatsapp?.name}>
+                  {IconChannel(ticket.channel)}
+                </Tooltip> {ticket.contact.name}
+             </div> </>,
+              draggable: true,
+              href: "/tickets/" + ticket.uuid,
+            })),
+            style: { backgroundColor: tag.color, color: "white" }
+          };
+        }),
     ];
 
     setFile({ lanes });
@@ -287,12 +317,12 @@ const Kanban = () => {
   const handleCardMove = async (cardId, sourceLaneId, targetLaneId, event) => {
     try {
       await api.delete(`/ticket-tags/${targetLaneId}`);
-      toast.success('Ticket Tag Removido!',{
+      toast.success('Ticket Tag Removido!', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
       await api.put(`/ticket-tags/${targetLaneId}/${sourceLaneId}`);
-      toast.success('Ticket Tag Adicionado com Sucesso!',{
+      toast.success('Ticket Tag Adicionado com Sucesso!', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
@@ -321,19 +351,19 @@ const Kanban = () => {
   };
 
   const fetchUsers = async () => {
-      try {
-        if (!isAdmin) {
-          return;
-        }
-  
-        const response = await api.get("/users");
-        setUsers(response.data.users || []);
-        //setSelectedUsers((response.data.users || []).map(user => user.id));
-      } catch (error) {
-        console.log(error);
+    try {
+      if (!isAdmin) {
+        return;
       }
-    };
-  
+
+      const response = await api.get("/users");
+      setUsers(response.data.users || []);
+      //setSelectedUsers((response.data.users || []).map(user => user.id));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleChangeUser = (selected) => {
 
     const params = {
@@ -361,7 +391,7 @@ const Kanban = () => {
   const handleSearch = (e) => {
     const params = {
       queueIds: JSON.stringify(jsonString),
-      
+
       searchParam: e.target.value
     };
 
@@ -369,8 +399,8 @@ const Kanban = () => {
     fetchTickets(params, tags);
 
   }
-  
-  
+
+
 
   return (
     <div className={classes.root}>
@@ -394,7 +424,7 @@ const Kanban = () => {
                   id="grouped-select"
                   label={i18n.t("kanban.user")}
                   minWidth={120}
-                  
+
                   value={selectedUsers}
                   onChange={(e) => handleChangeUser(e.target.value)}
                   multiple>
@@ -406,7 +436,7 @@ const Kanban = () => {
 
                 </Select>
               </FormControl>
-             
+
 
 
 
@@ -416,55 +446,55 @@ const Kanban = () => {
 
 
           }
-          
+
           <FormControl
-                size="small"
-                style={{
-                  minWidth: "20vh"
-                }} variant="outlined">
-                <InputLabel htmlFor="grouped-select">{i18n.t("kanban.status")}</InputLabel>
-                <Select
-                  defaultValue=""
-                  variant="outlined"
-                  id="grouped-select"
-                  label={i18n.t("kanban.status")}
-                  minWidth={120}
+            size="small"
+            style={{
+              minWidth: "20vh"
+            }} variant="outlined">
+            <InputLabel htmlFor="grouped-select">{i18n.t("kanban.status")}</InputLabel>
+            <Select
+              defaultValue=""
+              variant="outlined"
+              id="grouped-select"
+              label={i18n.t("kanban.status")}
+              minWidth={120}
 
-                  value={selectedStatus}
-                  onChange={(e) => handleChangeStatus(e.target.value)}
-                  multiple>
-                  {status.map((status) => (
-                    <MenuItem key={status.id} value={status.id}>
-                      {status.label}
-                    </MenuItem>
-                  ))}
+              value={selectedStatus}
+              onChange={(e) => handleChangeStatus(e.target.value)}
+              multiple>
+              {status.map((status) => (
+                <MenuItem key={status.id} value={status.id}>
+                  {status.label}
+                </MenuItem>
+              ))}
 
-                </Select>
-              </FormControl>
+            </Select>
+          </FormControl>
 
-            <FormControl
+          <FormControl
 
+            size="small"
+          >
+
+            <TextField
+              placeholder="search"
+              type="search"
               size="small"
-            >
+              variant="outlined"
 
-              <TextField
-                placeholder="search"
-                type="search"
-                size="small"
-                variant="outlined"
+              value={searchParam}
+              onChange={handleSearch}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon style={{ color: "gray" }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </FormControl>
 
-                value={searchParam}
-                onChange={handleSearch}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon style={{ color: "gray" }} />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </FormControl>
-          
           {/* TODO: Ativar pesquisa por data*/}
           {/*  <TextField
             label="Data de início"
@@ -513,16 +543,16 @@ const Kanban = () => {
         <Board
           data={file}
           onCardMoveAcrossLanes={handleCardMove}
-          
+
           style={{
             backgroundColor: 'rgba(252, 252, 252, 0.03)',
-            height: isSM  ? '85vh' : '80vh',
+            height: isSM ? '85vh' : '80vh',
           }}
         />
       </div>
     </div>
   );
-  
+
 };
 
 export default Kanban;
