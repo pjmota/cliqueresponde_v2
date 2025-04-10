@@ -286,15 +286,21 @@ const Kanban = () => {
   const handleCardMove = async (cardId, sourceLaneId, targetLaneId, event) => {
     try {
       await api.delete(`/ticket-tags/${targetLaneId}`);
-      toast.success('Ticket Tag Removido!');
+      toast.success('Ticket Tag Removido!',{
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
       await api.put(`/ticket-tags/${targetLaneId}/${sourceLaneId}`);
-      toast.success('Ticket Tag Adicionado com Sucesso!');
-      await fetchTickets(jsonString);
+      toast.success('Ticket Tag Adicionado com Sucesso!',{
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+      //await fetchTickets(jsonString);
       const { data } = await api.get(`/tags/list`, { params: { kanban: 1 } });
 
-      popularCards(jsonString);
+      //popularCards(jsonString);
 
-      await syncTags({ ticketId: targetLaneId, tags: data.filter(e => e.id === Number(sourceLaneId)) });
+      //await syncTags({ ticketId: targetLaneId, tags: data.filter(e => e.id === Number(sourceLaneId)) });
     } catch (err) {
       console.log(err);
     }
