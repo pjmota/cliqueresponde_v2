@@ -321,6 +321,24 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 												/>
 											</div>
 										)}
+											<Field
+											as={TextField}
+											type="number"
+											fullWidth
+											label={i18n.t("tagModal.form.sequence")}
+											name="sequence"											
+											id="sequence"
+											error={touched.color && Boolean(errors.color)}
+											helperText={touched.color && errors.color}
+											onChange={(e) => {
+												const value = e.target.value; // Pegamos o valor antes de chamar setTag
+												setTag(prev => ({ ...prev, sequence: value }));
+											}}
+											variant="outlined"
+											margin="dense"
+											value={tag.sequence}
+											
+										/>
 									</Grid>
 
 									{kanban === 1 && (

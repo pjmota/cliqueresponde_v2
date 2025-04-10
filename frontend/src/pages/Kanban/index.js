@@ -226,7 +226,8 @@ const Kanban = () => {
           href: "/tickets/" + ticket.uuid,
         })),
       },
-      ...tags.map(tag => {
+      ...tags.sort(
+        (a, b) => a.sequence - b.sequence).map(tag => {
         const filteredTickets = tickets.filter(ticket => {
           const tagIds = ticket.tags.map(tag => tag.id);
           return tagIds.includes(tag.id);

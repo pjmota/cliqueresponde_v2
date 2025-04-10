@@ -754,7 +754,8 @@ const messages = {
           greetingMessageLane: "Mensagem de saudação da lane",
           rollbackLaneId: "Voltar para Lane após retomar atendimento",
           conection: "Conexão",
-          integration: "Integração"
+          integration: "Integração",
+          sequence: "Sequência",
         },
         buttons: {
           okAdd: "Adicionar",
