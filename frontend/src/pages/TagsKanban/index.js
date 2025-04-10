@@ -263,7 +263,9 @@ const Tags = () => {
               <TableCell align="center">{i18n.t("tagsKanban.table.id")}</TableCell>
               <TableCell align="center">{i18n.t("tagsKanban.table.name")}</TableCell>
               <TableCell align="center">{i18n.t("tagsKanban.table.tickets")}</TableCell>
+              <TableCell align="center">{i18n.t("tagsKanban.table.sequence")}</TableCell>
               <TableCell align="center">{i18n.t("tagsKanban.table.actions")}</TableCell>
+             
             </TableRow>
           </TableHead>
           <TableBody>
@@ -284,6 +286,7 @@ const Tags = () => {
                     />
                   </TableCell>
                   <TableCell align="center">{tag?.ticketTags ? (<span>{tag?.ticketTags?.length}</span>) : <span>0</span>}</TableCell>
+                  <TableCell align="center">{tag?.sequence}</TableCell>
                   <TableCell align="center">
                     <IconButton size="small" onClick={() => handleEditTag(tag)}>
                       <EditIcon />

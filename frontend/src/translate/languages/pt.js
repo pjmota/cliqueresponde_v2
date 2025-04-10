@@ -1564,6 +1564,7 @@ const messages = {
           tickets: "Tickets",
           actions: "Ações",
           id: "Id da tag",
+          sequence:"Sequencia"
         },
         buttons: {
           add: "Nova Lane",
