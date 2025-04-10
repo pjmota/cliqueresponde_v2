@@ -295,12 +295,12 @@ const Kanban = () => {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
-      //await fetchTickets(jsonString);
+      await fetchTickets(jsonString);
       const { data } = await api.get(`/tags/list`, { params: { kanban: 1 } });
 
       //popularCards(jsonString);
 
-      //await syncTags({ ticketId: targetLaneId, tags: data.filter(e => e.id === Number(sourceLaneId)) });
+      await syncTags({ ticketId: targetLaneId, tags: data.filter(e => e.id === Number(sourceLaneId)) });
     } catch (err) {
       console.log(err);
     }
