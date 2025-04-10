@@ -1152,6 +1152,7 @@ const messages = {
         title: "Kanban",
         searchPlaceholder: "Pesquisa",
         user: "Usuário",
+        status: "Status",
         subMenus: {
           list: "Painel",
           tags: "Lanes",
