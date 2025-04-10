@@ -14,8 +14,10 @@ import { inspect } from "util";
 interface Request {
   searchParam?: string;
   pageNumber?: string;
-  status?: string[];
+  status?: string[] | string;
   date?: string;
+  dateStart?: string;
+  dateEnd?: string;
   updatedAt?: string;
   showAll?: string;
   userId: string;
