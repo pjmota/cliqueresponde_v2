@@ -112,13 +112,14 @@ const Kanban = () => {
     }
   };
 
-  const fetchTickets = async () => {
+  const fetchTickets = async (params,tags) => {
     try {
       const { data } = await api.get("/ticket/kanban", {
         params: {
           queueIds: JSON.stringify(jsonString),
           startDate: startDate,
           endDate: endDate,
+          ...params
         }
       });
       setTickets(data.tickets);

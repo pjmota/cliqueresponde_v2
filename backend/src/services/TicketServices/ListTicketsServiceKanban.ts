@@ -1,4 +1,4 @@
-import { Op, fn, where, col, Filterable, Includeable } from "sequelize";
+import { Op, fn, where, col, Filterable, Includeable, literal } from "sequelize";
 import { startOfDay, endOfDay, parseISO } from "date-fns";
 
 import Ticket from "../../models/Ticket";
@@ -8,26 +8,25 @@ import Queue from "../../models/Queue";
 import User from "../../models/User";
 import ShowUserService from "../UserServices/ShowUserService";
 import Tag from "../../models/Tag";
-import TicketTag from "../../models/TicketTag";
-import { intersection } from "lodash";
 import Whatsapp from "../../models/Whatsapp";
+import { inspect } from "util";
 
 interface Request {
   searchParam?: string;
   pageNumber?: string;
-  status?: string;
+  status?: string[];
   date?: string;
-  dateStart?: string;
-  dateEnd?: string;
   updatedAt?: string;
   showAll?: string;
   userId: string;
   withUnreadMessages?: string;
   queueIds: number[];
   tags: number[];
+  hasTags?: boolean;
   users: number[];
   companyId: number;
 }
+
 
 interface Response {
   tickets: Ticket[];
@@ -40,28 +39,69 @@ const ListTicketsServiceKanban = async ({
   pageNumber = "1",
   queueIds,
   tags,
+  hasTags = undefined,
   users,
   status,
   date,
-  dateStart,
-  dateEnd,
   updatedAt,
   showAll,
   userId,
   withUnreadMessages,
   companyId
 }: Request): Promise<Response> => {
+
+  console.log("REQUEST", {
+    searchParam,
+    pageNumber,
+    queueIds,
+    tags,
+    hasTags,
+    users,
+    status,
+    date,
+    updatedAt,
+    showAll,
+    userId,
+    withUnreadMessages,
+    companyId
+  });
+
+
+
+
+  const currentUser = await User.findOne({
+    where: { id: userId },
+    include: [
+      {
+        model: Ticket,
+        as: "tickets",
+        attributes: ["id"]
+      }
+    ]
+  });
+
+  
+
+
+  const userTicketsIds = currentUser?.tickets?.map(ticket => ticket.id) || [];
+
+
   let whereCondition: Filterable["where"] = {
-    [Op.or]: [{ userId }, { status: "pending" }],
     queueId: { [Op.or]: [queueIds, null] }
   };
+
+  // if (!currentUser.super && currentUser.profile !== "admin") {
+  //   whereCondition = { ...whereCondition, [Op.or]: [{ userId }] };
+
+  // }
+
   let includeCondition: Includeable[];
 
   includeCondition = [
     {
       model: Contact,
       as: "contact",
-      attributes: ["id", "name", "number", "email", "companyId", "urlPicture"]
+      attributes: ["id", "name", "number", "email"]
     },
     {
       model: Queue,
@@ -87,14 +127,11 @@ const ListTicketsServiceKanban = async ({
 
   if (showAll === "true") {
     whereCondition = { queueId: { [Op.or]: [queueIds, null] } };
+
   }
 
-  whereCondition = {
-    ...whereCondition,
-    status: { [Op.or]: ["pending", "open"] }
-  };
-
   if (searchParam) {
+
     const sanitizedSearchParam = searchParam.toLocaleLowerCase().trim();
 
     includeCondition = [
@@ -135,14 +172,19 @@ const ListTicketsServiceKanban = async ({
         }
       ]
     };
+
+
+
+
   }
 
-  if (dateStart && dateEnd) {
+  if (date) {
     whereCondition = {
       createdAt: {
-        [Op.between]: [+startOfDay(parseISO(dateStart)), +endOfDay(parseISO(dateEnd))]
+        [Op.between]: [+startOfDay(parseISO(date)), +endOfDay(parseISO(date))]
       }
     };
+
   }
 
   if (updatedAt) {
@@ -154,10 +196,11 @@ const ListTicketsServiceKanban = async ({
         ]
       }
     };
+
   }
 
   if (withUnreadMessages === "true") {
-    const user = await ShowUserService(userId, companyId);
+    const user = await ShowUserService(userId);
     const userQueueIds = user.queues.map(queue => queue.id);
 
     whereCondition = {
@@ -165,57 +208,85 @@ const ListTicketsServiceKanban = async ({
       queueId: { [Op.or]: [userQueueIds, null] },
       unreadMessages: { [Op.gt]: 0 }
     };
+
   }
 
   if (Array.isArray(tags) && tags.length > 0) {
-    const ticketsTagFilter: any[] | null = [];
-    for (let tag of tags) {
-      const ticketTags = await TicketTag.findAll({
-        where: { tagId: tag }
-      });
-      if (ticketTags) {
-        ticketsTagFilter.push(ticketTags.map(t => t.ticketId));
-      }
-    }
 
-    const ticketsIntersection: number[] = intersection(...ticketsTagFilter);
+    const userTickets = currentUser.profile !== "admin" ? userTicketsIds : undefined;
 
     whereCondition = {
       ...whereCondition,
       id: {
-        [Op.in]: ticketsIntersection
+        [Op.and]: [
+          {
+            [Op.in]: literal(`(select "ticketId" from "TicketTags" tt where "tagId" in (${tags.join(',')}))`)
+          },
+          ...(userTickets ? [{ [Op.in]: userTickets }] : [])
+        ]
       }
     };
+
+  }
+
+  if (hasTags == false) {
+    whereCondition = {
+      ...whereCondition,
+      [Op.and]: [
+        literal(`not exists (select 1 from "TicketTags" tt where tt."ticketId" = "Ticket"."id")`)
+      ]
+    };
+
   }
 
   if (Array.isArray(users) && users.length > 0) {
-    const ticketsUserFilter: any[] | null = [];
-    for (let user of users) {
-      const ticketUsers = await Ticket.findAll({
-        where: { userId: user }
-      });
-      if (ticketUsers) {
-        ticketsUserFilter.push(ticketUsers.map(t => t.id));
-      }
-    }
-
-    const ticketsIntersection: number[] = intersection(...ticketsUserFilter);
-
     whereCondition = {
       ...whereCondition,
-      id: {
-        [Op.in]: ticketsIntersection
+      userId: {
+        [Op.or]: [
+          { [Op.in]: [...new Set(users)] },
+          null
+        ]
       }
     };
+
   }
 
-  const limit = 400;
+  if (typeof status === "string") {
+    status = JSON.parse(status);
+  }
+  if (Array.isArray(status) && status.length > 0) {
+    whereCondition = {
+      ...whereCondition,
+      status: {
+        [Op.in]: [...new Set(status)]
+      }
+    };
+
+  }
+
+  const limit = 40;
   const offset = limit * (+pageNumber - 1);
 
   whereCondition = {
     ...whereCondition,
     companyId
   };
+
+  if (!currentUser.super && currentUser.profile !== "admin") {
+    whereCondition = {
+      ...whereCondition,
+      [Op.and]: [
+      {
+        userId: {
+        [Op.or]: [userId, null]
+        }
+      }
+      ]
+    };
+  }
+
+  console.log("WHERE CONDITION", inspect(whereCondition, { depth: 100 }));
 
   const { count, rows: tickets } = await Ticket.findAndCountAll({
     where: whereCondition,
