@@ -729,13 +729,15 @@ const messages = {
           contact: "Contato",
           sendAt: "Data de Agendamento",
           sentAt: "Data de Envio",
-          assinar: "Enviar Assinatura"
+          assinar: "Enviar Assinatura",
+          notifyBefore: "Tempo para mensagem de aviso em minutos",
         },
         buttons: {
           okAdd: "Adicionar",
           okEdit: "Salvar",
           cancel: "Cancelar",
-          addSchedule: "Adicionar agendamento"
+          addSchedule: "Adicionar agendamento",
+          justNotifyMe: "Apenas Notificar-me"
         },
         success: "Agendamento salvo com sucesso.",
       },
