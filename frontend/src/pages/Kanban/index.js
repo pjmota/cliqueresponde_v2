@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import Board from 'react-trello';
@@ -7,10 +7,11 @@ import { toast } from "react-toastify";
 import { i18n } from "../../translate/i18n";
 import { useHistory } from 'react-router-dom';
 import { Facebook, Instagram, WhatsApp } from "@material-ui/icons";
-import { Badge, Tooltip, Typography, Button, TextField, Box } from "@material-ui/core";
 import { format, isSameDay, parseISO } from "date-fns";
 import { Can } from "../../components/Can";
 import toastError from "../../errors/toastError";
+import { Badge, Tooltip, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, useMediaQuery } from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -18,19 +19,28 @@ const useStyles = makeStyles(theme => ({
     flexDirection: "column",
     alignItems: "center",
     padding: theme.spacing(1),
+    marginTop: theme.spacing(2),
+    gap: theme.spacing(2),
+  },
+  menu: {
+    display: 'flex',
+    justifyContent: "center",
+    gap: theme.spacing(1.25),
   },
   kanbanContainer: {
     width: "100%",
-    maxWidth: "1200px",
+    overflowY: "auto",
+    overflowX: "auto",
     margin: "0 auto",
+    position: "static", 
   },
   connectionTag: {
-    background: "green",
-    color: "#FFF",
-    marginRight: 1,
-    padding: 1,
+    background: theme.palette.success.main,
+    color: theme.palette.common.white,
+    marginRight: theme.spacing(0.125),
+    padding: theme.spacing(0.125),
     fontWeight: 'bold',
-    borderRadius: 3,
+    borderRadius: theme.shape.borderRadius,
     fontSize: "0.6em",
   },
   lastMessageTime: {
@@ -46,7 +56,7 @@ const useStyles = makeStyles(theme => ({
     position: "relative",
     color: theme.palette.success.main,
     fontWeight: "bold",
-    marginLeft: "auto"
+    marginLeft: "auto",
   },
   cardButton: {
     marginRight: theme.spacing(1),
@@ -57,7 +67,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   dateInput: {
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(0),
   },
 }));
 
@@ -73,10 +83,19 @@ const Kanban = () => {
   const [startDate, setStartDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(new Date(), "yyyy-MM-dd"));
 
+  const [searchParam, setSearchParam] = useState("");
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [status, setStatus] = useState([{ id: 'pending', label: 'Pendente' }, { id: 'closed', label: 'Fechado' }, { id: 'open', label: 'Aberto' }]);
+  const isAdmin = user.profile === "admin" || user.profile === "supervisor";
+  const isSM = useMediaQuery(theme => theme.breakpoints.down('sm'));
+  
   const jsonString = user.queues.map(queue => queue.UserQueue.queueId);
 
   useEffect(() => {
     fetchTags();
+    fetchUsers();
   }, [user]);
 
   const fetchTags = async () => {
@@ -93,13 +112,14 @@ const Kanban = () => {
     }
   };
 
-  const fetchTickets = async () => {
+  const fetchTickets = async (params,tags) => {
     try {
       const { data } = await api.get("/ticket/kanban", {
         params: {
           queueIds: JSON.stringify(jsonString),
           startDate: startDate,
           endDate: endDate,
+          ...params
         }
       });
       setTickets(data.tickets);
@@ -293,11 +313,153 @@ const Kanban = () => {
     history.push('/tagsKanban');
   };
 
+  const fetchUsers = async () => {
+      try {
+        if (!isAdmin) {
+          return;
+        }
+  
+        const response = await api.get("/users");
+        setUsers(response.data.users || []);
+        //setSelectedUsers((response.data.users || []).map(user => user.id));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+  const handleChangeUser = (selected) => {
+
+    const params = {
+      queueIds: JSON.stringify(jsonString),
+      users: JSON.stringify(selected),
+      status: JSON.stringify(status.map(item => item.id)),
+      searchParam: searchParam
+    };
+
+    fetchTickets(params, tags);
+    setSelectedUsers(selected);
+
+  }
+  const handleChangeStatus = (selected) => {
+    const params = {
+      queueIds: JSON.stringify(jsonString),
+      users: JSON.stringify(users.map(item => item.id)),
+      status: JSON.stringify(selected),
+      searchParam: searchParam
+    };
+
+    fetchTickets(params, tags);
+    setSelectedStatus(selected);
+  }
+  const handleSearch = (e) => {
+    const params = {
+      queueIds: JSON.stringify(jsonString),
+      
+      searchParam: e.target.value
+    };
+
+    setSearchParam(e.target.value.toLowerCase());
+    fetchTickets(params, tags);
+
+  }
+  
+  
+
   return (
     <div className={classes.root}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', width: '100%', maxWidth: '1200px' }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <TextField
+      <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+        <div
+          className={classes.menu}
+        >
+          {isAdmin && (
+            <>
+
+
+
+              <FormControl
+                size="small"
+                style={{
+                  minWidth: "20vh"
+                }} variant="outlined">
+                <InputLabel htmlFor="grouped-select">{i18n.t("kanban.user")}</InputLabel>
+                <Select defaultValue=""
+                  variant="outlined"
+                  id="grouped-select"
+                  label={i18n.t("kanban.user")}
+                  minWidth={120}
+                  
+                  value={selectedUsers}
+                  onChange={(e) => handleChangeUser(e.target.value)}
+                  multiple>
+                  {users.map((user) => (
+                    <MenuItem key={user.id} value={user.id}>
+                      {user.name}
+                    </MenuItem>
+                  ))}
+
+                </Select>
+              </FormControl>
+             
+
+
+
+
+
+            </>)
+
+
+          }
+          
+          <FormControl
+                size="small"
+                style={{
+                  minWidth: "20vh"
+                }} variant="outlined">
+                <InputLabel htmlFor="grouped-select">{i18n.t("kanban.status")}</InputLabel>
+                <Select
+                  defaultValue=""
+                  variant="outlined"
+                  id="grouped-select"
+                  label={i18n.t("kanban.status")}
+                  minWidth={120}
+
+                  value={selectedStatus}
+                  onChange={(e) => handleChangeStatus(e.target.value)}
+                  multiple>
+                  {status.map((status) => (
+                    <MenuItem key={status.id} value={status.id}>
+                      {status.label}
+                    </MenuItem>
+                  ))}
+
+                </Select>
+              </FormControl>
+
+            <FormControl
+
+              size="small"
+            >
+
+              <TextField
+                placeholder="search"
+                type="search"
+                size="small"
+                variant="outlined"
+
+                value={searchParam}
+                onChange={handleSearch}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon style={{ color: "gray" }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </FormControl>
+          
+          {/* TODO: Ativar pesquisa por data*/}
+          {/*  <TextField
             label="Data de início"
             type="date"
             value={startDate}
@@ -308,7 +470,7 @@ const Kanban = () => {
             variant="outlined"
             className={classes.dateInput}
           />
-          <Box mx={1} />
+
           <TextField
             label="Data de fim"
             type="date"
@@ -319,35 +481,41 @@ const Kanban = () => {
             }}
             variant="outlined"
             className={classes.dateInput}
-          />
-          <Box mx={1} />
-          <Button
+          /> */}
+
+          {/* <Button
             variant="contained"
             color="primary"
             onClick={handleSearchClick}
           >
             Buscar
-          </Button>
+          </Button> */}
+
+          <Can role={user.profile} perform="dashboard:view" yes={() => (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddConnectionClick}
+            >
+              {'+ Adicionar colunas'}
+            </Button>
+          )} />
         </div>
-        <Can role={user.profile} perform="dashboard:view" yes={() => (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAddConnectionClick}
-          >
-            {'+ Adicionar colunas'}
-          </Button>
-        )} />
       </div>
       <div className={classes.kanbanContainer}>
         <Board
           data={file}
           onCardMoveAcrossLanes={handleCardMove}
-          style={{ backgroundColor: 'rgba(252, 252, 252, 0.03)' }}
+          
+          style={{
+            backgroundColor: 'rgba(252, 252, 252, 0.03)',
+            height: isSM  ? '85vh' : '80vh',
+          }}
         />
       </div>
     </div>
   );
+  
 };
 
 export default Kanban;

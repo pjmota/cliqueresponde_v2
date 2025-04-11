@@ -15,11 +15,12 @@ interface ExtraInfo {
 }
 
 const UpsertContactCustomFieldService = async(extraInfo: ExtraInfo[], contact: Contact, exclude = true) => {
+  const publicFolder = path.resolve(__dirname, "..", "..", "..", "public");
   await Promise.all(
     extraInfo.map(async (info: any) => {
 
       if (info.image) {
-        const folder = path.resolve(process.env.ASSETS_DIRECTORY, "images", contact.id.toString());
+        const folder = path.resolve(publicFolder, `company${contact.companyId}`, "images", contact.id.toString());
         if(!fs.existsSync(folder)){
           fs.mkdirSync(folder, {recursive: true})
         }

@@ -40,6 +40,9 @@ class Tag extends Model<Tag> {
   @BelongsToMany(() => Ticket, () => TicketTag)
   tickets: Ticket[];
 
+  @Column
+  sequence: number;
+
   @BelongsToMany(() => Contact, () => ContactTag)
   contacts: Array<Contact & { ContactTag: ContactTag }>;
 

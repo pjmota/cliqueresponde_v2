@@ -4,6 +4,7 @@ import AppError from "../../errors/AppError";
 import Tag from "../../models/Tag";
 import logger from "../../utils/logger";
 import ScheduleTagIntegration from "../../models/ScheduleTagIntegration";
+import { sequence } from "factory-girl";
 
 interface Request {
   name: string;
@@ -16,6 +17,7 @@ interface Request {
   rollbackLaneId?: number | null;
   whatsappId?: number | null;
   queueIntegrationId?: number | null;
+  sequence?: number | null;
 }
 
 const CreateService = async ({
@@ -28,7 +30,8 @@ const CreateService = async ({
   greetingMessageLane = "",
   rollbackLaneId = null,
   whatsappId = null,
-  queueIntegrationId = null
+  queueIntegrationId = null,
+  sequence = null
 }: Request): Promise<Tag> => {
   const schema = Yup.object().shape({
     name: Yup.string().required().min(3)
@@ -52,7 +55,9 @@ const CreateService = async ({
       greetingMessageLane,
       rollbackLaneId: String(rollbackLaneId) === "" ? null : rollbackLaneId,
       whatsappId: String(whatsappId) === "" ? null : whatsappId,
-      queueIntegrationId: String(queueIntegrationId) === "" ? null : queueIntegrationId
+      queueIntegrationId: String(queueIntegrationId) === "" ? null : queueIntegrationId,
+      sequence: sequence ? sequence : 0
+
     }
   });
 
@@ -62,7 +67,8 @@ const CreateService = async ({
       nextTagId: tag.nextLaneId,	
       queueIntegrationId: tag.queueIntegrationId,	
       companyId: tag.companyId,	
-      delay: tag.timeLane 
+      delay: tag.timeLane,
+      
     }
 
     const scheduleTagIntegration = await ScheduleTagIntegration.findOne({

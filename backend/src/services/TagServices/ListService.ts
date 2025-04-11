@@ -134,6 +134,7 @@ const ListService = async ({
         'id',
         'name',
         'color',
+        'sequence',
       ],
     });
 

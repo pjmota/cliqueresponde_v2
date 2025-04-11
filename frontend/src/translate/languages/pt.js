@@ -1152,6 +1152,7 @@ const messages = {
         title: "Kanban",
         searchPlaceholder: "Pesquisa",
         user: "Usuário",
+        status: "Status",
         subMenus: {
           list: "Painel",
           tags: "Lanes",
@@ -1563,6 +1564,7 @@ const messages = {
           tickets: "Tickets",
           actions: "Ações",
           id: "Id da tag",
+          sequence:"Sequencia"
         },
         buttons: {
           add: "Nova Lane",

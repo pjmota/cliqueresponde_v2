@@ -22,6 +22,7 @@ type IndexQuery = {
   kanban?: number;
   tagId?: number;
   paramTag?: string;
+  sequence?: number;
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
@@ -50,7 +51,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     greetingMessageLane,
     rollbackLaneId,
     whatsappId,
-    queueIntegrationId
+    queueIntegrationId,
+    sequence
   } = req.body;
   const { companyId } = req.user;
 
@@ -64,7 +66,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     greetingMessageLane,
     rollbackLaneId,
     whatsappId,
-    queueIntegrationId: queueIntegrationId ?? null
+    queueIntegrationId: queueIntegrationId ?? null,
+    sequence: sequence ?? null
+    
   });
 
   const io = getIO();
