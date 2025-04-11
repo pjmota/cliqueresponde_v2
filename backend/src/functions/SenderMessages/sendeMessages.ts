@@ -27,7 +27,7 @@ export const senderMessages = async (userId: string | number, userNumber?: any, 
       message: _message
     }
 
-    if (!data.token || !data.number || user.sendWhatsAppInLeadMessage === 'disable') return
+    if (!data.token || !data.number) return
 
     await axios.post(`${process.env.WHATSAPP_API}`,
       {

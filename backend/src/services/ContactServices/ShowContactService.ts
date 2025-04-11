@@ -17,7 +17,8 @@ const ShowContactService = async (
         as: "whatsapp",
         attributes: ["id", "name", "expiresTicket", "groupAsTicket"]
       },
-    ]
+    ],
+    //logging: console.log
   });
 
   if (contact?.companyId !== companyId) {
