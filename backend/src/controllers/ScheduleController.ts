@@ -52,7 +52,10 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 		enviarQuantasVezes = 1,
 		tipoDias=  4,
     contadorEnvio = 0,
-    assinar = false
+    assinar = false,
+    justNotifyMe = false,
+    ticketId= null,
+    notifyBefore = 0,
   } = req.body;
   const { companyId } = req.user;
 
@@ -72,7 +75,10 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     enviarQuantasVezes,
     tipoDias,
     contadorEnvio,
-    assinar
+    assinar,
+    justNotifyMe,
+    ticketId,
+    notifyBefore
   });
 
   const io = getIO();
