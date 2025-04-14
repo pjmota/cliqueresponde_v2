@@ -674,6 +674,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 										variant="outlined"
 										fullWidth
 										size="small"
+										value={values.notifyBefore ?? 15}
 
 									/>
 								</FormControl>
