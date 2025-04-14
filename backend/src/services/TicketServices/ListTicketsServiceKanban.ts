@@ -52,21 +52,21 @@ const ListTicketsServiceKanban = async ({
   companyId
 }: Request): Promise<Response> => {
 
-  console.log("REQUEST", {
-    searchParam,
-    pageNumber,
-    queueIds,
-    tags,
-    hasTags,
-    users,
-    status,
-    date,
-    updatedAt,
-    showAll,
-    userId,
-    withUnreadMessages,
-    companyId
-  });
+  // console.log("REQUEST", {
+  //   searchParam,
+  //   pageNumber,
+  //   queueIds,
+  //   tags,
+  //   hasTags,
+  //   users,
+  //   status,
+  //   date,
+  //   updatedAt,
+  //   showAll,
+  //   userId,
+  //   withUnreadMessages,
+  //   companyId
+  // });
 
 
 
@@ -288,7 +288,7 @@ const ListTicketsServiceKanban = async ({
     };
   }
 
-  console.log("WHERE CONDITION", inspect(whereCondition, { depth: 100 }));
+  // console.log("WHERE CONDITION", inspect(whereCondition, { depth: 100 }));
 
   const { count, rows: tickets } = await Ticket.findAndCountAll({
     where: whereCondition,
