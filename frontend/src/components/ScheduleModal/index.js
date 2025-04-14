@@ -71,7 +71,7 @@ const ScheduleSchema = Yup.object().shape({
 	sendAt: Yup.string().required("Obrigatório")
 });
 
-const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload }) => {
+const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload,ticket }) => {
 	const classes = useStyles();
 	const history = useHistory();
 	const { user } = useContext(AuthContext);
@@ -176,7 +176,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 				}));
 
 				setWhatsapps(mappedWhatsapps);
-				if (mappedWhatsapps.length && mappedWhatsapps?.length === 1){
+				if (mappedWhatsapps.length && mappedWhatsapps?.length === 1) {
 					setSelectedWhatsapps(mappedWhatsapps[0].id)
 				}
 			});
@@ -286,7 +286,11 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 	const handleSaveSchedule = async values => {
 		const scheduleData = {
 			...values, userId: user.id, whatsappId: selectedWhatsapps, ticketUserId: selectedUser?.id || null,
-			queueId: selectedQueue || null, intervalo: intervalo || 1, tipoDias: tipoDias || 4
+			queueId: selectedQueue || null, intervalo: intervalo || 1, tipoDias: tipoDias || 4,
+			notifyBefore: values.notifyBefore || 0,
+			justNotifyMe: values.justNotifyMe || false,
+			ticketId: ticket?.id || null,
+
 		};
 
 		try {
@@ -439,7 +443,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 										fullWidth
 									/>
 								</div>
-								<Grid item xs={12} md={12} xl={6}>
+								<Grid item xs={12} md={12} xl={12}>
 									<MessageVariablesPicker
 										disabled={isSubmitting}
 										onClick={value => handleClickMsgVar(value, setFieldValue)}
@@ -614,9 +618,9 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 												<MenuItem value={"closed"}>{i18n.t("campaigns.dialog.form.closedTicketStatus")}</MenuItem>
 												<MenuItem value={"open"}>{i18n.t("campaigns.dialog.form.openTicketStatus")}</MenuItem>
 											</Field>
+
 										</FormControl>
 									</Grid>
-
 									<Grid item xs={12} md={6} xl={6}>
 										<Field
 											as={TextField}
@@ -634,8 +638,15 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											style={{ marginTop: '8px' }}
 										/>
 									</Grid>
+
 									<Grid item xs={12} md={6} xl={6}>
 										<FormControlLabel
+											style={{
+												display: "flex",
+												flexDirection: "row",
+												justifyContent: "start",
+												marginTop: "10px",
+											}}
 											control={
 												<Field
 													as={Switch}
@@ -648,7 +659,26 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											label={i18n.t("scheduleModal.form.assinar")}
 										/>
 									</Grid>
+
 								</Grid>
+
+								<FormControl size="small" fullWidth variant="outlined"
+									style={{ marginTop: '10px' }}>
+
+									<Field
+										as={TextField}
+										id="notifyBefore"
+										label={i18n.t("scheduleModal.form.notifyBefore")}
+										type="number"
+										name="notifyBefore"
+										variant="outlined"
+										fullWidth
+										size="small"
+										value={values.notifyBefore ?? 15}
+
+									/>
+								</FormControl>
+
 								<h3>Recorrência</h3>
 								<p>
 									Você pode escolher enviar a mensagem de forma recorrente e
@@ -736,45 +766,79 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 										</IconButton>
 									</Grid>
 								)}
+
+
+
+
 							</DialogContent>
 							<DialogActions>
-								{!attachment && !schedule.mediaPath && (
-									<Button
-										color="primary"
-										onClick={() => attachmentFile.current.click()}
-										disabled={isSubmitting}
-										variant="outlined"
-									>
-										{i18n.t("quickMessages.buttons.attach")}
-									</Button>
-								)}
-								<Button
-									onClick={handleClose}
-									color="secondary"
-									disabled={isSubmitting}
-									variant="outlined"
-								>
-									{i18n.t("scheduleModal.buttons.cancel")}
-								</Button>
-								{(schedule.sentAt === null || schedule.sentAt === "") && (
-									<Button
-										type="submit"
-										color="primary"
-										disabled={isSubmitting}
-										variant="contained"
-										className={classes.btnWrapper}
-									>
-										{scheduleId
-											? `${i18n.t("scheduleModal.buttons.okEdit")}`
-											: `${i18n.t("scheduleModal.buttons.okAdd")}`}
-										{isSubmitting && (
-											<CircularProgress
-												size={24}
-												className={classes.buttonProgress}
-											/>
-										)}
-									</Button>
-								)}
+
+
+								<Grid container spacing={2}>
+
+									<Grid item xs={12} md={6} xl={6}>
+										<Button
+
+											color="secondary"
+											disabled={isSubmitting}
+											variant="outlined"
+											className={classes.btnWrapper}
+											onClick={() =>
+												handleSaveSchedule({ ...values, justNotifyMe: true })
+											}
+										>
+
+											{i18n.t("scheduleModal.buttons.justNotifyMe")}
+
+
+										</Button>
+									</Grid>
+
+
+									<Grid item xs={12} md={6} xl={6}>
+										<div style={{ display: "flex", justifyContent: "space-between" }}>
+											{!attachment && !schedule.mediaPath && (
+												<Button
+													color="primary"
+													onClick={() => attachmentFile.current.click()}
+													disabled={isSubmitting}
+													variant="outlined"
+												>
+													{i18n.t("quickMessages.buttons.attach")}
+												</Button>
+											)}
+											<Button
+												onClick={handleClose}
+												color="secondary"
+												disabled={isSubmitting}
+												variant="outlined"
+											>
+												{i18n.t("scheduleModal.buttons.cancel")}
+											</Button>
+											{(schedule.sentAt === null || schedule.sentAt === "") && (
+												<Button
+													type="submit"
+													color="primary"
+													disabled={isSubmitting}
+													variant="contained"
+													className={classes.btnWrapper}
+												>
+													{scheduleId
+														? `${i18n.t("scheduleModal.buttons.okEdit")}`
+														: `${i18n.t("scheduleModal.buttons.okAdd")}`}
+													{isSubmitting && (
+														<CircularProgress
+															size={24}
+															className={classes.buttonProgress}
+														/>
+													)}
+												</Button>
+											)}
+
+										</div>
+									</Grid>
+
+								</Grid>
 							</DialogActions>
 						</Form>
 					)}

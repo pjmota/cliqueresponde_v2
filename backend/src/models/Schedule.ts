@@ -122,6 +122,15 @@ class Schedule extends Model<Schedule> {
   @Default(false)
   @Column
   assinar: boolean;
+
+
+  @Default(null)
+  @Column
+  justNotifyMe: boolean;
+
+  @Default('SCHEDULE')
+  @Column
+  type: string;
 }
 
 export default Schedule;

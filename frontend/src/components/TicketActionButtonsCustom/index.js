@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 
 import { Can } from "../Can";
@@ -21,6 +21,7 @@ import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
+import EventIcon from '@material-ui/icons/Event';
 
 import Button from '@material-ui/core/Button';
 import TransferTicketModalCustom from "../TransferTicketModalCustom";
@@ -118,6 +119,12 @@ const TicketActionButtonsCustom = ({ ticket
             setIsMounted(false);
         };
     }, []);
+
+    useEffect(() => {
+        const currentContactId = ticket.contact?.id;
+
+        setContactId(currentContactId);
+    });
 
 
     const fetchData = async () => {
@@ -379,6 +386,21 @@ const TicketActionButtonsCustom = ({ ticket
         }
     };
 
+    const handleCloseScheduleModal = () => {
+        setScheduleModalOpen(false);
+        
+    }
+
+    const handleOpenScheduleModal = (e) => {
+        setScheduleModalOpen(true);
+    }
+
+     const handleOpenScheduleModalFromContactId = useCallback(() => {
+        if (contactId) {
+          handleOpenScheduleModal();
+        }
+      }, [contactId]);
+
     return (
         <>
             {openAlert && (
@@ -482,18 +504,18 @@ const TicketActionButtonsCustom = ({ ticket
                             </IconButton>
                         </>
 
-                        {/* {showSchedules && (
+                        {showSchedules && (
                             <>
                                 <IconButton className={classes.bottomButtonVisibilityIcon}>
                                     <Tooltip title={i18n.t("tickets.buttons.scredule")}>
                                         <EventIcon
                                             // color="primary"
-                                            onClick={handleOpenScheduleModal}
+                                            onClick={handleOpenScheduleModalFromContactId}
                                         />
                                     </Tooltip>
                                 </IconButton>
                             </>
-                        )} */}
+                        )}
 
                         <MenuItem className={classes.bottomButtonVisibilityIcon}>
                             <Tooltip title={i18n.t("contactModal.form.chatBotContact")}>
@@ -526,14 +548,15 @@ const TicketActionButtonsCustom = ({ ticket
                                 ticket={ticket}
                             />
                         )}
-                        {/* {scheduleModalOpen && (
+                        {scheduleModalOpen && (
                             <ScheduleModal
                                 open={scheduleModalOpen}
                                 onClose={handleCloseScheduleModal}
                                 aria-labelledby="form-dialog-title"
                                 contactId={contactId}
+                                ticket={ticket}
                             />
-                        )} */}
+                        )}
 
                     </>
                 )}
