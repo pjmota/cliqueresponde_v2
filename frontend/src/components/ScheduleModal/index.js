@@ -617,14 +617,30 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 
 										</FormControl>
 									</Grid>
-
+									<Grid item xs={12} md={6} xl={6}>
+										<Field
+											as={TextField}
+											label={i18n.t("scheduleModal.form.sendAt")}
+											type="datetime-local"
+											name="sendAt"
+											// InputLabelProps={{
+											// 	shrink: true,
+											// }}
+											error={touched.sendAt && Boolean(errors.sendAt)}
+											helperText={touched.sendAt && errors.sendAt}
+											variant="outlined"
+											fullWidth
+											size="small"
+											style={{ marginTop: '8px' }}
+										/>
+									</Grid>
 
 									<Grid item xs={12} md={6} xl={6}>
 										<FormControlLabel
 											style={{
 												display: "flex",
 												flexDirection: "row",
-												justifyContent: "center",
+												justifyContent: "start",
 												marginTop: "10px",
 											}}
 											control={
@@ -641,6 +657,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 									</Grid>
 
 								</Grid>
+								
 								<FormControl size="small" fullWidth variant="outlined"
 									style={{ marginTop: '10px' }}>
 																		
