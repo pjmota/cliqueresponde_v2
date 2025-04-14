@@ -91,7 +91,15 @@ const CreateService = async ({
   }
 
   if (justNotifyMe) {
-    // console.log("justNotifyMe");
+    //se o sendAt for menor que a data atual, não pode criar o agendamento joga para o proximo dia
+    
+    const date = new Date(sendAt);
+    const now = new Date();
+    if (date < now) {
+      console.log("Data menor que a data atual, jogando para o proximo dia");
+      date.setDate(date.getDate() + 1);
+      sendAt = date.toISOString();
+    }
     return await justNotifyMeFunc(
       userId,
       companyId,
