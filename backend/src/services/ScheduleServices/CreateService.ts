@@ -94,7 +94,7 @@ const CreateService = async ({
 
   if (justNotifyMe) {
     //se o sendAt for menor que a data atual, não pode criar o agendamento joga para o proximo dia
-    
+
     const date = new Date(sendAt);
     const now = new Date();
     if (date < now) {
@@ -259,14 +259,32 @@ const justNotifyMeFunc = async (
     const date = new Date(sendAt);
     date.setMinutes(date.getMinutes() - (notifyBefore ?? 15));
 
+//     const body = `
+// Aviso Agendamento
+// Data do Agendamento: ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${_sendAt.getHours()}:${_sendAt.getMinutes()}
+// Nome do Contato: ${contact.name}
+// Whatsapp: https://wa.me/${contact.number}
+// Origem: ${ticket?.whatsapp?.name}
+// ${lastNote ? `Ultima Observação: ${lastNote.note}` : ""}
+// `;
+
+    //Mensagem estilizada com emoji e link em uma linha:
     const body = `
-Aviso Agendamento
-Data do Agendamento: ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${_sendAt.getHours()}:${_sendAt.getMinutes()}
-Nome do Contato: ${contact.name}
-Whatsapp: https://wa.me/${contact.number}
-Origem: ${ticket?.whatsapp?.name}
-`;
-    
+🔔 Aviso Agendamento
+
+*Data do Agendamento:* ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${_sendAt.getHours()}:${_sendAt.getMinutes()}
+*Nome do Contato:* ${contact.name}
+
+*Whatsapp:* https://wa.me/${contact.number}
+
+*Origem:* ${ticket?.whatsapp?.name}
+
+${lastNote ? `Ultima Observação: ${lastNote.note}` : ""}
+
+    `;
+
+
+
 
     //Funil: ${tags.map(tag => tag.name).join(", ")} LINHA COMENTADA PARA QUE INFORMAÇÃO SEJA INSERIDA NO ENVIO DA MENSAGEM AFIM DE PEEGAR A TAG ATUALIZADA
     // console.log("Parametros para criar o agendamento", {
@@ -311,13 +329,13 @@ Origem: ${ticket?.whatsapp?.name}
         throw new AppError("Já há agendamentos com os dados informados.");
       }
     }
-    
-  }
-  
-  await sendToNotifyToContact(contactId);
-  
 
-  
+  }
+
+  await sendToNotifyToContact(contactId);
+
+
+
 };
 
 
