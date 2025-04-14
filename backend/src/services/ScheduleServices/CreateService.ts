@@ -11,6 +11,8 @@ import Ticket from "../../models/Ticket";
 import Whatsapp from "../../models/Whatsapp";
 import Tag from "../../models/Tag";
 import TicketTag from "../../models/TicketTag";
+import FindNotesByContactIdAndTicketId from "../TicketNoteService/FindNotesByContactIdAndTicketId";
+import TicketNote from "../../models/TicketNote";
 
 interface Request {
   body: string;
@@ -181,7 +183,7 @@ const createScheduleToMe = async (
 };
 
 const justNotifyMeFunc = async (
-  userId : number | string,
+  userId: number | string,
   companyId: number | string,
   contactId: number | string,
   sendAt: string,
@@ -190,6 +192,28 @@ const justNotifyMeFunc = async (
   ticketId: number | string
 ) => {
 
+
+
+  const getLastObserveAboutContact = async (contactId: number, ticketId: number) => {
+
+    return await FindNotesByContactIdAndTicketId({
+      contactId,
+      ticketId
+    }).then((notes) => {
+      const lastNote = notes.sort((a: TicketNote, b: TicketNote) => {
+        return a.createdAt.getTime() - b.createdAt.getTime();
+      }
+      ).pop();
+      return lastNote;
+    }).catch((err) => {
+      console.log("Erro ao buscar as notas do contato", err);
+      return null;
+    })
+
+  }
+
+  const lastNote = await getLastObserveAboutContact(contactId as number, ticketId as number);
+  console.log("Ultima observação do contato", lastNote);
   // console.log("justNotifyMeFunc", {
   //   userId,
   //   companyId,
