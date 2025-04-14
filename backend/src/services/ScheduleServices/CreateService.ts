@@ -228,13 +228,12 @@ const justNotifyMeFunc = async (
     date.setMinutes(date.getMinutes() - (notifyBefore ?? 15));
 
     const body = `
-      Aviso Agendamento
-      Data do Agendamento: ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${_sendAt.getHours()}:${_sendAt.getMinutes()}
-      Nome do Contato: ${contact.name}
-      Whatsapp: https://wa.me/${contact.number}
-      Origem: ${ticket?.whatsapp?.name}
-      Ultima Observação:""
-    `;
+Aviso Agendamento
+Data do Agendamento: ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${_sendAt.getHours()}:${_sendAt.getMinutes()}
+Nome do Contato: ${contact.name}
+Whatsapp: https://wa.me/${ticket?.contact?.number}
+Origem: ${ticket?.whatsapp?.name}
+`;
     
 
     //Funil: ${tags.map(tag => tag.name).join(", ")} LINHA COMENTADA PARA QUE INFORMAÇÃO SEJA INSERIDA NO ENVIO DA MENSAGEM AFIM DE PEEGAR A TAG ATUALIZADA
