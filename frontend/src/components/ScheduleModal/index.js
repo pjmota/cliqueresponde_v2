@@ -71,7 +71,7 @@ const ScheduleSchema = Yup.object().shape({
 	sendAt: Yup.string().required("Obrigatório")
 });
 
-const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload }) => {
+const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload,ticket }) => {
 	const classes = useStyles();
 	const history = useHistory();
 	const { user } = useContext(AuthContext);
@@ -286,7 +286,11 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 	const handleSaveSchedule = async values => {
 		const scheduleData = {
 			...values, userId: user.id, whatsappId: selectedWhatsapps, ticketUserId: selectedUser?.id || null,
-			queueId: selectedQueue || null, intervalo: intervalo || 1, tipoDias: tipoDias || 4
+			queueId: selectedQueue || null, intervalo: intervalo || 1, tipoDias: tipoDias || 4,
+			notifyBefore: values.notifyBefore || 0,
+			justNotifyMe: values.justNotifyMe || false,
+			ticketId: ticket?.id || null,
+
 		};
 
 		try {
@@ -657,21 +661,21 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 									</Grid>
 
 								</Grid>
-								
+
 								<FormControl size="small" fullWidth variant="outlined"
 									style={{ marginTop: '10px' }}>
-																		
-									<Field
-									as={TextField}
-									id="notifyBefore"
-									label={i18n.t("scheduleModal.form.notifyBefore")}
-									type="number"
-									name="notifyBefore"
-									variant="outlined"
-									fullWidth
-									size="small"
 
-								/>
+									<Field
+										as={TextField}
+										id="notifyBefore"
+										label={i18n.t("scheduleModal.form.notifyBefore")}
+										type="number"
+										name="notifyBefore"
+										variant="outlined"
+										fullWidth
+										size="small"
+
+									/>
 								</FormControl>
 
 								<h3>Recorrência</h3>
@@ -778,6 +782,9 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											disabled={isSubmitting}
 											variant="outlined"
 											className={classes.btnWrapper}
+											onClick={() =>
+												handleSaveSchedule({ ...values, justNotifyMe: true })
+											}
 										>
 
 											{i18n.t("scheduleModal.buttons.justNotifyMe")}

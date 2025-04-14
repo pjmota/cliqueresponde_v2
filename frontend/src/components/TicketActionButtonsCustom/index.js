@@ -554,6 +554,7 @@ const TicketActionButtonsCustom = ({ ticket
                                 onClose={handleCloseScheduleModal}
                                 aria-labelledby="form-dialog-title"
                                 contactId={contactId}
+                                ticket={ticket}
                             />
                         )}
 
