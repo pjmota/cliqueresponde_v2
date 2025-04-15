@@ -7,6 +7,7 @@ import Tag from "../../models/Tag";
 import Whatsapp from "../../models/Whatsapp";
 import Company from "../../models/Company";
 import QueueIntegrations from "../../models/QueueIntegrations";
+import ContactCustomField from "../../models/ContactCustomField";
 
 const ShowTicketUUIDService = async (uuid: string,
   companyId: number): Promise<Ticket> => {
@@ -44,7 +45,19 @@ const ShowTicketUUIDService = async (uuid: string,
         model: Contact,
         as: "contact",
         attributes: ["id", "name", "number", "email", "profilePicUrl", "acceptAudioMessage", "active", "disableBot", "urlPicture", "companyId"],
-        include: ["extraInfo", "tags",
+        include: [
+          {
+            model: ContactCustomField,
+            as: "extraInfo",
+            include: [
+              {
+                model: Contact,
+                as: "contact",
+                attributes: ["id", "companyId"]
+              }
+            ]
+          },
+          "tags",
           {
             association: "wallets",
             attributes: ["id", "name"]
