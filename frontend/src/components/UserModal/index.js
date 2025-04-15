@@ -27,7 +27,7 @@ import { AuthContext } from "../../context/Auth/AuthContext";
 import useWhatsApps from "../../hooks/useWhatsApps";
 
 import { Can } from "../Can";
-import { Avatar, Grid, Input, Paper, Tab, Tabs } from "@material-ui/core";
+import { Avatar, Grid, Input, Paper, Tab, Tabs, Box, ListItemText, Typography } from "@material-ui/core";
 import { getBackendUrl } from "../../config";
 import TabPanel from "../TabPanel";
 import AvatarUploader from "../AvatarUpload";
@@ -162,8 +162,8 @@ const UserModal = ({ open, onClose, userId }) => {
 	const endWorkRef = useRef();
 	const [selectedTagIds, setSelectedTagIds] = useState([]);
 	const [selectedPermissionIds, setSelectedPermissionIds] = useState([]);
-
-
+	const [selectedConnection, setSelectedConnection] = useState("");
+	const [dataWhatsapps, setDataWhatsapps] = useState([]);
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -193,18 +193,23 @@ const UserModal = ({ open, onClose, userId }) => {
 		fetchUser();
 	}, [userId, open]);
 
-	/* useEffect(() => {
-    const selectedPermissionIds = user.permissions?.map(
-      (permission) => permission.id
-    ) ?? [];
-    setSelectedPermissionIds(selectedPermissionIds);
-  }, [user.permissions]); */
+	useEffect(() => {
+		const fetchWhatsapps = async () => {
+			try {
+				const { data } = await api.get("/whatsapp");
+				setDataWhatsapps(data);
+			} catch (err) {
+				toastError(err);
+			}
+		};
+		fetchWhatsapps();
+	}, []);
 
 	const handleClose = () => {
 		onClose();
 		setUser(initialState);
 		setSelectedQueueIds([]);
-    setSelectedTagIds([]);
+		setSelectedTagIds([]);
 		setSelectedPermissionIds([]);
 	};
 
@@ -299,10 +304,12 @@ const UserModal = ({ open, onClose, userId }) => {
 								>
 									<Tab label={i18n.t("userModal.tabs.general")} value={"general"} />
 									{loggedInUser.profile === "admin" && <Tab label={i18n.t("userModal.tabs.permissions")} value={"permissions"} />}
+									{loggedInUser.profile === "admin" && <Tab label={i18n.t("mainDrawer.listItems.schedules")} value={"schedules"} />}
 								</Tabs>
 							</Paper>
 							<Paper className={classes.paper} elevation={0}>
 								<DialogContent dividers>
+									{/* EDIT USER */}
 									<TabPanel
 										className={classes.container}
 										value={tab}
@@ -663,6 +670,8 @@ const UserModal = ({ open, onClose, userId }) => {
 											</Grid>
 										</Grid>
 									</TabPanel>
+
+									{/* PERMISSIONS */}
 									<TabPanel
 										className={classes.container}
 										value={tab}
@@ -1009,6 +1018,196 @@ const UserModal = ({ open, onClose, userId }) => {
 												</>
 											}
 										/>
+									</TabPanel>
+
+									{/* SCHEDULES */}
+									<TabPanel
+										className={classes.container}
+										value={tab}
+										name={"schedules"}
+									>
+										<Can
+											role={loggedInUser.profile}
+											perform="user-modal:editProfile"
+											yes={() => (<>
+
+												<Box>
+													<Grid container spacing={2}>
+														<Grid item xs={6}>
+															<Field
+																as={TextField}
+																rows={9}
+																multiline={true}
+																label={i18n.t("Mensagem de aviso")}
+																name="scheduleNotifyBeforeText"
+																error={
+																	touched.scheduleNotifyBeforeText &&
+																	Boolean(errors.scheduleNotifyBeforeText)
+																}
+																helperText={
+																	touched.scheduleNotifyBeforeText &&
+																	errors.scheduleNotifyBeforeText
+																}
+																variant="outlined"
+																margin="dense"
+																fullWidth
+															/>
+														</Grid>
+
+														<Grid item xs={6}>
+															<Field
+																as={TextField}
+																rows={9}
+																multiline={true}
+																label={i18n.t("Mensagem imediata")}
+																name="scheduleNotifyNowText"
+																error={
+																	touched.scheduleNotifyNowText &&
+																	Boolean(errors.scheduleNotifyNowText)
+																}
+																helperText={
+																	touched.scheduleNotifyNowText &&
+																	errors.scheduleNotifyNowText
+																}
+																variant="outlined"
+																margin="dense"
+																fullWidth
+															/>
+														</Grid>
+													</Grid>
+
+													<Grid container spacing={2}>
+														<Grid item xs={6}>
+															<Field
+																as={TextField}
+																label={i18n.t("scheduleModal.form.sendAt")}
+																type="time"
+																name="scheduleSendAt"
+																InputLabelProps={{
+																	shrink: true,
+																}}
+																error={
+																	touched.scheduleSendAt &&
+																	Boolean(errors.scheduleSendAt)
+																}
+																helperText={
+																	touched.scheduleSendAt && errors.scheduleSendAt
+																}
+																variant="outlined"
+																fullWidth
+															/>
+														</Grid>
+														<Grid item xs={6}>
+															<Field
+																as={TextField}
+																label={i18n.t(
+																	"Tempo para mensagem de aviso em minutos"
+																)}
+																type="number"
+																name="scheduleNotifyBefore"
+																InputProps={{
+																	inputProps: { min: 0 },
+																}}
+																InputLabelProps={{
+																	shrink: true,
+																}}
+																error={
+																	touched.scheduleNotifyBefore &&
+																	Boolean(errors.scheduleNotifyBefore)
+																}
+																helperText={
+																	touched.scheduleNotifyBefore &&
+																	errors.scheduleNotifyBefore
+																}
+																variant="outlined"
+																fullWidth
+															/>
+														</Grid>
+													</Grid>
+													<Grid container spacing={2}>
+														<Grid item xs={6}>
+															<Field
+																as={TextField}
+																label={i18n.t(
+																	"Dia(s) para o próximo agendamento"
+																)}
+																type="number"
+																name="daysUntilNextScheduleNotify"
+																InputProps={{
+																	inputProps: { min: 0 },
+																}}
+																InputLabelProps={{
+																	shrink: true,
+																}}
+																error={
+																	touched.daysUntilNextScheduleNotify &&
+																	Boolean(errors.daysUntilNextScheduleNotify)
+																}
+																helperText={
+																	touched.daysUntilNextScheduleNotify &&
+																	errors.daysUntilNextScheduleNotify
+																}
+																variant="outlined"
+																fullWidth
+															/>
+														</Grid>
+														<Grid item xs={6}>
+															<Select
+																//required
+																fullWidth
+																displayEmpty
+																variant="outlined"
+																value={selectedConnection}
+																onChange={(e) => {
+																	setSelectedConnection(e.target.value)
+																}}
+																MenuProps={{
+																	anchorOrigin: {
+																		vertical: "bottom",
+																		horizontal: "left",
+																	},
+																	transformOrigin: {
+																		vertical: "top",
+																		horizontal: "left",
+																	},
+																	getContentAnchorEl: null,
+																}}
+																renderValue={() => {
+																	if (!dataWhatsapps.length) {
+																		return <span style={{ fontSize: "1rem" }}>Nenhuma conexão configurada</span>;
+																	}
+
+																	if (selectedConnection === "") {
+																		return <span style={{ fontSize: "1rem" }}>Selecione uma Conexão</span>;
+																	}
+
+																	const whatsapp = dataWhatsapps.find(w => w.id === selectedConnection)
+																	return <span style={{ fontSize: "1rem" }}>{whatsapp?.name ?? "Selecione uma Conexão"}</span>;
+																}}
+															>
+																{dataWhatsapps?.length > 0 &&
+																	dataWhatsapps.map((whatsapp, key) => (
+																		<MenuItem dense key={key} value={whatsapp.id}>
+																			<ListItemText
+																				primary={
+																					<>
+																						{/* {IconChannel(whatsapp.channel)} */}
+																						<Typography component="span" style={{ fontSize: 14, marginLeft: "10px", display: "inline-flex", alignItems: "center", lineHeight: "2" }}>
+																							{whatsapp.name} &nbsp; <p className={(whatsapp.status) === 'CONNECTED' ? classes.online : classes.offline} >({whatsapp.status})</p>
+																						</Typography>
+																					</>
+																				}
+																			/>
+																		</MenuItem>
+																	))}
+															</Select>
+														</Grid>
+													</Grid>
+												</Box>
+
+											</>)}
+										/>
+
 									</TabPanel>
 								</DialogContent>
 							</Paper>
