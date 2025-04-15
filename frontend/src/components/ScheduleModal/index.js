@@ -91,7 +91,9 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		valorIntervalo: 0,
 		enviarQuantasVezes: 1,
 		tipoDias: 4,
-		assinar: false
+		assinar: false,
+		justNotifyMe: false,
+		notifyBefore: 15,
 	};
 
 	const initialContact = {
@@ -783,8 +785,9 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											disabled={isSubmitting}
 											variant="outlined"
 											className={classes.btnWrapper}
+											
 											onClick={() =>
-												handleSaveSchedule({ ...values, justNotifyMe: true })
+												handleSaveSchedule({ ...values, justNotifyMe: true, notifyBefore: values.notifyBefore })
 											}
 										>
 

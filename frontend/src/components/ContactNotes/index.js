@@ -17,7 +17,7 @@ import { i18n } from "../../translate/i18n";
 import ButtonWithSpinner from '../ButtonWithSpinner';
 
 import useTicketNotes from '../../hooks/useTicketNotes';
-import { Grid } from '@material-ui/core';
+import { FormControl, Grid } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -167,9 +167,11 @@ export function ContactNotes({ ticket }) {
                     <Form>
                         <Grid container spacing={2}>
                             <Grid xs={12} item>
+                                <FormControl>
                                 <Field
                                     as={TextField}
                                     name="note"
+                                    id="note"
                                     rows={3}
                                     label={i18n.t("ticketOptionsMenu.appointmentsModal.textarea")}
                                     placeholder={i18n.t("ticketOptionsMenu.appointmentsModal.placeholder")}
@@ -177,9 +179,10 @@ export function ContactNotes({ ticket }) {
                                     error={touched.note && Boolean(errors.note)}
                                     helperText={touched.note && errors.note}
                                     variant="outlined"
-                                    onChange={handleChangeComment}
+                                    
                                     fullWidth
                                 />
+                                </FormControl>
                             </Grid>
                             {notes.length > 0 && (
                                 <Grid xs={12} item>

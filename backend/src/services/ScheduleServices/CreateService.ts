@@ -11,6 +11,8 @@ import Ticket from "../../models/Ticket";
 import Whatsapp from "../../models/Whatsapp";
 import Tag from "../../models/Tag";
 import TicketTag from "../../models/TicketTag";
+import FindNotesByContactIdAndTicketId from "../TicketNoteService/FindNotesByContactIdAndTicketId";
+import TicketNote from "../../models/TicketNote";
 
 interface Request {
   body: string;
@@ -92,7 +94,7 @@ const CreateService = async ({
 
   if (justNotifyMe) {
     //se o sendAt for menor que a data atual, não pode criar o agendamento joga para o proximo dia
-    
+
     const date = new Date(sendAt);
     const now = new Date();
     if (date < now) {
@@ -181,7 +183,7 @@ const createScheduleToMe = async (
 };
 
 const justNotifyMeFunc = async (
-  userId : number | string,
+  userId: number | string,
   companyId: number | string,
   contactId: number | string,
   sendAt: string,
@@ -190,6 +192,28 @@ const justNotifyMeFunc = async (
   ticketId: number | string
 ) => {
 
+
+
+  const getLastObserveAboutContact = async (contactId: number, ticketId: number) => {
+
+    return await FindNotesByContactIdAndTicketId({
+      contactId,
+      ticketId
+    }).then((notes) => {
+      const lastNote = notes.sort((a: TicketNote, b: TicketNote) => {
+        return a.createdAt.getTime() - b.createdAt.getTime();
+      }
+      ).pop();
+      return lastNote;
+    }).catch((err) => {
+      console.log("Erro ao buscar as notas do contato", err);
+      return null;
+    })
+
+  }
+
+  const lastNote = await getLastObserveAboutContact(contactId as number, ticketId as number);
+  console.log("Ultima observação do contato", lastNote);
   // console.log("justNotifyMeFunc", {
   //   userId,
   //   companyId,
@@ -235,14 +259,32 @@ const justNotifyMeFunc = async (
     const date = new Date(sendAt);
     date.setMinutes(date.getMinutes() - (notifyBefore ?? 15));
 
+//     const body = `
+// Aviso Agendamento
+// Data do Agendamento: ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${_sendAt.getHours()}:${_sendAt.getMinutes()}
+// Nome do Contato: ${contact.name}
+// Whatsapp: https://wa.me/${contact.number}
+// Origem: ${ticket?.whatsapp?.name}
+// ${lastNote ? `Ultima Observação: ${lastNote.note}` : ""}
+// `;
+
+    //Mensagem estilizada com emoji e link em uma linha:
     const body = `
-Aviso Agendamento
-Data do Agendamento: ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${_sendAt.getHours()}:${_sendAt.getMinutes()}
-Nome do Contato: ${contact.name}
-Whatsapp: https://wa.me/${contact.number}
-Origem: ${ticket?.whatsapp?.name}
-`;
-    
+🔔 Aviso Agendamento
+
+*Data do Agendamento:* ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${_sendAt.getHours()}:${_sendAt.getMinutes()}
+*Nome do Contato:* ${contact.name}
+
+*Whatsapp:* https://wa.me/${contact.number}
+
+*Origem:* ${ticket?.whatsapp?.name}
+
+${lastNote ? `Ultima Observação: ${lastNote.note}` : ""}
+
+    `;
+
+
+
 
     //Funil: ${tags.map(tag => tag.name).join(", ")} LINHA COMENTADA PARA QUE INFORMAÇÃO SEJA INSERIDA NO ENVIO DA MENSAGEM AFIM DE PEEGAR A TAG ATUALIZADA
     // console.log("Parametros para criar o agendamento", {
@@ -287,13 +329,13 @@ Origem: ${ticket?.whatsapp?.name}
         throw new AppError("Já há agendamentos com os dados informados.");
       }
     }
-    
-  }
-  
-  await sendToNotifyToContact(contactId);
-  
 
-  
+  }
+
+  await sendToNotifyToContact(contactId);
+
+
+
 };
 
 
