@@ -213,7 +213,7 @@ const justNotifyMeFunc = async (
   }
 
   const lastNote = await getLastObserveAboutContact(contactId as number, ticketId as number);
-  console.log("Ultima observação do contato", lastNote);
+  //console.log("Ultima observação do contato", lastNote);
   // console.log("justNotifyMeFunc", {
   //   userId,
   //   companyId,
