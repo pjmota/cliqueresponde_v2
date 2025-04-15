@@ -145,7 +145,12 @@ const UserModal = ({ open, onClose, userId }) => {
 		sendWhatsAppInLeadMessage: "disable",
 		leadMessage: "",
 		tokenWhats: "",
-		userWhats: ""
+		userWhats: "",
+		scheduleSendAt: new Date(),
+		scheduleNotifyBeforeText: "",
+		scheduleNotifyBefore: 15,
+		scheduleNotifyNowText: "",
+		daysUntilNextScheduleNotify: 0,
 	};
 
 	const { user: loggedInUser } = useContext(AuthContext);
@@ -162,17 +167,21 @@ const UserModal = ({ open, onClose, userId }) => {
 	const endWorkRef = useRef();
 	const [selectedTagIds, setSelectedTagIds] = useState([]);
 	const [selectedPermissionIds, setSelectedPermissionIds] = useState([]);
-	const [selectedConnection, setSelectedConnection] = useState("");
+	const [selectedConnection, setSelectedConnection] = useState();
 	const [dataWhatsapps, setDataWhatsapps] = useState([]);
-
+	
 	useEffect(() => {
 		const fetchUser = async () => {
 
 			if (!userId) return;
 			try {
 				const { data } = await api.get(`/users/${userId}`);
+
+				//trata a data par atransformar em horas
+				const newFormatedTime = new Date(data.scheduleSendAt).toTimeString().slice(0, 5);
+
 				setUser(prevState => {
-					return { ...prevState, ...data };
+					return { ...prevState, ...data, scheduleSendAt: newFormatedTime }
 				});
 
 				const { profileImage } = data;
@@ -185,6 +194,7 @@ const UserModal = ({ open, onClose, userId }) => {
 				setSelectedTagIds(userTagIds)
 				setWhatsappId(data.whatsappId ? data.whatsappId : '');
 				setSelectedPermissionIds(userPermissions);
+				setSelectedConnection(data.whatsappId)
 			} catch (err) {
 				toastError(err);
 			}
@@ -231,12 +241,17 @@ const UserModal = ({ open, onClose, userId }) => {
 
 		}
 
+		const timeParts = values.scheduleSendAt.split(":");
+		const scheduleSendAt = new Date();
+		scheduleSendAt.setHours(parseInt(timeParts[0], 10), parseInt(timeParts[1], 10), 0, 0);
+
 		const userData = {
 			...values,
 			whatsappId,
 			queueIds: selectedQueueIds,
 			tagIds: selectedTagIds,
-			permissionsIds: selectedPermissionIds
+			permissionsIds: selectedPermissionIds,
+			scheduleSendAt
 		};
 
 		try {
