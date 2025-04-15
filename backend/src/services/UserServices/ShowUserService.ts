@@ -44,6 +44,11 @@ const ShowUserService = async (id: string | number, companyId?: string | number)
         "leadMessage",
         "tokenWhats",
         "userWhats",
+        "scheduleSendAt",
+        "scheduleNotifyBeforeText",
+        "scheduleNotifyBefore",
+        "scheduleNotifyNowText",
+        "daysUntilNextScheduleNotify",
       ],
       include: [
         { model: Queue, as: "queues", attributes: ["id", "name", "color"] },

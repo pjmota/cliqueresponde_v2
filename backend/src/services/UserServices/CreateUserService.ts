@@ -35,6 +35,11 @@ interface Request {
   leadMessage?: string;
   tokenWhats?: string;
   userWhats?: string;
+  scheduleNotifyBeforeText?:string;
+  scheduleNotifyNowText?:string;
+  scheduleNotifyBefore?:string;
+  scheduleSendAt?:Date;
+  daysUntilNextScheduleNotify?: number;
 }
 
 interface Response {
@@ -73,6 +78,11 @@ const CreateUserService = async ({
   leadMessage,
   tokenWhats,
   userWhats,
+  scheduleNotifyBeforeText,
+  scheduleNotifyNowText,
+  scheduleNotifyBefore,
+  scheduleSendAt,
+  daysUntilNextScheduleNotify
 }: Request): Promise<Response> => {
   if (companyId !== undefined) {
     const company = await Company.findOne({
@@ -150,6 +160,11 @@ const CreateUserService = async ({
       leadMessage,
       tokenWhats,
       userWhats,
+      scheduleNotifyBeforeText,
+      scheduleNotifyNowText,
+      scheduleNotifyBefore,
+      scheduleSendAt,
+      daysUntilNextScheduleNotify
     },
     { include: ["queues", "company", "tags", "permissions"] }
   );

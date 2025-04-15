@@ -75,7 +75,12 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     sendWhatsAppInLeadMessage,
     leadMessage,
     tokenWhats,
-    userWhats
+    userWhats,
+    scheduleNotifyBeforeText,
+    scheduleNotifyNowText,
+    scheduleNotifyBefore,
+    scheduleSendAt,
+    daysUntilNextScheduleNotify
   } = req.body;
   let userCompanyId: number | null = null;
 
@@ -200,7 +205,12 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       sendWhatsAppInLeadMessage,
       leadMessage,
       tokenWhats,
-      userWhats
+      userWhats,
+      scheduleNotifyBeforeText,
+      scheduleNotifyNowText,
+      scheduleNotifyBefore,
+      scheduleSendAt,
+      daysUntilNextScheduleNotify
     });
 
     const io = getIO();

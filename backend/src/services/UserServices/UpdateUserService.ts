@@ -37,6 +37,12 @@ interface UserData {
   leadMessage?: string;
   tokenWhats?: string;
   userWhats?: string;
+  scheduleNotifyBeforeText?:string;
+  scheduleNotifyNowText?:string;
+  scheduleNotifyBefore?:string;
+  scheduleSendAt?:Date;
+  daysUntilNextScheduleNotify?: number;
+
 }
 
 interface Request {
@@ -107,6 +113,11 @@ const UpdateUserService = async ({
     leadMessage,
     tokenWhats,
     userWhats,
+    scheduleNotifyBeforeText,
+    scheduleNotifyNowText,
+    scheduleNotifyBefore,
+    scheduleSendAt,
+    daysUntilNextScheduleNotify
   } = userData;
 
   try {
@@ -142,6 +153,11 @@ const UpdateUserService = async ({
     leadMessage,
     tokenWhats,
     userWhats,
+    scheduleNotifyBeforeText,
+    scheduleNotifyNowText,
+    scheduleNotifyBefore,
+    scheduleSendAt,
+    daysUntilNextScheduleNotify
   });
 
   await user.$set("queues", queueIds);

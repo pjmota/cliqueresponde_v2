@@ -104,6 +104,23 @@ class User extends Model<User> {
   @Column
   contactCustomFields: string;
 
+
+  @Column
+  scheduleSendAt: string;
+
+  @Column
+  scheduleNotifyBeforeText: string
+
+  @Column
+  scheduleNotifyBefore: number;
+
+  @Column
+  scheduleNotifyNowText: string;
+
+  @Default(null)
+  @Column
+  daysUntilNextScheduleNotify: number;
+
   @Default("light")
   @Column
   defaultTheme: string;

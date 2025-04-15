@@ -58,7 +58,12 @@ const ListUsersService = async ({
       "online",
       "startWork",
       "endWork",
-      "profileImage"
+      "profileImage",
+      "scheduleSendAt",
+      "scheduleNotifyBeforeText",
+      "scheduleNotifyBefore",
+      "scheduleNotifyNowText",
+      "daysUntilNextScheduleNotify"
     ],
     limit: limitNull ? null : limit,
     offset,
