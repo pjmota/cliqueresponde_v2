@@ -109,7 +109,20 @@ export const update = async (
   }
 
   const { scheduleId } = req.params;
-  const scheduleData = req.body;
+  const scheduleData = {
+    ...req.body,
+    intervalo: req.body.intervalo || 1,
+    valorIntervalo: req.body.valorIntervalo || 0,
+    enviarQuantasVezes: req.body.enviarQuantasVezes || 1,
+    tipoDias: req.body.tipoDias || 4,
+    contadorEnvio: req.body.contadorEnvio || 0,
+    assinar: req.body.assinar || false,
+    justNotifyMe: req.body.justNotifyMe || false,
+    notifyBefore: req.body.notifyBefore || 0,
+  };
+
+  
+
   const { companyId } = req.user;
 
   const schedule = await UpdateService({ scheduleData, id: scheduleId, companyId });

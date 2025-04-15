@@ -22,7 +22,10 @@ interface ScheduleData {
   valorIntervalo?: number;
   enviarQuantasVezes?: number;
   tipoDias?: number;
+  contadorEnvio?: number;
   assinar?: boolean;
+  justNotifyMe?: boolean;
+  notifyBefore?: number;
 }
 
 interface Request {
@@ -62,7 +65,10 @@ const UpdateUserService = async ({
     valorIntervalo,
     enviarQuantasVezes,
     tipoDias,
-    assinar
+    contadorEnvio,
+    assinar,
+    justNotifyMe,
+    notifyBefore
   } = scheduleData;
 
   try {
@@ -87,7 +93,10 @@ const UpdateUserService = async ({
     valorIntervalo,
     enviarQuantasVezes,
     tipoDias,
-    assinar
+    contadorEnvio,
+    assinar,
+    justNotifyMe,
+    notifyBefore
   });
 
   await schedule.reload();
