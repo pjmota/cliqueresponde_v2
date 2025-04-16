@@ -167,6 +167,7 @@ const Schedules = () => {
   const [schedules, dispatch] = useReducer(reducer, []);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [contactId, setContactId] = useState(+getUrlParam("contactId"));
+  const [isEditing, setIsEditing] = useState(false);
 
   const { getPlanCompany } = usePlans();
 
@@ -257,6 +258,7 @@ const Schedules = () => {
   const handleCloseScheduleModal = () => {
     setSelectedSchedule(null);
     setScheduleModalOpen(false);
+    setIsEditing(false);
   };
 
   const handleSearch = (event) => {
@@ -327,6 +329,7 @@ const Schedules = () => {
           }
           contactId={contactId}
           cleanContact={cleanContact}
+          isEditing={isEditing}
         />
       )}
       <MainHeader>
@@ -385,6 +388,7 @@ const Schedules = () => {
                       onClick={() => {
                         handleEditSchedule(schedule);
                         setScheduleModalOpen(true);
+                        setIsEditing(true);
                       }}
                       className="edit-icon"
                     />

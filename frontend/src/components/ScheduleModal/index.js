@@ -71,16 +71,20 @@ const ScheduleSchema = Yup.object().shape({
 	sendAt: Yup.string().required("Obrigatório")
 });
 
-const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload,ticket }) => {
+const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload, ticket, isEditing = false }) => {
 	const classes = useStyles();
 	const history = useHistory();
 	const { user } = useContext(AuthContext);
 	const isMounted = useRef(true);
+	const notifyBeforeTextRef = useRef();
+	const notifyNowTextRef = useRef();
+	const messageInputRef = useRef();
+
 	//const { companyId } = user;
 
 	const initialState = {
 		body: "",
-		contactId: "",
+		contactId: null,
 		sendAt: moment().add(1, 'hour').format('YYYY-MM-DDTHH:mm'),
 		sentAt: "",
 		openTicket: "enabled",
@@ -94,6 +98,8 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		assinar: false,
 		justNotifyMe: false,
 		notifyBefore: 15,
+		notifyBeforeText: "",
+		notifyNowText: "",
 	};
 
 	const initialContact = {
@@ -112,7 +118,6 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 	const [attachment, setAttachment] = useState(null);
 	const attachmentFile = useRef(null);
 	const [confirmationOpen, setConfirmationOpen] = useState(false);
-	const messageInputRef = useRef();
 	const [channelFilter, setChannelFilter] = useState("whatsapp");
 	const [whatsapps, setWhatsapps] = useState([]);
 	const [selectedWhatsapps, setSelectedWhatsapps] = useState([]);
@@ -124,6 +129,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 	const { findAll: findAllQueues } = useQueues();
 	const [options, setOptions] = useState([]);
 	const [searchParam, setSearchParam] = useState("");
+	const [configSendAt, setConfigSendAt] = useState(null);
 
 	useEffect(() => {
 		return () => {
@@ -243,6 +249,51 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		}
 	}, [scheduleId, contactId, open, user]);
 
+	useEffect(() => {
+		if (!scheduleId) {
+			/* const day = new Date().getDate();
+			const year = new Date().getFullYear();
+			const month = new Date().getMonth();
+			const minute = new Date().getMinutes();
+			const hour = new Date().getHours();
+  	
+			const padZero = (num) => String(num).padStart(2, "0");
+			const _date = `${year}-${padZero(month + 1)}-${padZero(day)}T${user.scheduleSendAt ?? `${hour}:${minute}`}`; */
+
+			const padZero = (num) => String(num).padStart(2, "0");
+
+			const now = new Date();
+			const year = now.getFullYear();
+			const month = now.getMonth(); // 0-based (Janeiro é 0)
+			const day = now.getDate();
+
+			const userScheduleSendAt = new Date(user.scheduleSendAt);
+			const timeScheduleSendAt = userScheduleSendAt ? `${padZero(userScheduleSendAt.getHours())}:${padZero(userScheduleSendAt.getMinutes())}` : `${padZero(now.getHours())}:${padZero(now.getMinutes())}`;
+			const scheduleTime = timeScheduleSendAt ?? `${padZero(now.getHours())}:${padZero(now.getMinutes())}`;
+
+			// Cria a data inicial com a hora definida pelo usuário
+			let scheduleDate = new Date(year, month, day, ...scheduleTime.split(':').map(Number));
+
+			// Adiciona o número de dias definidos em `daysUntilNextScheduleNotify`
+			scheduleDate.setDate(scheduleDate.getDate() + user.daysUntilNextScheduleNotify);
+
+			// Formata a data final no padrão ISO 8601 (YYYY-MM-DDTHH:mm)
+			const _date = `${scheduleDate.getFullYear()}-${padZero(scheduleDate.getMonth() + 1)}-${padZero(scheduleDate.getDate())}T${padZero(scheduleDate.getHours())}:${padZero(scheduleDate.getMinutes())}`;
+			setConfigSendAt(_date)
+			setSelectedWhatsapps(user.whatsappId);
+			setSchedule({
+				...schedule,
+				notifyBefore: user.scheduleNotifyBefore,
+				notifyBeforeText: user.scheduleNotifyBeforeText,
+				notifyNowText: user.scheduleNotifyNowText,
+				sendAt: moment(_date).format("YYYY-MM-DDTHH:mm"),
+
+
+			});
+		}
+	}, []);
+
+
 	const filterOptions = createFilterOptions({
 		trim: true,
 	});
@@ -251,6 +302,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		onClose();
 		setAttachment(null);
 		setSchedule(initialState);
+
 	};
 
 	const handleAttachmentFile = (e) => {
@@ -331,16 +383,16 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		setSchedule(initialState);
 		handleClose();
 	};
-	const handleClickMsgVar = async (msgVar, setValueFunc) => {
-		const el = messageInputRef.current;
+	const handleClickMsgVar = async (msgVar, setValueFunc, ref, field) => {
+		const el = ref.current;
 		const firstHalfText = el.value.substring(0, el.selectionStart);
 		const secondHalfText = el.value.substring(el.selectionEnd);
 		const newCursorPos = el.selectionStart + msgVar.length;
 
-		setValueFunc("body", `${firstHalfText}${msgVar}${secondHalfText}`);
+		setValueFunc(field, `${firstHalfText}${msgVar}${secondHalfText}`);
 
-		await new Promise(r => setTimeout(r, 100));
-		messageInputRef.current.setSelectionRange(newCursorPos, newCursorPos);
+		await new Promise((r) => setTimeout(r, 100));
+		el.setSelectionRange(newCursorPos, newCursorPos);
 	};
 
 	const deleteMedia = async () => {
@@ -415,14 +467,18 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											fullWidth
 											value={currentContact}
 											options={contacts}
+											error={touched.body && Boolean(errors.body)}
+											helperText={touched.body && errors.body}
 											onChange={(e, contact) => {
 												const contactId = contact ? contact.id : '';
 												setSchedule({ ...schedule, contactId });
 												setCurrentContact(contact ? contact : initialContact);
 												setChannelFilter(contact ? contact.channel : "whatsapp");
 											}}
+
 											getOptionLabel={(option) => option.name}
 											renderOption={renderOption}
+											
 											getOptionSelected={(option, value) => {
 												return value.id === option.id
 											}}
@@ -430,26 +486,99 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 										/>
 									</FormControl>
 								</div>
-								<div className={classes.multFieldLine}>
-									<Field
-										as={TextField}
-										rows={9}
-										multiline={true}
-										label={i18n.t("scheduleModal.form.body")}
-										name="body"
-										inputRef={messageInputRef}
-										error={touched.body && Boolean(errors.body)}
-										helperText={touched.body && errors.body}
-										variant="outlined"
-										margin="dense"
-										fullWidth
-									/>
-								</div>
-								<Grid item xs={12} md={12} xl={12}>
-									<MessageVariablesPicker
-										disabled={isSubmitting}
-										onClick={value => handleClickMsgVar(value, setFieldValue)}
-									/>
+								<Grid container spacing={isEditing ? 0 : 2} sx={{ display: { xs: "block", md: "flex" } }}>
+									<Grid item xs={12} md={isEditing ? 12 : 4} xl={isEditing ? 12 : 4}>
+										<div className={classes.multFieldLine}>
+											<Field
+												as={TextField}
+												rows={9}
+												multiline={true}
+												label={i18n.t("scheduleModal.form.body")}
+												name="body"
+												inputRef={messageInputRef}
+												error={touched.body && Boolean(errors.body)}
+												helperText={touched.body && errors.body}
+												variant="outlined"
+												margin="dense"
+												fullWidth
+											/>
+										</div>
+
+
+
+										<MessageVariablesPicker
+											disabled={isSubmitting}
+											onClick={value => handleClickMsgVar(value, setFieldValue, messageInputRef, "body")}
+										/>
+									</Grid>
+									{!isEditing && (
+										<Grid item xs={12} md={4}>
+											<Field
+												as={TextField}
+												rows={9}
+												multiline={true}
+												label={i18n.t("Mensagem de aviso")}
+												name="notifyBeforeText"
+												inputRef={notifyBeforeTextRef}
+												error={
+													touched.notifyBeforeText &&
+													Boolean(errors.notifyBeforeText)
+												}
+												helperText={
+													touched.notifyBeforeText && errors.notifyBeforeText
+												}
+												variant="outlined"
+												margin="dense"
+												fullWidth
+											/>
+
+											<MessageVariablesPicker
+												disabled={isSubmitting}
+												onClick={(value) =>
+													handleClickMsgVar(
+														value,
+														setFieldValue,
+														notifyBeforeTextRef,
+														"notifyBeforeText"
+													)
+												}
+											/>
+										</Grid>
+									)}
+
+									{!isEditing && (
+										<Grid item xs={12} md={4}>
+											<Field
+												as={TextField}
+												rows={9}
+												multiline={true}
+												label={i18n.t("Mensagem imediata")}
+												name="notifyNowText"
+												inputRef={notifyNowTextRef}
+												error={
+													touched.notifyNowText && Boolean(errors.notifyNowText)
+												}
+												helperText={
+													touched.notifyNowText && errors.notifyNowText
+												}
+												variant="outlined"
+												margin="dense"
+												fullWidth
+											/>
+
+											<MessageVariablesPicker
+												disabled={isSubmitting}
+												onClick={(value) =>
+													handleClickMsgVar(
+														value,
+														setFieldValue,
+														notifyNowTextRef,
+														"notifyNowText"
+													)
+												}
+											/>
+										</Grid>
+									)}
 								</Grid>
 								<Grid container spacing={1}>
 									<Grid item xs={12} md={6} xl={6}>
@@ -785,7 +914,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											disabled={isSubmitting}
 											variant="outlined"
 											className={classes.btnWrapper}
-											
+
 											onClick={() =>
 												handleSaveSchedule({ ...values, justNotifyMe: true, notifyBefore: values.notifyBefore })
 											}
