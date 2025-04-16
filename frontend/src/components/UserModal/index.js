@@ -146,7 +146,7 @@ const UserModal = ({ open, onClose, userId }) => {
 		leadMessage: "",
 		tokenWhats: "",
 		userWhats: "",
-		scheduleSendAt: new Date(),
+		scheduleSendAt: "00:00",
 		scheduleNotifyBeforeText: "",
 		scheduleNotifyBefore: 15,
 		scheduleNotifyNowText: "",
@@ -241,7 +241,7 @@ const UserModal = ({ open, onClose, userId }) => {
 
 		}
 
-		const timeParts = values.scheduleSendAt.split(":");
+		const timeParts = values.scheduleSendAt?.split(":") ?? ["00", "00"];
 		const scheduleSendAt = new Date();
 		scheduleSendAt.setHours(parseInt(timeParts[0], 10), parseInt(timeParts[1], 10), 0, 0);
 
@@ -1110,6 +1110,7 @@ const UserModal = ({ open, onClose, userId }) => {
 																}
 																variant="outlined"
 																fullWidth
+																
 															/>
 														</Grid>
 														<Grid item xs={6}>
