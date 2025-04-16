@@ -320,8 +320,11 @@ const justNotifyMeFunc = async (
     })
 
   }
-
-  const lastNote = await getLastObserveAboutContact(contactId as number, ticketId as number);
+  let lastNote = null;
+  if (contactId && ticketId) {
+    lastNote = await getLastObserveAboutContact(contactId as number, ticketId as number);
+  }else{
+  }
   //console.log("Ultima observação do contato", lastNote);
   // console.log("justNotifyMeFunc", {
   //   userId,
@@ -352,32 +355,23 @@ const justNotifyMeFunc = async (
       include: [{ model: Whatsapp, attributes: ["name"] }]
     });
 
-    const tags = await Tag.findAll({
-      include: [
-        {
-          model: TicketTag,
-          where: {
-            ticketId: ticket?.id
-          }
-        }
-      ]
-    });
+    // const tags = await Tag.findAll({
+    //   include: [
+    //     {
+    //       model: TicketTag,
+    //       where: {
+    //         ticketId: ticket?.id
+    //       }
+    //     }
+    //   ]
+    // });
 
     const _sendAt = new Date(sendAt);
 
     const date = new Date(sendAt);
     date.setMinutes(date.getMinutes() - (notifyBefore ?? 15));
 
-//     const body = `
-// Aviso Agendamento
-// Data do Agendamento: ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${_sendAt.getHours()}:${_sendAt.getMinutes()}
-// Nome do Contato: ${contact.name}
-// Whatsapp: https://wa.me/${contact.number}
-// Origem: ${ticket?.whatsapp?.name}
-// ${lastNote ? `Ultima Observação: ${lastNote.note}` : ""}
-// `;
-
-    //Mensagem estilizada com emoji e link em uma linha:
+  
     const body = `
 🔔 Aviso Agendamento
 
