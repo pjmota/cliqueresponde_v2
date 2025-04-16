@@ -56,6 +56,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     justNotifyMe = false,
     ticketId= null,
     notifyBefore = 0,
+    notifyBeforeText,
+    notifyNowText,
   } = req.body;
   const { companyId } = req.user;
 
@@ -78,7 +80,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     assinar,
     justNotifyMe,
     ticketId,
-    notifyBefore
+    notifyBefore,
+    notifyBeforeText,
+    notifyNowText,
   });
 
   const io = getIO();

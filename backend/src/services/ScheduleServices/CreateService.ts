@@ -34,6 +34,8 @@ interface Request {
   justNotifyMe?: boolean;
   ticketId?: number | string;
   notifyBefore?: number;
+  notifyBeforeText?:string,
+  notifyNowText?:string,
 }
 
 const CreateService = async ({
@@ -56,9 +58,11 @@ const CreateService = async ({
   justNotifyMe,
   ticketId = null,
   notifyBefore = 0,
+  notifyBeforeText,
+  notifyNowText,
 }: Request): Promise<void | Schedule> => {
 
-
+  const user = await ShowUserService(userId, companyId as number);
   /* console.log("REQUEST:", {
     body,
     sendAt,
@@ -113,6 +117,8 @@ const CreateService = async ({
     );
   }
 
+
+
   const schedule = await Schedule.create(
     {
       body,
@@ -137,19 +143,122 @@ const CreateService = async ({
     }
   );
 
+  if (notifyBefore && notifyBeforeText) {
+    console.log("notifyBefore && notifyBeforeText", {
+      notifyBefore,
+      notifyBeforeText
+    });
+    const sendAtBefore = new Date(sendAt);
+
+    sendAtBefore.setMinutes(sendAtBefore.getMinutes() - notifyBefore);
+
+    
+    await (async function (id) {
+      try {
+        await Schedule.create({
+          body: notifyBeforeText,
+          sendAt: sendAtBefore.toUTCString(),
+          contactId: id,
+          companyId,
+          userId,
+          status: "PENDENTE",
+          type: "BEFORE",
+          whatsappId,
+          ticketId,
+          justNotifyMe: false
+        });
+      } catch (error) {
+        if (error.name === "SequelizeUniqueConstraintError") {
+          throw new AppError("Já há agendamentos com os dados informados.");
+        }
+      }
+    })(contactId);
+
+    try {
+      await createScheduleToMe(
+        
+        user,
+        notifyBeforeText,
+        sendAtBefore.toUTCString(),
+        +companyId,
+        +userId,
+        "BEFORE",
+        false, //notifyMe,
+        whatsappId as number,
+        ticketId as number
+      );
+    } catch (error) {
+      if (error.name === "SequelizeUniqueConstraintError") {
+        throw new AppError("Já há agendamentos com os dados informados.");
+      }
+    }
+  }
+
+  if (notifyNowText) {
+
+    console.log("notifyNowText", {
+      notifyNowText
+    });
+
+    const sendAtNow = new Date();
+
+    sendAtNow.setMinutes(sendAtNow.getMinutes() + 1);
+
+    await (async function  (id)  {
+      try {
+        await Schedule.create({
+          body: notifyNowText,
+          sendAt: sendAtNow.toUTCString(),
+          contactId: id,
+          companyId,
+          userId,
+          status: "PENDENTE",
+          type: "NOW",
+          whatsappId,
+          ticketId,
+          justNotifyMe: false
+        });
+      } catch (error) {
+        if (error.name === "SequelizeUniqueConstraintError") {
+          throw new AppError("Já há agendamentos com os dados informados.");
+        }
+      }
+    })(contactId);
+
+    try {
+      await createScheduleToMe(
+        
+        user,
+        notifyNowText,
+        sendAtNow.toUTCString(),
+        +companyId,
+        +userId,
+        "NOW",
+        false, //notifyMe,
+        whatsappId as number,
+        ticketId as number
+      );
+    } catch (error) {
+      if (error.name === "SequelizeUniqueConstraintError") {
+        throw new AppError("Já há agendamentos com os dados informados.");
+      }
+    }
+  }
+
   await schedule.reload();
 
   return schedule;
 };
 
 const createScheduleToMe = async (
-  notifyMe: boolean,
+  
   user: User,
   body: string,
   sendAt: string,
   companyId: number,
   userId: number,
   type: string,
+  notifyMe?: boolean,
   whatsappId?: number,
   ticketId?: number
 ) => {
