@@ -1,6 +1,7 @@
 import Contact from "../../models/Contact";
 import AppError from "../../errors/AppError";
 import Whatsapp from "../../models/Whatsapp";
+import ContactCustomField from "../../models/ContactCustomField";
 
 const ShowContactService = async (
   id: string | number,
@@ -17,7 +18,19 @@ const ShowContactService = async (
         as: "whatsapp",
         attributes: ["id", "name", "expiresTicket", "groupAsTicket"]
       },
-    ]
+      {
+        model: ContactCustomField,
+        as: "extraInfo",
+        include: [
+          {
+            model: Contact,
+            as: "contact",
+            attributes: ["companyId"],
+          },
+        ],
+      },
+    ],
+    //logging: console.log
   });
 
   if (contact?.companyId !== companyId) {
