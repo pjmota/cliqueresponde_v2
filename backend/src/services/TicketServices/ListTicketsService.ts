@@ -666,7 +666,7 @@ const ListTicketsService = async ({
     }
   }
 
-  const limitBase = 40;
+  const limitBase = status === 'open' ? 500 : 40;
   let limit = limitBase;
   let offset = limit * (+pageNumber - 1);
   let tickets = [];
@@ -695,24 +695,27 @@ const ListTicketsService = async ({
       offset,
       order: [["updatedAt", sortTickets]],
       subQuery: false,
-      //...(searchParam ? {logging: console.log} : {})
+      //...(status === 'open' ? {logging: console.log} : {})
     });
 
-    count = result.count;
-    tickets = [...tickets, ...result.rows]; // Acumulamos os registros ao invés de sobrescrever
-    tickets = Array.from(new Map(tickets.map(t => [t.id, t])).values()); // Removemos duplicatas se necessário
+    const newTickets = result.rows;
+    //logger.warn(`Consulta retornou ${newTickets.length} novos registros (offset: ${offset}, limit: ${limit})`);
 
-    //logger.warn(`Consulta retornou ${result.rows.length} novos registros, total acumulado: ${tickets.length}`);
+    tickets = [...tickets, ...newTickets];
+    // Remove duplicados baseado no ID
+    tickets = Array.from(new Map(tickets.map(t => [t.id, t])).values());
 
-    // Se ainda não temos registros suficientes, aumentamos o limit e repetimos
-    if (status === "open" && count > limit && tickets.length < limitBase) {
+    // Atualiza o offset pra posição real acumulada
+    offset += newTickets.length;
+
+    // Se ainda não atingiu o limite desejado, aumenta o limit da próxima tentativa
+    if (status === "open" && tickets.length < limitBase && newTickets.length > 0) {
       limit += 10;
-      offset += limit; // Ajustar offset para não trazer os mesmos registros
     } else {
       break;
     }
   } while (tickets.length < limitBase);
-
+  count = tickets.length;
   const hasMore = count > offset + tickets.length;
   return {
     tickets,

@@ -2,6 +2,7 @@ import AppError from "../../errors/AppError";
 import Contact from "../../models/Contact";
 import ContactCustomField from "../../models/ContactCustomField";
 import ContactWallet from "../../models/ContactWallet";
+import UpsertContactCustomFieldService from "../ContactCustomFieldService/UpsertContactCustomFieldService";
 
 interface ExtraInfo {
   id?: number;
@@ -94,6 +95,10 @@ const UpdateContactService = async ({
     });
 
     await ContactWallet.bulkCreate(contactWallets);
+  }
+
+  if (extraInfo) {
+    UpsertContactCustomFieldService(extraInfo, contact);
   }
 
   await contact.update({

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import React, { useState, useEffect, useReducer, useContext } from "react";
+import React, { useState, useEffect, useReducer, useContext, useRef } from "react";
 import { toast } from "react-toastify";
 
 import { useHistory } from "react-router-dom";
@@ -116,6 +116,7 @@ const Campaigns = () => {
 
   const { datetimeToClient } = useDate();
   const { getPlanCompany } = usePlans();
+  const lastLoadedPageRef = useRef(0);
 
   useEffect(() => {
     async function fetchData() {
@@ -166,6 +167,7 @@ const Campaigns = () => {
   }, [user]);
 
   const fetchCampaigns = async () => {
+    if (lastLoadedPageRef.current >= pageNumber) return;
     try {
       const { data } = await api.get("/campaigns/", {
         params: { 
@@ -174,11 +176,14 @@ const Campaigns = () => {
           ...(user.profile === 'user' ? {userId: user.id} : {}) 
         },
       });
+      lastLoadedPageRef.current = pageNumber;
       dispatch({ type: "LOAD_CAMPAIGNS", payload: data.records });
       setHasMore(data.hasMore);
-      setLoading(false);
+      //setLoading(false);
     } catch (err) {
       toastError(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -214,6 +219,7 @@ const Campaigns = () => {
   };
 
   const loadMore = () => {
+    setLoading(true);
     setPageNumber((prevState) => prevState + 1);
   };
 

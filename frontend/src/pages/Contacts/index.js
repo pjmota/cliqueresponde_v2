@@ -575,7 +575,7 @@ const Contacts = () => {
                             <TableCell align="center">
                                 {i18n.t("contacts.table.whatsapp")}
                             </TableCell>
-                            <TableCell align="center">
+                            <TableCell align="center" style={{ whiteSpace: "nowrap" }}>
                                 {i18n.t("contacts.table.createdBy")}
                             </TableCell>
                             <TableCell align="center">
@@ -626,7 +626,7 @@ const Contacts = () => {
                                             />
                                         )}
                                     </TableCell>
-                                    <TableCell align="center">
+                                    <TableCell align="center" style={{ whiteSpace: "nowrap" }}>
                                         <IconButton
                                             size="small"
                                             disabled={!contact.active}

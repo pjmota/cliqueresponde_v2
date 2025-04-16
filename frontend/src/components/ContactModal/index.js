@@ -17,12 +17,14 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Switch from "@material-ui/core/Switch";
+import InsertPhotoIcon from "@material-ui/icons/InsertPhoto";
 
 import { i18n } from "../../translate/i18n";
 
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import { TagsContainer } from "../TagsContainer";
+import { MenuItem, Select } from "@material-ui/core";
 // import AsyncSelect from "../AsyncSelect";
 
 const useStyles = makeStyles(theme => ({
@@ -116,9 +118,11 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 	const handleSaveContact = async values => {
 		try {
 			if (contactId) {
+				console.log('no if', { ...values, disableBot: disableBot })
 				await api.put(`/contacts/${contactId}`, { ...values, disableBot: disableBot });
 				handleClose();
 			} else {
+				console.log('no else', { ...values, disableBot: disableBot })
 				const { data } = await api.post("/contacts", { ...values, disableBot: disableBot });
 				if (onSave) {
 					onSave(data);
@@ -130,6 +134,42 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 			toastError(err);
 		}
 	};
+
+	const isImage = (value) => {
+    return value.toLocaleLowerCase().trim().startsWith("img");
+  };
+
+  const isSelect = (value) => {
+    return value.match(/CMB\s{1,}(.*)\[(.*)\]/i);
+  };
+
+  const cmbOptions = (value) => {
+    const m = value.match(/CMB\s{1,}(.*)\[(.*)\]/i);
+    return m[2].split("|");
+  };
+
+  const cmbLabel = (value) => {
+    const m = value.match(/CMB\s{1,}(.*)\[(.*)\]/i);
+    return m[1];
+  };
+
+	const handleImage = (file, index, setFieldValue) => {
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const extraInfo = [...contact.extraInfo];
+      setFieldValue(`extraInfo[${index}].value`, file.name);
+    	setFieldValue(`extraInfo[${index}].image`, reader.result);
+    	setFieldValue(`extraInfo[${index}].mediaPath`, undefined);
+
+      setContact({ ...contact, extraInfo: extraInfo });
+    };
+
+    reader.readAsDataURL(file);
+  };
 
 	return (
 		<div className={classes.root}>
@@ -237,8 +277,119 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 								>
 									{i18n.t("contactModal.form.extraInfo")}
 								</Typography>
-
 								<FieldArray name="extraInfo">
+									{({ push, remove, form }) => {
+										const { setFieldValue, values } = form; // Acessa setFieldValue e values do Formik
+										return (
+											<>
+												{values.extraInfo &&
+													values.extraInfo.length > 0 &&
+													values.extraInfo.map((info, index) => (
+														<div className={classes.extraAttr} key={`${index}-info`}>
+															{!isSelect(values.extraInfo[index].name) && (
+																<Field
+																	as={TextField}
+																	label={i18n.t("contactModal.form.extraName")}
+																	name={`extraInfo[${index}].name`}
+																	variant="outlined"
+																	margin="dense"
+																	className={classes.textField}
+																/>
+															)}
+
+															{isSelect(values.extraInfo[index].name) && (
+																<TextField
+																	label={i18n.t("contactModal.form.extraName")}
+																	variant="outlined"
+																	margin="dense"
+																	disabled={true}
+																	className={classes.textField}
+																	value={cmbLabel(values.extraInfo[index].name)}
+																	InputProps={{ readOnly: true }}
+																/>
+															)}
+
+															{!isImage(values.extraInfo[index].name) &&
+																isSelect(values.extraInfo[index].name) && (
+																	<Field
+																		as={Select}
+																		name={`extraInfo[${index}].value`}
+																		variant="outlined"
+																		margin="dense"
+																		className={classes.textField}
+																	>
+																		{cmbOptions(values.extraInfo[index].name).map((item, idx) => (
+																			<MenuItem key={idx} value={item}>
+																				{item}
+																			</MenuItem>
+																		))}
+																	</Field>
+																)}
+
+															{!isImage(values.extraInfo[index].name) &&
+																!isSelect(values.extraInfo[index].name) && (
+																	<Field
+																		as={TextField}
+																		label={i18n.t("contactModal.form.extraValue")}
+																		name={`extraInfo[${index}].value`}
+																		variant="outlined"
+																		margin="dense"
+																		className={classes.textField}
+																	/>
+																)}
+
+															{isImage(values.extraInfo[index].name) &&
+																values.extraInfo[index].mediaPath && (
+																	<a href={values.extraInfo[index].mediaPath} target="_blank" rel="noopener noreferrer">
+																		{values.extraInfo[index].value}
+																	</a>
+																)}
+
+															{isImage(values.extraInfo[index].name) &&
+																values.extraInfo[index].value &&
+																!values.extraInfo[index].mediaPath && (
+																	<TextField
+																		value={values.extraInfo[index].value}
+																		label="Imagem"
+																		variant="outlined"
+																		margin="dense"
+																		className={classes.textField}
+																		disabled
+																	/>
+																)}
+
+															{isImage(values.extraInfo[index].name) && (
+																<IconButton size="small" component="label">
+																	<input
+																		type="file"
+																		hidden
+																		onChange={(ev) => handleImage(ev.target.files[0], index, setFieldValue)}
+																	/>
+																	<InsertPhotoIcon />
+																</IconButton>
+															)}
+
+															<IconButton size="small" onClick={() => remove(index)}>
+																<DeleteOutlineIcon />
+															</IconButton>
+														</div>
+													))}
+												<div className={classes.extraAttr}>
+													<Button
+														style={{ flex: 1, marginTop: 8 }}
+														variant="outlined"
+														color="primary"
+														onClick={() => push({ name: "", value: "" })}
+													>
+														{`+ ${i18n.t("contactModal.buttons.addExtraInfo")}`}
+													</Button>
+												</div>
+											</>
+										);
+									}}
+								</FieldArray>
+
+								{/* <FieldArray name="extraInfo">
 									{({ push, remove }) => (
 										<>
 											{values.extraInfo &&
@@ -248,7 +399,103 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 														className={classes.extraAttr}
 														key={`${index}-info`}
 													>
-														<Field
+														{!isSelect(values.extraInfo[index].name) && (
+															<TextField
+																label={i18n.t("contactModal.form.extraName")}
+																name={`extraInfo[${index}].name`}
+																variant="outlined"
+																margin="dense"
+																className={classes.textField}
+																value={values.extraInfo[index].name}
+																onChange={setFieldValue}
+															/>
+														)}
+
+														{isSelect(values.extraInfo[index].name) && (
+															<TextField
+																label={i18n.t("contactModal.form.extraName")}
+																name={`extraInfo[${index}].name`}
+																variant="outlined"
+																margin="dense"
+																disabled={true}
+																className={classes.textField}
+																value={cmbLabel(
+																	values.extraInfo[index].name
+																)}
+																onChange={setFieldValue}
+															/>
+														)}
+
+														{!isImage(values.extraInfo[index].name) &&
+															isSelect(values.extraInfo[index].name) && (
+																<Select
+																	label={i18n.t("contactModal.form.extraValue")}
+																	name={`extraInfo[${index}].value`}
+																	variant="outlined"
+																	margin="dense"
+																	className={classes.textField}
+																	value={values.extraInfo[index].value}
+																	onChange={setFieldValue}
+																>
+																	{cmbOptions(
+																		values.extraInfo[index].name
+																	).map((item, index) => (
+																		<MenuItem key={index} value={item}>
+																			{item}
+																		</MenuItem>
+																	))}
+																</Select>
+															)}
+
+														{!isImage(values.extraInfo[index].name) &&
+															!isSelect(values.extraInfo[index].name) && (
+																<TextField
+																	label={i18n.t("contactModal.form.extraValue")}
+																	name={`extraInfo[${index}].value`}
+																	variant="outlined"
+																	margin="dense"
+																	className={classes.textField}
+																	value={values.extraInfo[index].value}
+																	onChange={setFieldValue}
+																/>
+															)}
+
+														{isImage(values.extraInfo[index].name) &&
+															values.extraInfo[index].mediaPath && (
+																<a
+																	href={values.extraInfo[index].mediaPath}
+																	target="_blank"
+																>
+																	{values.extraInfo[index].value}
+																</a>
+															)}
+
+														{isImage(values.extraInfo[index].name) &&
+															values.extraInfo[index].value &&
+															!values.extraInfo[index].mediaPath && (
+																<TextField
+																	value={values.extraInfo[index].value}
+																	label="Imagem"
+																	variant="outlined"
+																	margin="dense"
+																	className={classes.textField}
+																	disabled
+																/>
+															)}
+
+														{isImage(values.extraInfo[index].name) && (
+															<IconButton size="small" component="label">
+																<input
+																	type="file"
+																	hidden
+																	onChange={(ev) =>
+																		handleImage(ev.target.files[0], index)
+																	}
+																/>
+																<InsertPhotoIcon />
+															</IconButton>
+														)} */}
+														{/* <Field
 															as={TextField}
 															label={i18n.t("contactModal.form.extraName")}
 															name={`extraInfo[${index}].name`}
@@ -263,8 +510,9 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 															variant="outlined"
 															margin="dense"
 															className={classes.textField}
-														/>
-														<IconButton
+														/> */}
+														
+													{/* 	<IconButton
 															size="small"
 															onClick={() => remove(index)}
 														>
@@ -284,7 +532,7 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 											</div>
 										</>
 									)}
-								</FieldArray>
+								</FieldArray> */}
 							</DialogContent>
 							<DialogActions>
 								<Button
