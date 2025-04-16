@@ -267,7 +267,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 			const month = now.getMonth(); // 0-based (Janeiro é 0)
 			const day = now.getDate();
 
-			const userScheduleSendAt = new Date(user.scheduleSendAt);
+			const userScheduleSendAt = new Date(user.scheduleSendAt) ?? null;
 			const timeScheduleSendAt = userScheduleSendAt ? `${padZero(userScheduleSendAt.getHours())}:${padZero(userScheduleSendAt.getMinutes())}` : `${padZero(now.getHours())}:${padZero(now.getMinutes())}`;
 			const scheduleTime = timeScheduleSendAt ?? `${padZero(now.getHours())}:${padZero(now.getMinutes())}`;
 
@@ -298,7 +298,10 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		trim: true,
 	});
 
-	const handleClose = () => {
+	const handleClose = (reload=false) => {
+		if(reload) {
+			window.location.reload();
+		}
 		onClose();
 		setAttachment(null);
 		setSchedule(initialState);
@@ -381,7 +384,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		}
 		setCurrentContact(initialContact);
 		setSchedule(initialState);
-		handleClose();
+		handleClose(values.justNotifyMe);
 	};
 	const handleClickMsgVar = async (msgVar, setValueFunc, ref, field) => {
 		const el = ref.current;
