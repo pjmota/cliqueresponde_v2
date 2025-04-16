@@ -1046,10 +1046,11 @@ const UserModal = ({ open, onClose, userId }) => {
 											perform="user-modal:editProfile"
 											yes={() => (<>
 
-												<Box>
-													<Grid container spacing={2}>
+												
+													<Grid container spacing={3} rowSpacing={10}>
 														<Grid item xs={6}>
 															<Field
+																
 																as={TextField}
 																rows={9}
 																multiline={true}
@@ -1071,6 +1072,7 @@ const UserModal = ({ open, onClose, userId }) => {
 
 														<Grid item xs={6}>
 															<Field
+																
 																as={TextField}
 																rows={9}
 																multiline={true}
@@ -1091,9 +1093,10 @@ const UserModal = ({ open, onClose, userId }) => {
 														</Grid>
 													</Grid>
 
-													<Grid container spacing={2}>
+													<Grid container spacing={3} style={{ marginTop: "20px" }}>
 														<Grid item xs={6}>
 															<Field
+																
 																as={TextField}
 																label={i18n.t("scheduleModal.form.sendAt")}
 																type="time"
@@ -1113,8 +1116,9 @@ const UserModal = ({ open, onClose, userId }) => {
 																
 															/>
 														</Grid>
-														<Grid item xs={6}>
+														<Grid item xs={6} >
 															<Field
+																
 																as={TextField}
 																label={i18n.t(
 																	"Tempo para mensagem de aviso em minutos"
@@ -1140,9 +1144,10 @@ const UserModal = ({ open, onClose, userId }) => {
 															/>
 														</Grid>
 													</Grid>
-													<Grid container spacing={2}>
+													<Grid container spacing={3} style={{ marginTop: "20px" }}>
 														<Grid item xs={6}>
 															<Field
+																
 																as={TextField}
 																label={i18n.t(
 																	"Dia(s) para o próximo agendamento"
@@ -1170,6 +1175,7 @@ const UserModal = ({ open, onClose, userId }) => {
 														<Grid item xs={6}>
 															<Select
 																//required
+																size="small"
 																fullWidth
 																displayEmpty
 																variant="outlined"
@@ -1219,7 +1225,7 @@ const UserModal = ({ open, onClose, userId }) => {
 															</Select>
 														</Grid>
 													</Grid>
-												</Box>
+												
 
 											</>)}
 										/>
