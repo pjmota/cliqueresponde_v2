@@ -50,7 +50,8 @@ type IndexGetContactQuery = {
 interface ExtraInfo extends ContactCustomField {
   name: string;
   value: string;
-}
+  mediaPath: string;
+};
 interface ContactData {
   name: string;
   number: string;

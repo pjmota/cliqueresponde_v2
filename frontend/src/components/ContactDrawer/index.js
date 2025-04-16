@@ -287,7 +287,13 @@ const ContactDrawer = ({ open, handleDrawerClose, contact, ticket, loading }) =>
 								>
 									<InputLabel>{info.name}</InputLabel>
 									<Typography component="div" noWrap style={{ paddingTop: 2 }}>
+									{info.name === 'img' ? (
+										<a href={info.mediaPath} target="_blank" rel="noopener noreferrer">
+											{info.value}
+										</a>
+									) : (
 										<MarkdownWrapper>{info.value}</MarkdownWrapper>
+									)}
 									</Typography>
 								</Paper>
 							))}
