@@ -83,7 +83,7 @@ const ListService = async ({
       { model: User, as: "user", attributes: ["id", "name"] },
       { model: Whatsapp, as: "whatsapp", attributes: ["id", "name", "channel"] }
     ],
-    logging: console.log
+    //logging: console.log
   });
 
   const hasMore = count > offset + schedules.length;
