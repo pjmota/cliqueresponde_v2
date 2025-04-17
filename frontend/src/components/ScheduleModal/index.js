@@ -267,7 +267,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 			const month = now.getMonth(); // 0-based (Janeiro é 0)
 			const day = now.getDate();
 
-			const userScheduleSendAt = new Date(user.scheduleSendAt);
+			const userScheduleSendAt = new Date(user.scheduleSendAt) ?? null;
 			const timeScheduleSendAt = userScheduleSendAt ? `${padZero(userScheduleSendAt.getHours())}:${padZero(userScheduleSendAt.getMinutes())}` : `${padZero(now.getHours())}:${padZero(now.getMinutes())}`;
 			const scheduleTime = timeScheduleSendAt ?? `${padZero(now.getHours())}:${padZero(now.getMinutes())}`;
 
@@ -280,7 +280,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 			// Formata a data final no padrão ISO 8601 (YYYY-MM-DDTHH:mm)
 			const _date = `${scheduleDate.getFullYear()}-${padZero(scheduleDate.getMonth() + 1)}-${padZero(scheduleDate.getDate())}T${padZero(scheduleDate.getHours())}:${padZero(scheduleDate.getMinutes())}`;
 			setConfigSendAt(_date)
-			setSelectedWhatsapps(user.whatsappId);
+			setSelectedWhatsapps(user.scheduleConnection ?? user.whatsappId);
 			setSchedule({
 				...schedule,
 				notifyBefore: user.scheduleNotifyBefore,
@@ -298,7 +298,10 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		trim: true,
 	});
 
-	const handleClose = () => {
+	const handleClose = (reload = false) => {
+		if (typeof reload == "boolean" && reload) {
+			window.location.reload();
+		}
 		onClose();
 		setAttachment(null);
 		setSchedule(initialState);
@@ -478,7 +481,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 
 											getOptionLabel={(option) => option.name}
 											renderOption={renderOption}
-											
+
 											getOptionSelected={(option, value) => {
 												return value.id === option.id
 											}}
@@ -915,8 +918,10 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											variant="outlined"
 											className={classes.btnWrapper}
 
-											onClick={() =>
+											onClick={() => {
 												handleSaveSchedule({ ...values, justNotifyMe: true, notifyBefore: values.notifyBefore })
+												handleClose(true)
+											}
 											}
 										>
 

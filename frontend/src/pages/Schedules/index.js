@@ -378,7 +378,7 @@ const Schedules = () => {
                   }}
                   title={schedule?.user?.name}
                 >
-                  <div key={schedule.id} className="event-container">
+                  <div key={schedule?.id} className="event-container">
                     <div style={eventTitleStyle}>{schedule?.contact?.name}</div>
                     <DeleteOutlineIcon
                       onClick={() => handleDeleteSchedule(schedule.id)}
@@ -396,8 +396,8 @@ const Schedules = () => {
                 </Tooltip>
               </>
             ),
-            start: new Date(schedule.sendAt),
-            end: new Date(schedule.sendAt),
+            start: new Date(schedule?.sendAt),
+            end: new Date(schedule?.sendAt),
           }))}
           startAccessor="start"
           endAccessor="end"

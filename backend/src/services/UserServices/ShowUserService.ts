@@ -49,6 +49,7 @@ const ShowUserService = async (id: string | number, companyId?: string | number)
         "scheduleNotifyBefore",
         "scheduleNotifyNowText",
         "daysUntilNextScheduleNotify",
+        "scheduleConnection"
       ],
       include: [
         { model: Queue, as: "queues", attributes: ["id", "name", "color"] },

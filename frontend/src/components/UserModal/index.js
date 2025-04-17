@@ -146,7 +146,7 @@ const UserModal = ({ open, onClose, userId }) => {
 		leadMessage: "",
 		tokenWhats: "",
 		userWhats: "",
-		scheduleSendAt: new Date(),
+		scheduleSendAt: "00:00",
 		scheduleNotifyBeforeText: "",
 		scheduleNotifyBefore: 15,
 		scheduleNotifyNowText: "",
@@ -168,6 +168,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	const [selectedTagIds, setSelectedTagIds] = useState([]);
 	const [selectedPermissionIds, setSelectedPermissionIds] = useState([]);
 	const [selectedConnection, setSelectedConnection] = useState();
+	const [selectedScheduleConnection, setSelectedScheduleConnection] = useState();
 	const [dataWhatsapps, setDataWhatsapps] = useState([]);
 	
 	useEffect(() => {
@@ -186,7 +187,6 @@ const UserModal = ({ open, onClose, userId }) => {
 
 				const { profileImage } = data;
 				setProfileUrl(`${backendUrl}/public/company${data.companyId}/user/${profileImage}`);
-
 				const userQueueIds = data.queues?.map(queue => queue.id);
 				const userTagIds = data.tags?.map(tag => tag.id);
 				const userPermissions = data.permissions?.map(per => per.id);
@@ -194,7 +194,8 @@ const UserModal = ({ open, onClose, userId }) => {
 				setSelectedTagIds(userTagIds)
 				setWhatsappId(data.whatsappId ? data.whatsappId : '');
 				setSelectedPermissionIds(userPermissions);
-				setSelectedConnection(data.whatsappId)
+				setSelectedConnection(data.whatsappId);
+				setSelectedScheduleConnection(data.scheduleConnection ?? "");
 			} catch (err) {
 				toastError(err);
 			}
@@ -241,7 +242,7 @@ const UserModal = ({ open, onClose, userId }) => {
 
 		}
 
-		const timeParts = values.scheduleSendAt.split(":");
+		const timeParts = values.scheduleSendAt?.split(":") ?? ["00", "00"];
 		const scheduleSendAt = new Date();
 		scheduleSendAt.setHours(parseInt(timeParts[0], 10), parseInt(timeParts[1], 10), 0, 0);
 
@@ -251,7 +252,8 @@ const UserModal = ({ open, onClose, userId }) => {
 			queueIds: selectedQueueIds,
 			tagIds: selectedTagIds,
 			permissionsIds: selectedPermissionIds,
-			scheduleSendAt
+			scheduleSendAt,
+			scheduleConnection: selectedScheduleConnection,
 		};
 
 		try {
@@ -1046,10 +1048,11 @@ const UserModal = ({ open, onClose, userId }) => {
 											perform="user-modal:editProfile"
 											yes={() => (<>
 
-												<Box>
-													<Grid container spacing={2}>
+												
+													<Grid container spacing={3} rowSpacing={10}>
 														<Grid item xs={6}>
 															<Field
+																
 																as={TextField}
 																rows={9}
 																multiline={true}
@@ -1071,6 +1074,7 @@ const UserModal = ({ open, onClose, userId }) => {
 
 														<Grid item xs={6}>
 															<Field
+																
 																as={TextField}
 																rows={9}
 																multiline={true}
@@ -1091,9 +1095,10 @@ const UserModal = ({ open, onClose, userId }) => {
 														</Grid>
 													</Grid>
 
-													<Grid container spacing={2}>
+													<Grid container spacing={3} style={{ marginTop: "20px" }}>
 														<Grid item xs={6}>
 															<Field
+																
 																as={TextField}
 																label={i18n.t("scheduleModal.form.sendAt")}
 																type="time"
@@ -1110,10 +1115,12 @@ const UserModal = ({ open, onClose, userId }) => {
 																}
 																variant="outlined"
 																fullWidth
+																
 															/>
 														</Grid>
-														<Grid item xs={6}>
+														<Grid item xs={6} >
 															<Field
+																
 																as={TextField}
 																label={i18n.t(
 																	"Tempo para mensagem de aviso em minutos"
@@ -1139,9 +1146,10 @@ const UserModal = ({ open, onClose, userId }) => {
 															/>
 														</Grid>
 													</Grid>
-													<Grid container spacing={2}>
+													<Grid container spacing={3} style={{ marginTop: "20px" }}>
 														<Grid item xs={6}>
 															<Field
+																
 																as={TextField}
 																label={i18n.t(
 																	"Dia(s) para o próximo agendamento"
@@ -1169,12 +1177,13 @@ const UserModal = ({ open, onClose, userId }) => {
 														<Grid item xs={6}>
 															<Select
 																//required
+																size="small"
 																fullWidth
 																displayEmpty
 																variant="outlined"
-																value={selectedConnection}
+																value={selectedScheduleConnection}
 																onChange={(e) => {
-																	setSelectedConnection(e.target.value)
+																	setSelectedScheduleConnection(e.target.value)
 																}}
 																MenuProps={{
 																	anchorOrigin: {
@@ -1192,11 +1201,11 @@ const UserModal = ({ open, onClose, userId }) => {
 																		return <span style={{ fontSize: "1rem" }}>Nenhuma conexão configurada</span>;
 																	}
 
-																	if (selectedConnection === "") {
+																	if (selectedScheduleConnection === "") {
 																		return <span style={{ fontSize: "1rem" }}>Selecione uma Conexão</span>;
 																	}
 
-																	const whatsapp = dataWhatsapps.find(w => w.id === selectedConnection)
+																	const whatsapp = dataWhatsapps.find(w => w.id === selectedScheduleConnection)
 																	return <span style={{ fontSize: "1rem" }}>{whatsapp?.name ?? "Selecione uma Conexão"}</span>;
 																}}
 															>
@@ -1218,7 +1227,7 @@ const UserModal = ({ open, onClose, userId }) => {
 															</Select>
 														</Grid>
 													</Grid>
-												</Box>
+												
 
 											</>)}
 										/>
