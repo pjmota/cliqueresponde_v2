@@ -920,8 +920,12 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											className={classes.btnWrapper}
 
 											onClick={() => {
-												handleSaveSchedule({ ...values, justNotifyMe: true, notifyBefore: values.notifyBefore })
-												handleClose(true)
+												handleSaveSchedule({ ...values, justNotifyMe: true, notifyBefore: values.notifyBefore }).then(
+													() => {
+														if (reload) { handleClose(true) }
+													}
+
+												)
 											}
 											}
 										>
