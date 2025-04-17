@@ -229,6 +229,9 @@ class User extends Model<User> {
   @Column
   userWhats: string;
 
+  @BelongsTo(() => Whatsapp)
+  scheduleConnection: Whatsapp;
+
   @BelongsToMany(() => Permission, () => UserPermission)
   permissions: Permission[];
 
