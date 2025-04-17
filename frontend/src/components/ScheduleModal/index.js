@@ -178,7 +178,8 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 			.get(`/whatsapp/filter`, { params: { session: 0, channel: channelFilter } })
 			.then(({ data }) => {
 				// Mapear os dados recebidos da API para adicionar a propriedade 'selected'
-				const mappedWhatsapps = data.map((whatsapp) => ({
+
+				const mappedWhatsapps = data.filter(e => (user.profile !== 'user' || e.id === user.whatsappId)).map((whatsapp) => ({
 					...whatsapp,
 					selected: false,
 				}));
