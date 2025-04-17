@@ -80,7 +80,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     scheduleNotifyNowText,
     scheduleNotifyBefore,
     scheduleSendAt,
-    daysUntilNextScheduleNotify
+    daysUntilNextScheduleNotify,
+    scheduleConnection
   } = req.body;
   let userCompanyId: number | null = null;
 
@@ -210,7 +211,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       scheduleNotifyNowText,
       scheduleNotifyBefore,
       scheduleSendAt,
-      daysUntilNextScheduleNotify
+      daysUntilNextScheduleNotify,
+      scheduleConnection
     });
 
     const io = getIO();
