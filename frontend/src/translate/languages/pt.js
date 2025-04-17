@@ -473,7 +473,8 @@ const messages = {
           email: "Email",
           extraName: "Nome do campo",
           extraValue: "Valor",
-          chatBotContact: "Desabilitar chatbot",
+          chatBotContactEnable: "Habilitar chatbot",
+          chatBotContactDisable: "Desabilitar chatbot",
           termsLGDP: "Termos LGPD aceito em:",
           whatsapp: "Conexão Origem: "
         },

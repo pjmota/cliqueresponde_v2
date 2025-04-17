@@ -304,6 +304,7 @@ const TicketActionButtonsCustom = ({ ticket
             await api.put(`/tickets/${ticket.id}`, {
                 status: status,
                 userId: userId || null,
+                useIntegration: ticket.useIntegration === 'false' ? ticket.useIntegration : 'false'
             });
 
             let setting;
@@ -518,7 +519,7 @@ const TicketActionButtonsCustom = ({ ticket
                         )}
 
                         <MenuItem className={classes.bottomButtonVisibilityIcon}>
-                            <Tooltip title={i18n.t("contactModal.form.chatBotContact")}>
+                            <Tooltip title={disableBot ? i18n.t("contactModal.form.chatBotContactDisable") : i18n.t("contactModal.form.chatBotContactEnable")}>
                                 <Switch
                                     size="small"
                                     // color="primary"
