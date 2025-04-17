@@ -281,7 +281,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 			// Formata a data final no padrão ISO 8601 (YYYY-MM-DDTHH:mm)
 			const _date = `${scheduleDate.getFullYear()}-${padZero(scheduleDate.getMonth() + 1)}-${padZero(scheduleDate.getDate())}T${padZero(scheduleDate.getHours())}:${padZero(scheduleDate.getMinutes())}`;
 			setConfigSendAt(_date)
-			setSelectedWhatsapps(user.whatsappId);
+			setSelectedWhatsapps(user.scheduleConnection ?? user.whatsappId);
 			setSchedule({
 				...schedule,
 				notifyBefore: user.scheduleNotifyBefore,
@@ -299,8 +299,8 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		trim: true,
 	});
 
-	const handleClose = (reload=false) => {
-		if(reload) {
+	const handleClose = (reload = false) => {
+		if (typeof reload == "boolean" && reload) {
 			window.location.reload();
 		}
 		onClose();
@@ -385,7 +385,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		}
 		setCurrentContact(initialContact);
 		setSchedule(initialState);
-		handleClose(values.justNotifyMe);
+		handleClose();
 	};
 	const handleClickMsgVar = async (msgVar, setValueFunc, ref, field) => {
 		const el = ref.current;
@@ -482,7 +482,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 
 											getOptionLabel={(option) => option.name}
 											renderOption={renderOption}
-											
+
 											getOptionSelected={(option, value) => {
 												return value.id === option.id
 											}}
@@ -919,8 +919,10 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											variant="outlined"
 											className={classes.btnWrapper}
 
-											onClick={() =>
+											onClick={() => {
 												handleSaveSchedule({ ...values, justNotifyMe: true, notifyBefore: values.notifyBefore })
+												handleClose(true)
+											}
 											}
 										>
 
