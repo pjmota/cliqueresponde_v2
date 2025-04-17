@@ -42,6 +42,7 @@ interface UserData {
   scheduleNotifyBefore?:string;
   scheduleSendAt?:Date;
   daysUntilNextScheduleNotify?: number;
+  scheduleConnection?: number;
 
 }
 
@@ -80,7 +81,6 @@ const UpdateUserService = async ({
     profile: Yup.string(),
     password: Yup.string()
   });
-
   const oldUserEmail = user.email;
   
   const {
@@ -117,7 +117,8 @@ const UpdateUserService = async ({
     scheduleNotifyNowText,
     scheduleNotifyBefore,
     scheduleSendAt,
-    daysUntilNextScheduleNotify
+    daysUntilNextScheduleNotify,
+    scheduleConnection
   } = userData;
 
   try {
@@ -125,7 +126,6 @@ const UpdateUserService = async ({
   } catch (err: any) {
     throw new AppError(err.message);
   }
-
   await user.update({
     email,
     password,
@@ -157,7 +157,8 @@ const UpdateUserService = async ({
     scheduleNotifyNowText,
     scheduleNotifyBefore,
     scheduleSendAt,
-    daysUntilNextScheduleNotify
+    daysUntilNextScheduleNotify,
+    scheduleConnection
   });
 
   await user.$set("queues", queueIds);

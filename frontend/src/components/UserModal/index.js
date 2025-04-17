@@ -168,6 +168,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	const [selectedTagIds, setSelectedTagIds] = useState([]);
 	const [selectedPermissionIds, setSelectedPermissionIds] = useState([]);
 	const [selectedConnection, setSelectedConnection] = useState();
+	const [selectedScheduleConnection, setSelectedScheduleConnection] = useState();
 	const [dataWhatsapps, setDataWhatsapps] = useState([]);
 	
 	useEffect(() => {
@@ -186,7 +187,6 @@ const UserModal = ({ open, onClose, userId }) => {
 
 				const { profileImage } = data;
 				setProfileUrl(`${backendUrl}/public/company${data.companyId}/user/${profileImage}`);
-
 				const userQueueIds = data.queues?.map(queue => queue.id);
 				const userTagIds = data.tags?.map(tag => tag.id);
 				const userPermissions = data.permissions?.map(per => per.id);
@@ -194,7 +194,8 @@ const UserModal = ({ open, onClose, userId }) => {
 				setSelectedTagIds(userTagIds)
 				setWhatsappId(data.whatsappId ? data.whatsappId : '');
 				setSelectedPermissionIds(userPermissions);
-				setSelectedConnection(data.whatsappId)
+				setSelectedConnection(data.whatsappId);
+				setSelectedScheduleConnection(data.scheduleConnection ?? "");
 			} catch (err) {
 				toastError(err);
 			}
@@ -251,7 +252,8 @@ const UserModal = ({ open, onClose, userId }) => {
 			queueIds: selectedQueueIds,
 			tagIds: selectedTagIds,
 			permissionsIds: selectedPermissionIds,
-			scheduleSendAt
+			scheduleSendAt,
+			scheduleConnection: selectedScheduleConnection,
 		};
 
 		try {
@@ -1179,9 +1181,9 @@ const UserModal = ({ open, onClose, userId }) => {
 																fullWidth
 																displayEmpty
 																variant="outlined"
-																value={selectedConnection}
+																value={selectedScheduleConnection}
 																onChange={(e) => {
-																	setSelectedConnection(e.target.value)
+																	setSelectedScheduleConnection(e.target.value)
 																}}
 																MenuProps={{
 																	anchorOrigin: {
@@ -1199,11 +1201,11 @@ const UserModal = ({ open, onClose, userId }) => {
 																		return <span style={{ fontSize: "1rem" }}>Nenhuma conexão configurada</span>;
 																	}
 
-																	if (selectedConnection === "") {
+																	if (selectedScheduleConnection === "") {
 																		return <span style={{ fontSize: "1rem" }}>Selecione uma Conexão</span>;
 																	}
 
-																	const whatsapp = dataWhatsapps.find(w => w.id === selectedConnection)
+																	const whatsapp = dataWhatsapps.find(w => w.id === selectedScheduleConnection)
 																	return <span style={{ fontSize: "1rem" }}>{whatsapp?.name ?? "Selecione uma Conexão"}</span>;
 																}}
 															>
