@@ -165,7 +165,8 @@ const CreateService = async ({
           type: "BEFORE",
           whatsappId,
           ticketId,
-          justNotifyMe: false
+          justNotifyMe: false,
+          openTicket
         });
       } catch (error) {
         if (error.name === "SequelizeUniqueConstraintError") {
@@ -185,7 +186,8 @@ const CreateService = async ({
         "BEFORE",
         false, //notifyMe,
         whatsappId as number,
-        ticketId as number
+        ticketId as number,
+        openTicket
       );
     } catch (error) {
       if (error.name === "SequelizeUniqueConstraintError") {
@@ -216,7 +218,8 @@ const CreateService = async ({
           type: "NOW",
           whatsappId,
           ticketId,
-          justNotifyMe: false
+          justNotifyMe: false,
+          openTicket
         });
       } catch (error) {
         if (error.name === "SequelizeUniqueConstraintError") {
@@ -260,7 +263,8 @@ const createScheduleToMe = async (
   type: string,
   notifyMe?: boolean,
   whatsappId?: number,
-  ticketId?: number
+  ticketId?: number,
+  openTicket?: string
 ) => {
   if (!notifyMe || !user.userWhats) {
     return;
@@ -287,7 +291,8 @@ const createScheduleToMe = async (
     type,
     whatsappId,
     ticketId,
-    justNotifyMe: false
+    justNotifyMe: false,
+    openTicket
   });
 };
 
