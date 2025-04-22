@@ -59,32 +59,35 @@ const UpdateUserService = async ({
     nextLaneId: String(nextLaneId) === "" ? null : nextLaneId,
     greetingMessageLane,
     rollbackLaneId: String(rollbackLaneId) === "" ? null : rollbackLaneId,
-    whatsappId,
-    queueIntegrationId,
+    whatsappId : String(whatsappId) === "" ? null : whatsappId,
+    queueIntegrationId: String(queueIntegrationId) === "" ? null : queueIntegrationId,
     sequence: sequence ? sequence : 0
   });
 
-  if(kanban) {
+  if (kanban) {
     const params = {
-      tagId: tag.id ,	
-      nextTagId: tag.nextLaneId,	
-      queueIntegrationId: tag.queueIntegrationId,	
-      companyId: tag.companyId,	
-      delay: tag.timeLane 
+      tagId: tag.id,
+      nextTagId: tag.nextLaneId,
+      queueIntegrationId: tag.queueIntegrationId,
+      companyId: tag.companyId,
+      delay: tag.timeLane
     }
 
+
     const scheduleTagIntegration = await ScheduleTagIntegration.findOne({
-      where: { tagId: tag.id , companyId: tag.companyId }
+      where: { tagId: tag.id, companyId: tag.companyId }
     });
 
-    if(scheduleTagIntegration) {
+    if (scheduleTagIntegration) {
       const record = await ScheduleTagIntegration.findByPk(scheduleTagIntegration.id);
       await record.update(params);
     } else {
-      await ScheduleTagIntegration.findOrCreate({
-        where: {...params },
-        defaults:{ ...params}
-      })
+      if (tag.queueIntegrationId) {
+        await ScheduleTagIntegration.findOrCreate({
+          where: { ...params },
+          defaults: { ...params }
+        })
+      }
     }
   }
 
