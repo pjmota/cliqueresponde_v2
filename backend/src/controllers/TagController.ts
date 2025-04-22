@@ -14,6 +14,7 @@ import KanbanListService from "../services/TagServices/KanbanListService";
 import ContactTag from "../models/ContactTag";
 import logger from "../utils/logger";
 import SyncTagLanesService from "../services/TagServices/SyncTagLaneService";
+import Tag from "../models/Tag";
 
 type IndexQuery = {
   searchParam?: string;
@@ -24,6 +25,25 @@ type IndexQuery = {
   paramTag?: string;
   sequence?: number;
 };
+
+async function obtemUltimoNumeroDaSequencia(
+  companyId: number,
+  kanban: number
+
+): Promise<number> {
+  let itemCount= await Tag.count({
+    where: {
+      companyId,
+      kanban
+    }
+  });
+
+  //veja se existe algum item com o mesmo numero de sequencia
+  while (await Tag.findOne({ where: { companyId, kanban, sequence: itemCount } }) && itemCount > 0) {
+    itemCount++;
+  }
+  return itemCount > 0 ? itemCount : 1;
+}
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { pageNumber, totalPage, searchParam, kanban, tagId, paramTag } = req.query as IndexQuery;
@@ -56,6 +76,15 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   } = req.body;
   const { companyId } = req.user;
 
+  
+  
+  
+  const lastSequenceNumber = await obtemUltimoNumeroDaSequencia(
+    companyId,
+    kanban
+  );
+  
+
   const tag = await CreateService({
     name,
     color,
@@ -67,7 +96,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     rollbackLaneId,
     whatsappId,
     queueIntegrationId: queueIntegrationId ?? null,
-    sequence: sequence ?? null
+    sequence: sequence ?? lastSequenceNumber
     
   });
 
