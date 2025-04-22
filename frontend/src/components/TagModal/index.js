@@ -186,7 +186,7 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 			userId: user?.id, 
 			kanban: kanban, 
 			nextLaneId: lane, 
-			whatsappId: whatsapp,
+			whatsappId:  whatsapp || null,
 			queueIntegrationId: queueIntegration || null, 
 			rollbackLaneId: rollbackLane || null 
 		};
