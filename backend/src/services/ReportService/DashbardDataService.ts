@@ -4,6 +4,7 @@ import { QueryTypes } from "sequelize";
 import * as _ from "lodash";
 import sequelize from "../../database";
 import path from "path";
+import getHappeningsNotContinued from "./DashboardTicketsHappeningsNotConotinued";
 const fs = require('fs');
 
 
@@ -186,5 +187,109 @@ export default async function DashboardDataService(
     plain: true
   });
 
-  return responseData;
+  const countQueuesHappening = await getCountQueuesHappening(companyId, params);
+  const countQueuesPending = await getCountQueuesPending(companyId, params);
+  const countQueuesFinished = await getCountQueuesFinished(companyId, params);
+  const countTicketsHappeningsNotContinued = await getHappeningsNotContinued(companyId, params.date_to);
+
+  const newResponseData = {
+    ...responseData,
+    countQueuesHappening: countQueuesHappening,
+    countQueuesPending: countQueuesPending,
+    countQueuesFinished: countQueuesFinished,
+    countTicketsHappeningsNotContinued: countTicketsHappeningsNotContinued.length
+  }
+
+  return newResponseData;
+}
+
+async function getCountQueuesFinished(
+  companyId: string | number,
+  params: Params
+) {
+  const query = `
+      select
+        case
+          when t."queueId" is null then 'Sem Fila'
+          else q."name"
+        end as "queueName",
+        q.color,
+        count(*) as "count"
+      from "TicketTraking" tt
+      left join "Tickets" t on t.id = tt."ticketId"
+      left join "Queues" q on q.id = t."queueId"
+      where tt."companyId" = ${companyId} 
+        and tt."finishedAt" >= '${params.date_from} 00:00:00' 
+        and tt."finishedAt" <= '${params.date_to} 23:59:59'
+      group by "queueName", q."color"
+      order by "count" desc;
+    `
+
+  const countTagsFinished = await sequelize.query(
+    query,
+    { type: QueryTypes.SELECT }
+  );
+  
+  return countTagsFinished
+}
+
+async function getCountQueuesHappening(
+  companyId: string | number,
+  params: Params
+) {
+  const query = `
+      select
+        case
+          when t."queueId" is null then 'Sem Fila'
+          else q."name"
+        end as "queueName",
+        q.color,
+        count(*) as "count"
+      from "TicketTraking" tt
+      left join "Tickets" t on t.id = tt."ticketId"
+      left join "Queues" q on q.id = t."queueId"
+      where tt."companyId" = ${companyId} 
+        and t."status" = 'open'
+        and tt."finishedAt" is null
+        and t."isGroup" = 'false'
+      group by "queueName", q."color"
+      order by "count" desc;
+    `
+
+  const countTagsHappening = await sequelize.query(
+    query,
+    { type: QueryTypes.SELECT, logging: console.log },
+  );
+  
+  return countTagsHappening
+}
+
+async function getCountQueuesPending(
+  companyId: string | number,
+  params: Params
+) {
+  const query = `
+      select
+        case
+          when t."queueId" is null then 'Sem Fila'
+          else q."name"
+        end as "queueName",
+        q.color,
+        count(*) as "count"
+      from "TicketTraking" tt
+      left join "Tickets" t on t.id = tt."ticketId"
+      left join "Queues" q on q.id = t."queueId"
+      where tt."companyId" = ${companyId} 
+        and tt."finishedAt" is null
+        and t."status" = 'pending'
+      group by "queueName", q."color"
+      order by "count" desc;
+    `
+
+  const countTagsPending = await sequelize.query(
+    query,
+    { type: QueryTypes.SELECT }
+  );
+  
+  return countTagsPending
 }
