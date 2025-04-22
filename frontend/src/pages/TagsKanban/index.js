@@ -53,7 +53,7 @@ const reducer = (state, action) => {
       }
     });
 
-    return [...state, ...newTags];
+    return [...state, ...newTags].sort((a, b) => a.sequence - b.sequence);
   }
 
   if (action.type === "UPDATE_TAGS") {
