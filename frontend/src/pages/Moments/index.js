@@ -239,7 +239,6 @@ const ChatMoments = () => {
   const handleChangeTab = (event, newValue) => {
     setActiveTab(String(newValue));
   };
-
   return (
     user.profile === "user" && user.allowRealTime === "disabled" ?
       <ForbiddenPage />
