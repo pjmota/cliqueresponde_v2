@@ -922,6 +922,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											onClick={() => {
 												handleSaveSchedule({ ...values, justNotifyMe: true, notifyBefore: values.notifyBefore }).then(
 													() => {
+														
 														//TODO: Descobrir porque após fechar o modal de agendamento na tela do calendário ele está disparando um loop ifinito
 														if (reload) { handleClose(true) }
 													}
