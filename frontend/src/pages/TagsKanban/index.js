@@ -62,9 +62,9 @@ const reducer = (state, action) => {
 
     if (tagIndex !== -1) {
       state[tagIndex] = tag;
-      return [...state];
+      return [...state].sort((a, b) => a.sequence - b.sequence);
     } else {
-      return [tag, ...state];
+      return [tag, ...state].sort((a, b) => a.sequence - b.sequence);
     }
   }
 
