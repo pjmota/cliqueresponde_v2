@@ -316,7 +316,7 @@ const ChatMoments = () => {
                               <TableBody>
                                 { fullData.countQueuesHappening.slice(0, 10).map((queue, index) => (
                                   <TableRow key={index}>
-                                    <TableCell align="center">
+                                    <TableCell align="center" style={{padding: "6px 0px 6px 16px"}}>
                                       <Box
                                         sx={{
                                           display: 'inline-block',
@@ -327,6 +327,7 @@ const ChatMoments = () => {
                                           fontWeight: 'bold',
                                           textAlign: 'center',
                                           color: queue?.color ? 'white' : 'black',
+                                          whiteSpace: "nowrap"
                                         }}
                                       >
                                         {queue?.queueName || ""}
@@ -401,7 +402,7 @@ const ChatMoments = () => {
                               <TableBody>
                                 { fullData.countQueuesPending.slice(0, 10).map((queue, index) => (
                                   <TableRow key={index}>
-                                    <TableCell align="center">
+                                    <TableCell align="center" style={{padding: "6px 0px 6px 16px"}}>
                                       <Box
                                         sx={{
                                           display: 'inline-block',
@@ -412,6 +413,7 @@ const ChatMoments = () => {
                                           fontWeight: 'bold',
                                           textAlign: 'center',
                                           color: queue?.color ? 'white' : 'black',
+                                          whiteSpace: "nowrap"
                                         }}
                                       >
                                         {queue?.queueName || ""}
@@ -486,7 +488,7 @@ const ChatMoments = () => {
                               <TableBody>
                                 { fullData.countQueuesFinished.slice(0, 10).map((queue, index) => (
                                   <TableRow key={index}>
-                                    <TableCell align="center">
+                                    <TableCell align="center" style={{padding: "6px 0px 6px 16px"}}>
                                       <Box
                                         sx={{
                                           display: 'inline-block',
@@ -497,6 +499,7 @@ const ChatMoments = () => {
                                           fontWeight: 'bold',
                                           textAlign: 'center',
                                           color: queue?.color ? 'white' : 'black',
+                                          whiteSpace: "nowrap"
                                         }}
                                       >
                                         {queue?.queueName || ""}
@@ -573,13 +576,15 @@ const ChatMoments = () => {
                                     <Box
                                       sx={{
                                         display: 'inline-block',
-                                        padding: '8px 16px',
+                                        padding: '0px 16px',
                                         backgroundColor: ticket.queueColor || '#d3d3d385',
                                         borderRadius: '4px',
                                         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                                         fontWeight: 'bold',
                                         textAlign: 'center',
                                         color: ticket.queueColor ? 'white' : 'black',
+                                        height: "27px",
+                                        alignContent: "center"
                                       }}
                                     >
                                       {ticket.queueName}

@@ -3,10 +3,10 @@ import React, { useContext, useState, useEffect } from "react";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 // import {  Button, Grid } from "@material-ui/core";
-import { makeStyles, styled } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
-import { IconButton, keyframes, Tooltip } from "@mui/material";
 import { Groups, Info, SaveAlt } from "@mui/icons-material";
+import { styled, keyframes } from "@mui/material/styles";
 
 import CallIcon from "@material-ui/icons/Call";
 import RecordVoiceOverIcon from "@material-ui/icons/RecordVoiceOver";
@@ -45,7 +45,7 @@ import { i18n } from "../../translate/i18n";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import ForbiddenPage from "../../components/ForbiddenPage";
 import { ArrowDownward, ArrowUpward, FeedbackTwoTone } from "@material-ui/icons";
-import { Box } from "@material-ui/core";
+import { Box, IconButton, Tooltip } from "@material-ui/core";
 import DashboardInfoQueueModal from "../../components/DashboardInfoQueuesModal";
 import DashboardTicketsHappeningsNotContinued from "../../components/DashboardTicketsHappeningsNotContinued";
 
@@ -220,19 +220,11 @@ const Dashboard = () => {
   const classes = useStyles();
   const [counters, setCounters] = useState({});
   const [attendants, setAttendants] = useState([]);
-  const [filterType, setFilterType] = useState(1);
-  const [period, setPeriod] = useState(0);
-  const [dateFrom, setDateFrom] = useState(moment("1", "D").format("YYYY-MM-DD"));
-  const [dateTo, setDateTo] = useState(moment().format("YYYY-MM-DD"));
   const [loading, setLoading] = useState(false);
   const { find } = useDashboard();
 
   //FILTROS NPS
   const [tab, setTab] = useState("Indicadores");
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [selectedQueues, setSelectedQueues] = useState([]);
-
-
 
   let newDate = new Date();
   let date = newDate.getDate();
@@ -284,12 +276,6 @@ const Dashboard = () => {
 
     let params = {};
 
-    if (period > 0) {
-      params = {
-        days: period,
-      };
-    }
-
     if (!isEmpty(dateStartTicket) && moment(dateStartTicket).isValid()) {
       params = {
         ...params,
@@ -322,12 +308,6 @@ const Dashboard = () => {
 
     setLoading(false);
   }
-
-  const handleSelectedUsers = (selecteds) => {
-    const users = selecteds.map((t) => t.id);
-    setSelectedUsers(users);
-  };
-
 
   const handleChangeTab = (e, newValue) => {
     setTab(newValue);
