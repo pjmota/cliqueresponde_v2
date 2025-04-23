@@ -5,6 +5,7 @@ import * as _ from "lodash";
 import sequelize from "../../database";
 import path from "path";
 import getHappeningsNotContinued from "./DashboardTicketsHappeningsNotConotinued";
+import logger from "../../utils/logger";
 const fs = require('fs');
 
 
@@ -54,7 +55,7 @@ export default async function DashboardDataService(
       left join "Companies" c on c.id = tt."companyId"
       left join "Users" u on u.id = tt."userId"
       left join "Whatsapps" w on w.id = tt."whatsappId"
-      inner join "Tickets" t on t.id = tt."ticketId"
+      left join "Tickets" t on t.id = tt."ticketId"
       left join "Contacts" ct on ct.id = t."contactId"
       -- filterPeriod
     ),
@@ -62,16 +63,21 @@ export default async function DashboardDataService(
       select
         (select avg("supportTime") from traking where "supportTime" > 0) "avgSupportTime",
         (select avg("waitTime") from traking where "waitTime" > 0) "avgWaitTime",        
-        (select count(id) from traking where finished) "supportFinished",
+        (select count(id) 
+          from traking 
+          where "finishedAt" >= '${params.date_from} 00:00:00' and "finishedAt" <= '${params.date_to} 23:59:59'
+        ) "supportFinished",
         (
-          select count(distinct "id")
-          from "Tickets" t
-          where status like 'open' and t."companyId" = ?
+          select count(distinct tk."ticketId")
+          from traking tk
+          left join "Tickets" t on t.id = tk."ticketId"
+          where t.status like 'open' and tk."finishedAt" is null and t."isGroup" = 'false'
         ) "supportHappening",
         (
-          select count(distinct "id")
-          from "Tickets" t
-          where status like 'pending' and t."companyId" = ?
+          select count(distinct tk."ticketId")
+          from traking tk
+          left join "Tickets" t on t.id = tk."ticketId"
+          where t."status" = 'pending' and tk."finishedAt" is null
         ) "supportPending",
         (select count(id) from traking where groups) "supportGroups",
         (
@@ -158,7 +164,7 @@ export default async function DashboardDataService(
   let where = 'where tt."companyId" = ?';
   const replacements: any[] = [companyId];
 
-  if (_.has(params, "days")) {
+  /* if (_.has(params, "days")) {
     where += ` and t."createdAt" >= (now() - '? days'::interval)`;
     replacements.push(parseInt(`${params.days}`.replace(/\D/g, ""), 10));
   }
@@ -171,20 +177,21 @@ export default async function DashboardDataService(
   if (_.has(params, "date_to")) {
     where += ` and t."createdAt" <= ?`;
     replacements.push(`${params.date_to} 23:59:59`);
-  }
+  } */
 
   replacements.push(companyId);
   replacements.push(companyId);
   replacements.push(companyId);
   replacements.push(companyId);
   replacements.push(companyId);
-
+/* logger.warn(`query grande   ---- ${JSON.stringify(where)}`) */
   const finalQuery = query.replace("-- filterPeriod", where);
 
   const responseData: DashboardData = await sequelize.query(finalQuery, {
     replacements,
     type: QueryTypes.SELECT,
-    plain: true
+    plain: true,
+    //logging: console.log
   });
 
   const countQueuesHappening = await getCountQueuesHappening(companyId, params);
@@ -227,7 +234,7 @@ async function getCountQueuesFinished(
 
   const countTagsFinished = await sequelize.query(
     query,
-    { type: QueryTypes.SELECT }
+    { type: QueryTypes.SELECT, logging: console.log }
   );
   
   return countTagsFinished
