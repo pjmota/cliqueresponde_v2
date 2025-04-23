@@ -106,7 +106,6 @@ const DashboardManage = () => {
     (async () => {
       try {
         const { data } = await api.get("/usersMoments");
-        console.log(data)
         setTickets(data);
         setUpdate(!update);
       } catch (err) {

@@ -106,6 +106,34 @@ const messages = {
           neutral: "Neutros",
           detractors: "Detratores",
         },
+        infoQueuesModal: {
+          title: "Info Filas",
+          table: {
+            queueNameColumn: "Fila",
+            queueQuantityColumn: "Qt. atendimentos",
+          },
+        },
+        ticketsHappeningsNotContinuedModal: {
+          title: "Atendimentos não continuados",
+          table: {
+            serviceColumn: "Atendimento",
+            attendantColumn: "Atendente",
+            contactColumn: "Contato",
+            numberColumn: "Número",
+            queueColumn: "Fila",
+            idleTimeColumn: "Tempo Ocioso",
+            idleTimeColumnComplement: "minutos atrás",
+            lastConversationDateColumn: "Data última conversa",
+          },
+          pagination: {
+            info: "Página",
+            buttons: {
+              previous: "Anterior",
+              next: "Próxima",
+            },
+          },
+          tooltipTitle: "Espiar conversa",
+        },
       },
       reports: {
         title: "Relatório de Pesquisas Realizadas",

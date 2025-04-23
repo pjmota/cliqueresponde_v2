@@ -9,6 +9,7 @@ import isQueueIdHistoryBlocked from "../UserServices/isQueueIdHistoryBlocked";
 import Contact from "../../models/Contact";
 import Queue from "../../models/Queue";
 import Whatsapp from "../../models/Whatsapp";
+import logger from "../../utils/logger";
 
 interface Request {
   ticketId: string;
@@ -71,8 +72,10 @@ const ListMessagesService = async ({
           } :
           { [Op.in]: queues },
       },
-      attributes: ["id"]
-    });
+      attributes: ["id"],
+      //logging: console.log
+    }
+  );
   } else {
     ticketIds = await Ticket.findAll({
       where:
@@ -141,7 +144,8 @@ const ListMessagesService = async ({
     distinct: true,
     offset,
     subQuery: false,
-    order: [["createdAt", "DESC"]] 
+    order: [["createdAt", "DESC"]],
+    //logging: console.log
   });
 
   const hasMore = count > offset + messages.length;

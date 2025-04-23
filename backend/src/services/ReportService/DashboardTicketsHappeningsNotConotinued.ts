@@ -59,7 +59,7 @@ export default async function getHappeningsNotContinued(
     `  
   const happeningsNotContinued: DataReturn[] = await sequelize.query(
     query,
-    { type: QueryTypes.SELECT, logging: console.log }
+    { type: QueryTypes.SELECT }
   );
   
   return happeningsNotContinued

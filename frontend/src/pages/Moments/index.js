@@ -239,7 +239,7 @@ const ChatMoments = () => {
   const handleChangeTab = (event, newValue) => {
     setActiveTab(String(newValue));
   };
-console.log('fulldata', fullData)
+
   return (
     user.profile === "user" && user.allowRealTime === "disabled" ?
       <ForbiddenPage />
@@ -251,6 +251,7 @@ console.log('fulldata', fullData)
               <Title>{"Painel de Atendimentos"}</Title>
             </Grid>
             <Tabs value={Number(activeTab)} onChange={handleChangeTab}>
+              <Tab label="" />
               <Tab label="" />
               <Tab label="" />
             </Tabs>
@@ -517,7 +518,7 @@ console.log('fulldata', fullData)
               </>
             )}
             {activeTab === '1' && (
-              <TabPanel value={String(activeTab)} index={0} style={{ paddingLeft: 0, paddingRight: 0, paddingTop: 0 }}>
+              <TabPanel value={String(activeTab)} index={1} style={{ paddingLeft: 0, paddingRight: 0, paddingTop: 0 }}>
                 <MainHeader>
                   <Grid style={{ width: "99.6%" }} container justifyContent="center" alignItems="flex-start">
                     {/* <Grid xs={12} sm={8} xl={4} item style={{marginTop: "1.5rem", justifyItems: "center"}}>
@@ -538,54 +539,60 @@ console.log('fulldata', fullData)
             )}
             {activeTab === '2' && (
               <>
-                <TabPanel value={String(activeTab)} index={1} style={{ paddingLeft: 0, paddingRight: 0, paddingTop: 0 }}>
+                <TabPanel value={String(activeTab)} index={2} style={{ paddingLeft: 0, paddingRight: 0, paddingTop: 0 }}>
                   <Box sx={{marginTop: "0"}}>
                     { ticketsData.length > 0 && (
                     <>
                       <Box sx={{borderTop: '1px solid #e0e0e0'}}></Box>
-                      <TableContainer>
-                        <Table size="small" stickyHeader>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell align="center">Atendimento</TableCell>
-                              <TableCell align="center">Atendente</TableCell>
-                              <TableCell align="center">Contato</TableCell>
-                              <TableCell align="center">Numero</TableCell>
-                              <TableCell align="center">Fila</TableCell>
-                              <TableCell align="center">Tempo Ocioso</TableCell>
-                              <TableCell align="center">Data última conversa</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {ticketsData.length > 0 ? ticketsData.slice(0, 10).map((ticket, index) => (
-                              <TableRow key={index}>
-                                <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{ticket.ticketId}</TableCell>
-                                <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{ticket.attendant}</TableCell>
-                                <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{ticket.contact}</TableCell>
-                                <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{ticket.contactNumber}</TableCell>
-                                <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>
-                                  <Box
-                                    sx={{
-                                      display: 'inline-block',
-                                      padding: '8px 16px',
-                                      backgroundColor: ticket.queueColor || '#d3d3d385',
-                                      borderRadius: '4px',
-                                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                                      fontWeight: 'bold',
-                                      textAlign: 'center',
-                                      color: ticket.queueColor ? 'white' : 'black',
-                                    }}
-                                  >
-                                    {ticket.queueName}
-                                  </Box>
-                                </TableCell>
-                                <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{`${differenceInMinutes(new Date(), new Date(ticket.updatedAt))} minutos atrás`}</TableCell>
-                                <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{format(new Date(ticket.updatedAt), 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                      <Paper
+                        className={classes.mainPaper}
+                        variant="outlined"
+                        /* onScroll={handleScroll} */
+                      >
+                        <TableContainer>
+                          <Table size="small" stickyHeader>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell align="center">Atendimento</TableCell>
+                                <TableCell align="center">Atendente</TableCell>
+                                <TableCell align="center">Contato</TableCell>
+                                <TableCell align="center">Numero</TableCell>
+                                <TableCell align="center">Fila</TableCell>
+                                <TableCell align="center">Tempo Ocioso</TableCell>
+                                <TableCell align="center">Data última conversa</TableCell>
                               </TableRow>
-                            )) : null }
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
+                            </TableHead>
+                            <TableBody>
+                              {ticketsData.length > 0 ? ticketsData.slice(0, 10).map((ticket, index) => (
+                                <TableRow key={index}>
+                                  <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{ticket.ticketId}</TableCell>
+                                  <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{ticket.attendant}</TableCell>
+                                  <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{ticket.contact}</TableCell>
+                                  <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{ticket.contactNumber}</TableCell>
+                                  <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>
+                                    <Box
+                                      sx={{
+                                        display: 'inline-block',
+                                        padding: '8px 16px',
+                                        backgroundColor: ticket.queueColor || '#d3d3d385',
+                                        borderRadius: '4px',
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                        fontWeight: 'bold',
+                                        textAlign: 'center',
+                                        color: ticket.queueColor ? 'white' : 'black',
+                                      }}
+                                    >
+                                      {ticket.queueName}
+                                    </Box>
+                                  </TableCell>
+                                  <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{`${differenceInMinutes(new Date(), new Date(ticket.updatedAt))} minutos atrás`}</TableCell>
+                                  <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{format(new Date(ticket.updatedAt), 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                                </TableRow>
+                              )) : null }
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </Paper>
                     </>
                     )}
                   </Box>

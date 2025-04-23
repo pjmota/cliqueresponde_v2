@@ -3,10 +3,10 @@ import React, { useContext, useState, useEffect } from "react";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 // import {  Button, Grid } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, styled } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
-import { IconButton } from "@mui/material";
-import { Groups, SaveAlt } from "@mui/icons-material";
+import { IconButton, keyframes, Tooltip } from "@mui/material";
+import { Groups, Info, SaveAlt } from "@mui/icons-material";
 
 import CallIcon from "@material-ui/icons/Call";
 import RecordVoiceOverIcon from "@material-ui/icons/RecordVoiceOver";
@@ -44,7 +44,10 @@ import { Avatar, Button, Card, CardContent, Container, Stack, SvgIcon, Tab, Tabs
 import { i18n } from "../../translate/i18n";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import ForbiddenPage from "../../components/ForbiddenPage";
-import { ArrowDownward, ArrowUpward } from "@material-ui/icons";
+import { ArrowDownward, ArrowUpward, FeedbackTwoTone } from "@material-ui/icons";
+import { Box } from "@material-ui/core";
+import DashboardInfoQueueModal from "../../components/DashboardInfoQueuesModal";
+import DashboardTicketsHappeningsNotContinued from "../../components/DashboardTicketsHappeningsNotContinued";
 
 const useStyles = makeStyles((theme) => ({
   overline: {
@@ -182,6 +185,36 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const pencilShake = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(10deg);
+  }
+  20% {
+    transform: rotate(-10deg);
+  }
+  30% {
+    transform: rotate(10deg);
+  }
+  40% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg); /* Pausa no estado original */
+  }
+`;
+
+const CustomFeedbackTwoTone = styled(FeedbackTwoTone)({
+  animation: `${pencilShake} 1.5s ease-in-out infinite`,
+  transformOrigin: "center",
+  color: "red",
+  "& path:first-of-type": {
+    opacity: 0,
+  },
+});
+
 const Dashboard = () => {
   const theme = useTheme();
   const classes = useStyles();
@@ -214,6 +247,11 @@ const Dashboard = () => {
   const [dateEndTicket, setDateEndTicket] = useState(now);
   const [queueTicket, setQueueTicket] = useState(false);
   const [fetchDataFilter, setFetchDataFilter] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [dataModal, setDataModal] = useState({});
+  const [fullData, setFullData] = useState([]);
+  const [modalticketsNotContinuedOpen, setModalticketsNotContinuedOpen] = useState(false);
+  const [paramModalticketsNotContinued, setParamModalticketsNotContinued] = useState({});
 
   const { user } = useContext(AuthContext);
 
@@ -274,7 +312,7 @@ const Dashboard = () => {
 
     const data = await find(params);
 
-
+    setFullData(data);
     setCounters(data.counters);
     if (isArray(data.attendants)) {
       setAttendants(data.attendants);
@@ -473,9 +511,39 @@ const Dashboard = () => {
                                   >
                                     {i18n.t("dashboard.cards.inAttendance")}
                                   </Typography>
-                                  <Typography variant="h4" className={classes.h4}>
-                                    {counters.supportHappening}
-                                  </Typography>
+                                  <Box style={{display: "flex"}}>
+                                    <Typography variant="h4" className={classes.h4}>
+                                      {counters.supportHappening}
+                                    </Typography>
+                                    {counters.supportHappening ?
+                                      <Tooltip title="Detalhe das Filas">
+                                        <IconButton
+                                          size="small"
+                                          onClick={() => {
+                                            setModalOpen(true);
+                                            setDataModal({info: fullData.countQueuesHappening, desc: 'Em Conversa'})
+                                          }}
+                                        >
+                                          <Info style={{color:"#d3d3d3"}}/>
+                                        </IconButton>
+                                      </Tooltip>
+                                      : null
+                                    }
+                                    {fullData.countTicketsHappeningsNotContinued ?
+                                      <Tooltip title="Tikets sem respostas">
+                                        <IconButton
+                                          size="small"
+                                          onClick={() => {
+                                            setModalticketsNotContinuedOpen(true);
+                                            setParamModalticketsNotContinued({companyId: user.companyId})
+                                          }}
+                                        >
+                                          <CustomFeedbackTwoTone />
+                                        </IconButton>
+                                      </Tooltip>
+                                      : null
+                                    }
+                                  </Box>
                                 </Stack>
                                 <Avatar
                                   sx={{
@@ -520,11 +588,25 @@ const Dashboard = () => {
                                   >
                                     {i18n.t("dashboard.cards.waiting")}
                                   </Typography>
-                                  <Typography variant="h4"
-                                    className={classes.h4}
-                                  >
-                                    {counters.supportPending}
-                                  </Typography>
+                                  <Box style={{display: "flex"}}>
+                                    <Typography variant="h4" className={classes.h4}>
+                                      {counters.supportPending}
+                                    </Typography>
+                                    {counters.supportPending ?
+                                      <Tooltip title="Detalhe das Filas">
+                                        <IconButton
+                                          size="small"
+                                          onClick={() => {
+                                            setModalOpen(true);
+                                            setDataModal({info: fullData.countQueuesPending, desc: 'Aguardando'})
+                                          }}
+                                        >
+                                          <Info style={{color:"#d3d3d3"}}/>
+                                        </IconButton>
+                                      </Tooltip>
+                                      : null
+                                    }
+                                  </Box>
                                 </Stack>
                                 <Avatar
                                   sx={{
@@ -569,11 +651,25 @@ const Dashboard = () => {
                                   >
                                     {i18n.t("dashboard.cards.finalized")}
                                   </Typography>
-                                  <Typography variant="h4"
-                                    className={classes.h4}
-                                  >
-                                    {counters.supportFinished}
-                                  </Typography>
+                                  <Box style={{display: "flex"}}>
+                                    <Typography variant="h4" className={classes.h4}>
+                                      {counters.supportFinished}
+                                    </Typography>
+                                    {counters.supportFinished ?
+                                      <Tooltip title="Detalhe das Filas">
+                                        <IconButton
+                                          size="small"
+                                          onClick={() => {
+                                            setModalOpen(true);
+                                            setDataModal({info: fullData.countQueuesFinished, desc: 'Finalizadas'})
+                                          }}
+                                        >
+                                          <Info style={{color:"#d3d3d3"}}/>
+                                        </IconButton>
+                                      </Tooltip>
+                                      : null
+                                    }
+                                  </Box>
                                 </Stack>
                                 <Avatar
                                   sx={{
@@ -1171,6 +1267,18 @@ const Dashboard = () => {
                     </Container>
                   </TabPanel>
                 </Grid2>
+                <DashboardInfoQueueModal
+                  open={modalOpen}
+                  onClose={() => setModalOpen(false)}
+                  data={dataModal}
+                >
+                </DashboardInfoQueueModal>
+                <DashboardTicketsHappeningsNotContinued
+                  open={modalticketsNotContinuedOpen}
+                  onClose={() => setModalticketsNotContinuedOpen(false)}
+                  data={paramModalticketsNotContinued}
+                >
+                </DashboardTicketsHappeningsNotContinued>
               </Container >
             </div >
           </>

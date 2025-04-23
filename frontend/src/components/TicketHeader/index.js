@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const TicketHeader = ({ loading, children }) => {
+const TicketHeader = ({ loading, children, ticketId }) => {
 	const classes = useStyles();
 	const history = useHistory();
 
@@ -51,9 +51,11 @@ const TicketHeader = ({ loading, children }) => {
 					square
 					className={classes.ticketHeader}
 				>
-					<Button color="primary" onClick={handleBack}>
-						<ArrowBackIos />
-					</Button>
+					{!ticketId &&
+						<Button color="primary" onClick={handleBack}>
+							<ArrowBackIos />
+						</Button>
+					}
 					{children}
 				</Card>
 			)}
