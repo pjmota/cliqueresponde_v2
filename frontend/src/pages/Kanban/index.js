@@ -12,7 +12,7 @@ import { Can } from "../../components/Can";
 import toastError from "../../errors/toastError";
 import { Badge, Tooltip, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, useMediaQuery } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
-
+import "./Kanban.css"
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -50,6 +50,7 @@ const useStyles = makeStyles(theme => ({
     overflowX: "auto",
     margin: "0 auto",
     position: "static",
+    height: "82vh",
   },
   connectionTag: {
     background: theme.palette.success.main,
@@ -564,7 +565,8 @@ const Kanban = () => {
 
           style={{
             backgroundColor: 'rgba(252, 252, 252, 0.03)',
-            height: isSM ? '85vh' : '80vh',
+
+            height: "100%"
           }}
         />
       </div>
