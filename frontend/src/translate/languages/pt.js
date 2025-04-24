@@ -715,6 +715,9 @@ const messages = {
           leadMessage: "Mensagem padrão para o lead",
           tokenWhats: "Token Disparo",
           userWhats: "WhatsApp do Usuário",
+          viewAllContacts: "Visualiza todos os contatos",
+          viewAllContactsEnable: "Habilitado",
+          viewAllContactsDisable: "Desabilitado",
         },
         tabs: {
           general: "Geral",
@@ -760,6 +763,9 @@ const messages = {
           sentAt: "Data de Envio",
           assinar: "Enviar Assinatura",
           notifyBefore: "Tempo para mensagem de aviso em minutos",
+          timeWarningMessageMinutes: "Tempo para mensagem de aviso em minutos",
+          dayNextAppointment: "Dia(s) para o próximo agendamento",
+          selectConnection: "Selecione uma conexão"
         },
         buttons: {
           okAdd: "Adicionar",

@@ -234,7 +234,7 @@ const ListContactsService = async ({
   if (contatosFiltrados.length > 0) {
     whereCondition = {
       ...whereCondition,
-      id: { [Op.in]: contatosFiltrados }
+      ...(user.viewAllContacts === 'enable' ? {} : {id: { [Op.in]: contatosFiltrados }})
     };
   }
 
@@ -327,7 +327,7 @@ const ListContactsService = async ({
       }
     ],
     order: [["name", "ASC"]],
-    //logging: console.log
+    logging: console.log
   });
 
   const hasMore = count > offset + contacts.length;

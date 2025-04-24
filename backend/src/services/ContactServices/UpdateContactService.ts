@@ -117,7 +117,9 @@ const UpdateContactService = async ({
       {
         association: "wallets",
         attributes: ["id", "name"]
-      }]
+      }
+    ],
+    //logging: console.log
   });
 
   return contact;
