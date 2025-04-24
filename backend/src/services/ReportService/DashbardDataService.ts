@@ -234,7 +234,10 @@ async function getCountQueuesFinished(
 
   const countTagsFinished = await sequelize.query(
     query,
-    { type: QueryTypes.SELECT, logging: console.log }
+    { 
+      type: QueryTypes.SELECT, 
+      //logging: console.log 
+    }
   );
   
   return countTagsFinished
