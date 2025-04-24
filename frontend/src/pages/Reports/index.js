@@ -392,7 +392,7 @@ const Reports = () => {
               />
             </Grid>
 
-            <Grid item xs={12} sm={3} md={3}>
+            <Grid item xs={12} sm={2} md={2}>
               <TextField
                 label="Data Inicial"
                 type="date"
@@ -406,7 +406,7 @@ const Reports = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={3} md={3}>
+            <Grid item xs={12} sm={2} md={2}>
               <TextField
                 label="Data Final"
                 type="date"
@@ -420,7 +420,7 @@ const Reports = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={3} md={3} style={{ display: 'flex', justifyContent: 'center' }}>
+            <Grid item xs={12} sm={5} md={5} style={{ display: 'flex', justifyContent: 'center' }}>
               <FormControlLabel
                 control={
                   <Switch
@@ -429,19 +429,27 @@ const Reports = () => {
                     onChange={() => setOnlyRated(!onlyRated)}
                   />
                 }
-
+                style={{whiteSpace: "nowrap"}}
                 label={i18n.t("reports.buttons.onlyRated")}
               />
-              <IconButton onClick={exportarGridParaExcel} aria-label="Exportar para Excel">
-
-                <SaveAlt />
-              </IconButton>
+              <Tooltip title="Detalhe das Filas">
+                <IconButton onClick={exportarGridParaExcel} aria-label="Exportar para Excel">
+                  <SaveAlt />
+                </IconButton>
+              </Tooltip>
               <Button
                 variant="contained"
                 color="primary"
                 onClick={() => handleFilter(pageNumber)}
                 size="small"
-              >{i18n.t("reports.buttons.filter")}</Button>
+                style={{
+                  whiteSpace: "nowrap",
+                  minWidth: "auto", // Remove a largura mínima padrão
+                  padding: "4px 8px", // Ajusta o padding para ser mais compacto
+                }}
+              >
+                {i18n.t("reports.buttons.filter")}
+              </Button>
             </Grid>
           </Grid>
 
