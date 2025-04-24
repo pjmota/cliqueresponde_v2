@@ -71,9 +71,7 @@ const ContactListItemModal = ({
   const classes = useStyles();
   const isMounted = useRef(true);
 
-  const {
-    user: { companyId },
-  } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { contactListId } = useParams();
 
   const initialState = {
@@ -121,17 +119,22 @@ const ContactListItemModal = ({
   const handleSaveContact = async (values) => {
     try {
       if (contactId) {
+        values.isGroup = values.number > 12 ? true : false;
+
         await api.put(`/contact-list-items/${contactId}`, {
           ...values,
-          companyId,
+          companyId: user.companyId,
           contactListId,
+          userId: user.id
         });
         handleClose();
       } else {
+        values.isGroup = values.number > 12 ? true : false;
         const { data } = await api.post("/contact-list-items", {
           ...values,
-          companyId,
+          companyId: user.companyId,
           contactListId,
+          userId: user.id
         });
         if (onSave) {
           onSave(data);
