@@ -433,7 +433,8 @@ const MessagesList = ({
   onDrop,
   whatsappId,
   queueId,
-  channel
+  channel,
+  ticketIdReceived
 }) => {
   const classes = useStyles();
   const [messagesList, dispatch] = useReducer(reducer, []);
@@ -450,7 +451,9 @@ const MessagesList = ({
   const messageOptionsMenuOpen = Boolean(anchorEl);
   const { ticketId } = useParams();
 
-  const currentTicketId = useRef(ticketId);
+  const ticketIdEdited = ticketId ? ticketId : ticketIdReceived
+
+  const currentTicketId = useRef(ticketIdEdited);
   const { getAll } = useCompanySettings();
   const [dragActive, setDragActive] = useState(false);
 
@@ -460,7 +463,6 @@ const MessagesList = ({
   const { showSelectMessageCheckbox } = useContext(ForwardMessageContext);
 
   const { user, socket } = useContext(AuthContext);
-
   const companyId = user.companyId;
 
   useEffect(() => {
@@ -489,24 +491,24 @@ const MessagesList = ({
     dispatch({ type: "RESET" });
     setPageNumber(1);
 
-    currentTicketId.current = ticketId;
-  }, [ticketId, selectedQueuesMessage]);
+    currentTicketId.current = ticketIdEdited;
+  }, [ticketIdEdited, selectedQueuesMessage]);
 
   useEffect(() => {
     setLoading(true);
     const delayDebounceFn = setTimeout(() => {
       const fetchMessages = async () => {
-        if (ticketId === "undefined") {
+        if (ticketIdEdited === "undefined") {
           history.push("/tickets");
           return;
         }
-        if (isNil(ticketId)) return;
+        if (isNil(ticketIdEdited)) return;
         try {
-          const { data } = await api.get("/messages/" + ticketId, {
-            params: { pageNumber, selectedQueues: JSON.stringify(selectedQueuesMessage) },
+          const { data } = await api.get("/messages/" + ticketIdEdited, {
+            params: { pageNumber, selectedQueues: JSON.stringify(ticketIdReceived ? user.queues.map(queue => queue.id) : selectedQueuesMessage) },
           });
 
-          if (currentTicketId.current === ticketId) {
+          if (currentTicketId.current === ticketIdEdited) {
             dispatch({ type: "LOAD_MESSAGES", payload: data.messages });
             setHasMore(data.hasMore);
             setLoading(false);
@@ -528,10 +530,10 @@ const MessagesList = ({
     return () => {
       clearTimeout(delayDebounceFn);
     };
-  }, [pageNumber, ticketId, selectedQueuesMessage]);
+  }, [pageNumber, ticketIdEdited, selectedQueuesMessage]);
 
   useEffect(() => {
-    if (ticketId === "undefined") {
+    if (ticketIdEdited === "undefined") {
       return;
     }
 
@@ -539,20 +541,20 @@ const MessagesList = ({
 
     //    const socket = socketManager.GetSocket();
     const connectEventMessagesList = () => {
-      socket.emit("joinChatBox", `${ticketId}`);
+      socket.emit("joinChatBox", `${ticketIdEdited}`);
     }
 
     const onAppMessageMessagesList = (data) => {
-      if (data.action === "create" && data.ticket.uuid === ticketId) {
+      if (data.action === "create" && data.ticket.uuid === ticketIdEdited) {
         dispatch({ type: "ADD_MESSAGE", payload: data.message });
         scrollToBottom();
       }
 
-      if (data.action === "update" && data?.message?.ticket?.uuid === ticketId) {
+      if (data.action === "update" && data?.message?.ticket?.uuid === ticketIdEdited) {
         dispatch({ type: "UPDATE_MESSAGE", payload: data.message });
       }
 
-      if (data.action == "delete" && data.message.ticket?.uuid === ticketId) {
+      if (data.action == "delete" && data.message.ticket?.uuid === ticketIdEdited) {
         dispatch({ type: "DELETE_MESSAGE", payload: data.messageId });
       }
     }
@@ -561,13 +563,13 @@ const MessagesList = ({
 
     return () => {
 
-      socket.emit("joinChatBoxLeave", `${ticketId}`)
+      socket.emit("joinChatBoxLeave", `${ticketIdEdited}`)
 
       socket.off("connect", connectEventMessagesList);
       socket.off(`company-${companyId}-appMessage`, onAppMessageMessagesList);
     };
 
-  }, [ticketId]);
+  }, [ticketIdEdited]);
 
   const loadMore = () => {
     if (loadingMore) return;
@@ -758,8 +760,8 @@ const MessagesList = ({
 
 
   const renderTicketsSeparator = (message, index) => {
-    let lastTicket = messagesList[index - 1]?.ticketId;
-    let currentTicket = message.ticketId;
+    let lastTicket = messagesList[index - 1]?.ticketIdEdited;
+    let currentTicket = message.ticketIdEdited;
 
     if (lastTicket !== currentTicket && lastTicket !== undefined) {
       if (message?.ticket?.queue) {
@@ -772,7 +774,7 @@ const MessagesList = ({
               className={classes.currentTicktText}
               style={{ backgroundColor: message?.ticket?.queue?.color || "grey" }}
             >
-              #{i18n.t("ticketsList.called")} {message?.ticketId} - {message?.ticket?.queue?.name}
+              #{i18n.t("ticketsList.called")} {message?.ticketIdEdited} - {message?.ticket?.queue?.name}
             </div>
 
           </span>
@@ -787,7 +789,7 @@ const MessagesList = ({
               className={classes.currentTicktText}
               style={{ backgroundColor: "grey" }}
             >
-              #{i18n.t("ticketsList.called")} {message.ticketId} - {i18n.t("ticketsList.noQueue")}
+              #{i18n.t("ticketsList.called")} {message.ticketIdEdited} - {i18n.t("ticketsList.noQueue")}
             </div>
 
           </span>

@@ -151,6 +151,7 @@ const UserModal = ({ open, onClose, userId }) => {
 		scheduleNotifyBefore: 15,
 		scheduleNotifyNowText: "",
 		daysUntilNextScheduleNotify: 0,
+		viewAllContacts: "disable"
 	};
 
 	const { user: loggedInUser } = useContext(AuthContext);
@@ -172,6 +173,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	const [dataWhatsapps, setDataWhatsapps] = useState([]);
 	
 	useEffect(() => {
+		setTab("general")
 		const fetchUser = async () => {
 
 			if (!userId) return;
@@ -195,7 +197,8 @@ const UserModal = ({ open, onClose, userId }) => {
 				setWhatsappId(data.whatsappId ? data.whatsappId : '');
 				setSelectedPermissionIds(userPermissions);
 				setSelectedConnection(data.whatsappId);
-				setSelectedScheduleConnection(data.scheduleConnection ?? "");
+
+				setSelectedScheduleConnection(data.scheduleConnection ?? loggedInUser.whatsappId);
 			} catch (err) {
 				toastError(err);
 			}
@@ -968,6 +971,31 @@ const UserModal = ({ open, onClose, userId }) => {
 															>
 																<>
 																	<InputLabel >
+																		{i18n.t("userModal.form.viewAllContacts")}
+																	</InputLabel>
+
+																	<Field
+																		as={Select}
+																		label={i18n.t("userModal.form.viewAllContacts")}
+																		name="viewAllContacts"
+																		type="viewAllContacts"
+																		required
+																	>
+																		<MenuItem value={"enable"}>{i18n.t("userModal.form.viewAllContactsEnable")}</MenuItem>
+																		<MenuItem value={"disable"}>{i18n.t("userModal.form.viewAllContactsDisable")}</MenuItem>
+																	</Field>
+																</>
+															</FormControl>
+														</Grid>
+														<Grid item xs={12} md={6} xl={6}>
+															<FormControl
+																variant="outlined"
+																className={classes.maxWidth}
+																margin="dense"
+																fullWidth
+															>
+																<>
+																	<InputLabel >
 																		{i18n.t("userModal.form.sendWhatsAppInLeadMessage")}
 																	</InputLabel>
 
@@ -1122,9 +1150,7 @@ const UserModal = ({ open, onClose, userId }) => {
 															<Field
 																
 																as={TextField}
-																label={i18n.t(
-																	"Tempo para mensagem de aviso em minutos"
-																)}
+																label={i18n.t("scheduleModal.form.timeWarningMessageMinutes")}
 																type="number"
 																name="scheduleNotifyBefore"
 																InputProps={{
@@ -1151,9 +1177,7 @@ const UserModal = ({ open, onClose, userId }) => {
 															<Field
 																
 																as={TextField}
-																label={i18n.t(
-																	"Dia(s) para o próximo agendamento"
-																)}
+																label={i18n.t("scheduleModal.form.dayNextAppointment")}
 																type="number"
 																name="daysUntilNextScheduleNotify"
 																InputProps={{
@@ -1202,11 +1226,11 @@ const UserModal = ({ open, onClose, userId }) => {
 																	}
 
 																	if (selectedScheduleConnection === "") {
-																		return <span style={{ fontSize: "1rem" }}>Selecione uma Conexão</span>;
+																		return <span style={{ fontSize: "1rem" }}>{i18n.t("scheduleModal.form.selectConnection")}</span>;
 																	}
 
 																	const whatsapp = dataWhatsapps.find(w => w.id === selectedScheduleConnection)
-																	return <span style={{ fontSize: "1rem" }}>{whatsapp?.name ?? "Selecione uma Conexão"}</span>;
+																	return <span style={{ fontSize: "1rem" }}>{whatsapp?.name ?? i18n.t("scheduleModal.form.selectConnection")}</span>;
 																}}
 															>
 																{dataWhatsapps?.length > 0 &&

@@ -43,6 +43,7 @@ interface UserData {
   scheduleSendAt?:Date;
   daysUntilNextScheduleNotify?: number;
   scheduleConnection?: number;
+  viewAllContacts?: string;
 
 }
 
@@ -118,7 +119,8 @@ const UpdateUserService = async ({
     scheduleNotifyBefore,
     scheduleSendAt,
     daysUntilNextScheduleNotify,
-    scheduleConnection
+    scheduleConnection,
+    viewAllContacts
   } = userData;
 
   try {
@@ -126,6 +128,7 @@ const UpdateUserService = async ({
   } catch (err: any) {
     throw new AppError(err.message);
   }
+  
   await user.update({
     email,
     password,
@@ -158,7 +161,8 @@ const UpdateUserService = async ({
     scheduleNotifyBefore,
     scheduleSendAt,
     daysUntilNextScheduleNotify,
-    scheduleConnection
+    scheduleConnection,
+    viewAllContacts
   });
 
   await user.$set("queues", queueIds);
@@ -204,6 +208,7 @@ const UpdateUserService = async ({
     allTicketsQueuesAttending: user.allTicketsQueuesAttending,
     sendWhatsAppInLeadMessage: user.sendWhatsAppInLeadMessage,
     leadMessage: user.leadMessage,
+    viewAllContacts: user.viewAllContacts,
     
   };
 

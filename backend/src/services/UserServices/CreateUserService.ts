@@ -41,6 +41,7 @@ interface Request {
   scheduleSendAt?:Date;
   daysUntilNextScheduleNotify?: number;
   scheduleConnection?: number;
+  viewAllContacts?: string;
 }
 
 interface Response {
@@ -85,6 +86,7 @@ const CreateUserService = async ({
   scheduleSendAt,
   daysUntilNextScheduleNotify,
   scheduleConnection,
+  viewAllContacts
 }: Request): Promise<Response> => {
   if (companyId !== undefined) {
     const company = await Company.findOne({
@@ -167,7 +169,8 @@ const CreateUserService = async ({
       scheduleNotifyBefore,
       scheduleSendAt,
       daysUntilNextScheduleNotify,
-      scheduleConnection
+      scheduleConnection,
+      viewAllContacts
     },
     { include: ["queues", "company", "tags", "permissions"] }
   );

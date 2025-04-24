@@ -81,7 +81,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     scheduleNotifyBefore,
     scheduleSendAt,
     daysUntilNextScheduleNotify,
-    scheduleConnection
+    scheduleConnection,
+    viewAllContacts
   } = req.body;
   let userCompanyId: number | null = null;
 
@@ -142,7 +143,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       sendWhatsAppInLeadMessage: 'disabled',
       leadMessage: "",
       tokenWhats: "",
-      userWhats: ""
+      userWhats: "",
+      viewAllContacts: 'disable'
     };
 
     const user = await CreateCompanyService(companyData);
@@ -212,7 +214,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       scheduleNotifyBefore,
       scheduleSendAt,
       daysUntilNextScheduleNotify,
-      scheduleConnection
+      scheduleConnection,
+      viewAllContacts
     });
 
     const io = getIO();

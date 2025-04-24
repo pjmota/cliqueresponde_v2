@@ -30,6 +30,7 @@ interface SerializedUser {
   showDashboard?: string;
   token?: string;
   allTicketsQueuesWaiting?: string;
+  viewAllContacts?: string;
 }
 
 interface Request {

@@ -106,6 +106,34 @@ const messages = {
           neutral: "Neutros",
           detractors: "Detratores",
         },
+        infoQueuesModal: {
+          title: "Info Filas",
+          table: {
+            queueNameColumn: "Fila",
+            queueQuantityColumn: "Qt. atendimentos",
+          },
+        },
+        ticketsHappeningsNotContinuedModal: {
+          title: "Atendimentos não continuados",
+          table: {
+            serviceColumn: "Atendimento",
+            attendantColumn: "Atendente",
+            contactColumn: "Contato",
+            numberColumn: "Número",
+            queueColumn: "Fila",
+            idleTimeColumn: "Tempo Ocioso",
+            idleTimeColumnComplement: "minutos atrás",
+            lastConversationDateColumn: "Data última conversa",
+          },
+          pagination: {
+            info: "Página",
+            buttons: {
+              previous: "Anterior",
+              next: "Próxima",
+            },
+          },
+          tooltipTitle: "Espiar conversa",
+        },
       },
       reports: {
         title: "Relatório de Pesquisas Realizadas",
@@ -687,6 +715,9 @@ const messages = {
           leadMessage: "Mensagem padrão para o lead",
           tokenWhats: "Token Disparo",
           userWhats: "WhatsApp do Usuário",
+          viewAllContacts: "Visualiza todos os contatos",
+          viewAllContactsEnable: "Habilitado",
+          viewAllContactsDisable: "Desabilitado",
         },
         tabs: {
           general: "Geral",
@@ -732,6 +763,9 @@ const messages = {
           sentAt: "Data de Envio",
           assinar: "Enviar Assinatura",
           notifyBefore: "Tempo para mensagem de aviso em minutos",
+          timeWarningMessageMinutes: "Tempo para mensagem de aviso em minutos",
+          dayNextAppointment: "Dia(s) para o próximo agendamento",
+          selectConnection: "Selecione uma conexão"
         },
         buttons: {
           okAdd: "Adicionar",

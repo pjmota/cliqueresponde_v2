@@ -9,5 +9,6 @@ routes.get("/dashboard", isAuth, DashboardController.index);
 routes.get("/dashboard/ticketsUsers", DashboardController.reportsUsers);
 routes.get("/dashboard/ticketsDay", DashboardController.reportsDay);
 routes.get("/dashboard/moments",isAuth, DashboardController.DashTicketsQueues);
+routes.get("/dashboard/ticketsHappeningsNotContinued", DashboardController.reportsNotContinued);
 
 export default routes;

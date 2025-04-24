@@ -219,9 +219,13 @@ class User extends Model<User> {
 
   @Column
   sendWhatsAppInLeadMessage: string;
-
+  
   @Column
   leadMessage: string;
+
+  @Default("disable")
+  @Column
+  viewAllContacts: string;
 
   @Column
   tokenWhats: string;
