@@ -4,6 +4,8 @@ import { QueryTypes } from "sequelize";
 import * as _ from "lodash";
 import sequelize from "../../database";
 import path from "path";
+import logger from "../../utils/logger";
+import getHappeningsNotContinued from "./DashboardTicketsHappeningsNotConotinued";
 const fs = require('fs');
 
 
@@ -53,7 +55,7 @@ export default async function DashboardDataService(
       left join "Companies" c on c.id = tt."companyId"
       left join "Users" u on u.id = tt."userId"
       left join "Whatsapps" w on w.id = tt."whatsappId"
-      inner join "Tickets" t on t.id = tt."ticketId"
+      left join "Tickets" t on t.id = tt."ticketId"
       left join "Contacts" ct on ct.id = t."contactId"
       -- filterPeriod
     ),
@@ -61,16 +63,21 @@ export default async function DashboardDataService(
       select
         (select avg("supportTime") from traking where "supportTime" > 0) "avgSupportTime",
         (select avg("waitTime") from traking where "waitTime" > 0) "avgWaitTime",        
-        (select count(id) from traking where finished) "supportFinished",
+        (select count(id) 
+          from traking 
+          where "finishedAt" >= '${params.date_from} 00:00:00' and "finishedAt" <= '${params.date_to} 23:59:59'
+        ) "supportFinished",
         (
-          select count(distinct "id")
-          from "Tickets" t
-          where status like 'open' and t."companyId" = ?
+          select count(distinct tk."ticketId")
+          from traking tk
+          left join "Tickets" t on t.id = tk."ticketId"
+          where t.status like 'open' and tk."finishedAt" is null and t."isGroup" = 'false'
         ) "supportHappening",
         (
-          select count(distinct "id")
-          from "Tickets" t
-          where status like 'pending' and t."companyId" = ?
+          select count(distinct tk."ticketId")
+          from traking tk
+          left join "Tickets" t on t.id = tk."ticketId"
+          where t."status" = 'pending' and tk."finishedAt" is null
         ) "supportPending",
         (select count(id) from traking where groups) "supportGroups",
         (
@@ -157,7 +164,7 @@ export default async function DashboardDataService(
   let where = 'where tt."companyId" = ?';
   const replacements: any[] = [companyId];
 
-  if (_.has(params, "days")) {
+  /* if (_.has(params, "days")) {
     where += ` and t."createdAt" >= (now() - '? days'::interval)`;
     replacements.push(parseInt(`${params.days}`.replace(/\D/g, ""), 10));
   }
@@ -170,21 +177,131 @@ export default async function DashboardDataService(
   if (_.has(params, "date_to")) {
     where += ` and t."createdAt" <= ?`;
     replacements.push(`${params.date_to} 23:59:59`);
-  }
+  } */
 
   replacements.push(companyId);
   replacements.push(companyId);
   replacements.push(companyId);
   replacements.push(companyId);
   replacements.push(companyId);
-
+/* logger.warn(`query grande   ---- ${JSON.stringify(where)}`) */
   const finalQuery = query.replace("-- filterPeriod", where);
 
   const responseData: DashboardData = await sequelize.query(finalQuery, {
     replacements,
     type: QueryTypes.SELECT,
-    plain: true
+    plain: true,
+    //logging: console.log
   });
 
-  return responseData;
+  const countQueuesHappening = await getCountQueuesHappening(companyId, params);
+  const countQueuesPending = await getCountQueuesPending(companyId, params);
+  const countQueuesFinished = await getCountQueuesFinished(companyId, params);
+  const countTicketsHappeningsNotContinued = await getHappeningsNotContinued(companyId, params.date_to);
+
+  const newResponseData = {
+    ...responseData,
+    countQueuesHappening: countQueuesHappening,
+    countQueuesPending: countQueuesPending,
+    countQueuesFinished: countQueuesFinished,
+    countTicketsHappeningsNotContinued: countTicketsHappeningsNotContinued.length
+  }
+
+  return newResponseData;
+}
+
+async function getCountQueuesFinished(
+  companyId: string | number,
+  params: Params
+) {
+  const query = `
+      select
+        case
+          when t."queueId" is null then 'Sem Fila'
+          else q."name"
+        end as "queueName",
+        q.color,
+        count(*) as "count"
+      from "TicketTraking" tt
+      left join "Tickets" t on t.id = tt."ticketId"
+      left join "Queues" q on q.id = t."queueId"
+      where tt."companyId" = ${companyId} 
+        and tt."finishedAt" >= '${params.date_from} 00:00:00' 
+        and tt."finishedAt" <= '${params.date_to} 23:59:59'
+      group by "queueName", q."color"
+      order by "count" desc;
+    `
+
+  const countTagsFinished = await sequelize.query(
+    query,
+    { 
+      type: QueryTypes.SELECT, 
+      //logging: console.log 
+    }
+  );
+  
+  return countTagsFinished
+}
+
+async function getCountQueuesHappening(
+  companyId: string | number,
+  params: Params
+) {
+  const query = `
+      select
+        case
+          when t."queueId" is null then 'Sem Fila'
+          else q."name"
+        end as "queueName",
+        q.color,
+        count(*) as "count"
+      from "TicketTraking" tt
+      left join "Tickets" t on t.id = tt."ticketId"
+      left join "Queues" q on q.id = t."queueId"
+      where tt."companyId" = ${companyId} 
+        and t."status" = 'open'
+        and tt."finishedAt" is null
+        and t."isGroup" = 'false'
+      group by "queueName", q."color"
+      order by "count" desc;
+    `
+
+  const countTagsHappening = await sequelize.query(
+    query,
+    { type: QueryTypes.SELECT, 
+      //logging: console.log 
+    },
+  );
+  
+  return countTagsHappening
+}
+
+async function getCountQueuesPending(
+  companyId: string | number,
+  params: Params
+) {
+  const query = `
+      select
+        case
+          when t."queueId" is null then 'Sem Fila'
+          else q."name"
+        end as "queueName",
+        q.color,
+        count(*) as "count"
+      from "TicketTraking" tt
+      left join "Tickets" t on t.id = tt."ticketId"
+      left join "Queues" q on q.id = t."queueId"
+      where tt."companyId" = ${companyId} 
+        and tt."finishedAt" is null
+        and t."status" = 'pending'
+      group by "queueName", q."color"
+      order by "count" desc;
+    `
+
+  const countTagsPending = await sequelize.query(
+    query,
+    { type: QueryTypes.SELECT }
+  );
+  
+  return countTagsPending
 }

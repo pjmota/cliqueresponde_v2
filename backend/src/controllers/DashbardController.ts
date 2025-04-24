@@ -3,6 +3,7 @@ import DashboardDataService, { DashboardData, Params } from "../services/ReportS
 import { TicketsAttendance } from "../services/ReportService/TicketsAttendance";
 import { TicketsDayService } from "../services/ReportService/TicketsDayService";
 import TicketsQueuesService from "../services/TicketServices/TicketsQueuesService";
+import getHappeningsNotContinued from "../services/ReportService/DashboardTicketsHappeningsNotConotinued";
 
 type IndexQuery = {
   initialDate: string;
@@ -69,3 +70,13 @@ export const DashTicketsQueues = async (
 
   return res.status(200).json(tickets);
 };
+
+export const reportsNotContinued = async (req: Request, res: Response): Promise<Response> => {
+
+  const { finalDate, companyId } = req.query as IndexQuery
+
+  const data = await getHappeningsNotContinued(companyId, finalDate);
+
+  return res.json({ data });
+
+}
