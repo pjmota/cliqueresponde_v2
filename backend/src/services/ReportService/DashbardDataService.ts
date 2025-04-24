@@ -4,8 +4,8 @@ import { QueryTypes } from "sequelize";
 import * as _ from "lodash";
 import sequelize from "../../database";
 import path from "path";
-import getHappeningsNotContinued from "./DashboardTicketsHappeningsNotConotinued";
 import logger from "../../utils/logger";
+import getHappeningsNotContinued from "./DashboardTicketsHappeningsNotConotinued";
 const fs = require('fs');
 
 
