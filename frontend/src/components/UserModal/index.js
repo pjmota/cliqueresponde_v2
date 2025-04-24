@@ -173,6 +173,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	const [dataWhatsapps, setDataWhatsapps] = useState([]);
 	
 	useEffect(() => {
+		setTab("general")
 		const fetchUser = async () => {
 
 			if (!userId) return;
@@ -196,7 +197,8 @@ const UserModal = ({ open, onClose, userId }) => {
 				setWhatsappId(data.whatsappId ? data.whatsappId : '');
 				setSelectedPermissionIds(userPermissions);
 				setSelectedConnection(data.whatsappId);
-				setSelectedScheduleConnection(data.scheduleConnection ?? "");
+
+				setSelectedScheduleConnection(data.scheduleConnection ?? loggedInUser.whatsappId);
 			} catch (err) {
 				toastError(err);
 			}
