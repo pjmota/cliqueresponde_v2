@@ -111,7 +111,14 @@ const Kanban = () => {
   const jsonString = user.queues.map(queue => queue.UserQueue.queueId);
 
   useEffect(() => {
-    fetchTags();
+    fetchTags().then(() => {
+      fetchTickets({
+        queueIds: JSON.stringify(jsonString),
+        users: JSON.stringify(user.id),
+        status: JSON.stringify(status.map(item => item.id)),
+        searchParam: searchParam
+      }, tags);
+    });
     fetchUsers();
   }, [user]);
 
@@ -123,23 +130,29 @@ const Kanban = () => {
       const userTagIds = user.tags.map(tag => tag.id);
       const filteredTags = fetchedTags.filter(tag => userTagIds.includes(tag.id));
       setTags(filteredTags);
-      fetchTickets();
+      //fetchTickets();
     } catch (error) {
       console.log(error);
     }
   };
 
   const fetchTickets = async (params, tags) => {
+    
     try {
-      const { data } = await api.get("/ticket/kanban", {
-        params: {
-          queueIds: JSON.stringify(jsonString),
-          startDate: startDate,
-          endDate: endDate,
-          ...params
+      const requests = tags.map(tag => api.get("/ticket/kanban", { params: { ...params, tags: JSON.stringify([tag.id]) } }));
+      requests.push(api.get("/ticket/kanban", { params: { ...params, hasTags: false } }));
+      const response = await Promise.all(requests);
+
+      const tickets = [];
+
+      response.map(({ data }) => data.tickets).flat().forEach(ticket => {
+        if (tickets.some(item => item.id === ticket.id)) {
+          return;
         }
+        tickets.push({...ticket});
       });
-      setTickets(data.tickets);
+
+      setTickets(tickets);
     } catch (err) {
       console.log(err);
       setTickets([]);
@@ -150,7 +163,12 @@ const Kanban = () => {
     const companyId = user.companyId;
     const onAppMessage = (data) => {
       if (data.action === "create" || data.action === "update" || data.action === "delete") {
-        fetchTickets();
+        fetchTickets({
+          queueIds: JSON.stringify(jsonString),
+          users: JSON.stringify(user.id),
+          status: JSON.stringify(status.map(item => item.id)),
+          searchParam: searchParam
+        }, tags);
       }
     };
     socket.on(`company-${companyId}-ticket`, onAppMessage);
@@ -326,7 +344,7 @@ const Kanban = () => {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
-      await fetchTickets(jsonString);
+      //await fetchTickets(jsonString);
       const { data } = await api.get(`/tags/list`, { params: { kanban: 1 } });
 
       //popularCards(jsonString);
