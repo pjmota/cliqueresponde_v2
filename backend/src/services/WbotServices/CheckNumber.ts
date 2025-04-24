@@ -35,10 +35,7 @@ const CheckContactNumber = async (
   let numberArray;
 
   if (isGroup) {
-    logger.warn(`if`)
-
     const grupoMeta = await checkerGroup(number, wbot);
-    logger.warn(`grupoMeta ---- ${JSON.stringify(grupoMeta)}`)
     numberArray = [
       {
         ...grupoMeta,
@@ -47,12 +44,11 @@ const CheckContactNumber = async (
       }
     ];
   } else {
-    logger.warn(`else`)
     numberArray = await checker(number, wbot);
   }
 
   const isNumberExit = numberArray;
-logger.warn(`isNumberExit ---- ${JSON.stringify(isNumberExit)}`)
+
   if (!isNumberExit[0]?.exists) {
     throw new AppError("Este número não está cadastrado no whatsapp");
   }
