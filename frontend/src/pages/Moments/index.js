@@ -246,7 +246,7 @@ const ChatMoments = () => {
       <>
         <Container maxWidth="lg" className={classes.container} style={{paddingTop: 0}}>
           <TabContext value={String(activeTab)}>
-            <Grid xs={12} sm={12} xl={4} item style={{marginTop: "1.5rem", justifyItems: "center"}}>
+            <Grid xs={12} sm={12} xl={12} item style={{marginTop: "1.5rem", justifyItems: "center"}}>
               <Title>{"Painel de Atendimentos"}</Title>
             </Grid>
             <Tabs value={Number(activeTab)} onChange={handleChangeTab}>
