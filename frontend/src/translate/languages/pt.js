@@ -403,7 +403,7 @@ const messages = {
         message: "Leia o QrCode para iniciar a sessão",
       },
       contacts: {
-        title: "Contatos",
+        title: "Lista de Contatos",
         toasts: {
           deleted: "Contato excluído com sucesso!",
         },
@@ -426,6 +426,7 @@ const messages = {
           export: "Exportar Contato",
         },
         table: {
+          id: "ID",
           name: "Nome",
           whatsapp: "Conexão",
           email: "Email",
