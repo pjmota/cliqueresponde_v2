@@ -496,7 +496,7 @@ const Dashboard = () => {
                                       {counters.supportHappening}
                                     </Typography>
                                     {counters.supportHappening ?
-                                      <Tooltip title="Detalhe das Filas">
+                                      <Tooltip title={i18n.t("dashboard.cards.queueDetails")}>
                                         <IconButton
                                           size="small"
                                           onClick={() => {
@@ -510,7 +510,7 @@ const Dashboard = () => {
                                       : null
                                     }
                                     {fullData.countTicketsHappeningsNotContinued ?
-                                      <Tooltip title="Tikets sem respostas">
+                                      <Tooltip title={i18n.t("dashboard.cards.ticketsWithoutAnswers")}>
                                         <IconButton
                                           size="small"
                                           onClick={() => {

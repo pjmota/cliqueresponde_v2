@@ -13,7 +13,7 @@ import CronScheduleTagIntegrationService from './services/ScheduleTagIntegration
 // import { ScheduledMessagesJob, ScheduleMessagesGenerateJob, ScheduleMessagesEnvioJob, ScheduleMessagesEnvioForaHorarioJob } from "./wbotScheduledMessages";
 
 const server = app.listen(process.env.PORT, async () => {
-  const companies = await Company.findAll({
+  /* const companies = await Company.findAll({
     where: { status: true },
     attributes: ["id"]
   });
@@ -31,12 +31,12 @@ const server = app.listen(process.env.PORT, async () => {
 
   if (process.env.REDIS_URI_ACK && process.env.REDIS_URI_ACK !== '') {
     BullQueue.process();
-  }
+  } */
 
   logger.info(`Server started on port: ${process.env.PORT}`);
 });
 
-process.on("uncaughtException", err => {
+/* process.on("uncaughtException", err => {
   console.error(`${new Date().toUTCString()} uncaughtException:`, err.message);
   console.error(err.stack);
   process.exit(1);
@@ -65,7 +65,7 @@ cron.schedule("* * * * *", async () => {
   } catch (error) {
     logger.error(`[Automação de tag] ${error.message}`);
   }
-});
+}); */
 
 // cron.schedule("* * * * * *", async () => {
 

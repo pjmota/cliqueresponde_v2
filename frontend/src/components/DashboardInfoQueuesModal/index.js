@@ -50,7 +50,7 @@ console.log()
           <Badge
             badgeContent={count}
             color="primary"
-            max={999}
+            max={99999}
             sx={{ "& .MuiBadge-anchorOriginTopRightRectangle": { right: "-1.5rem !important" } }}
           >
             <span>{i18n.t("dashboard.infoQueuesModal.title")} {data?.desc}</span>
