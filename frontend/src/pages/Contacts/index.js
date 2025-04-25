@@ -561,6 +561,9 @@ const Contacts = () => {
                         <TableRow>
                             <TableCell padding="checkbox" />
                             <TableCell>
+                                {i18n.t("contacts.table.id")}
+                            </TableCell>
+                            <TableCell>
                                 {i18n.t("contacts.table.name")}
                             </TableCell>
                             <TableCell align="center">
@@ -594,6 +597,7 @@ const Contacts = () => {
                                     <TableCell style={{ paddingRight: 0 }}>
                                         {<Avatar src={`${contact?.urlPicture}`} />}
                                     </TableCell>
+                                    <TableCell>{contact.id}</TableCell>
                                     <TableCell>{contact.name}</TableCell>
                                     <TableCell align="center">
                                         {((enableLGPD && hideNum && user.profile === "user")

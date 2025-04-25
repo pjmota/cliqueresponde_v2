@@ -8,11 +8,11 @@ const UpdateStatusContactCustomFieldService = async (
   let field = fields.find(field => field.name === "status");
 
   if (!field) {
-    field = await ContactCustomField.create({
+    /* field = await ContactCustomField.create({
       name: "status",
       value: statusId,
       contactId
-    });
+    }); */
   } else {
     await field.update({ value: statusId });
     field.reload();
