@@ -428,6 +428,7 @@ const TicketsListCustom = (props) => {
     queues,
     sortTickets,
     showTicketWithoutQueue,
+    pageNumber
   ]);
 
   useEffect(() => {
@@ -453,11 +454,12 @@ const TicketsListCustom = (props) => {
   };
 
   const handleScroll = (e) => {
+    console.log("hasMore", hasMore)
     if (!hasMore || loading) return;
 
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
 
-    if (scrollHeight - (scrollTop + 100) < clientHeight) {
+    if (scrollHeight - (scrollTop + status === "open" ? 100 : 40) < clientHeight) {
       loadMore();
     }
   };

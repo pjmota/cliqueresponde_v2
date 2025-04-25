@@ -710,7 +710,7 @@ const ListTicketsService = async ({
       offset,
       order: [["updatedAt", sortTickets]],
       subQuery: false,
-      //...(status === 'open' ? {logging: console.log} : {})
+      //...(status === 'pending' ? {logging: console.log} : {})
     });
 
     const newTickets = result.rows;
@@ -720,18 +720,24 @@ const ListTicketsService = async ({
     // Remove duplicados baseado no ID
     tickets = Array.from(new Map(tickets.map(t => [t.id, t])).values());
 
+    tickets = tickets.slice(0, limitBase);
+
     // Atualiza o offset pra posição real acumulada
     offset += newTickets.length;
 
+    count = result.count;
+
+    if (newTickets.length === 0 || tickets.length >= limitBase) {
+      break; // Sai se não há mais registros ou se atingiu o limite desejado
+    }
+
     // Se ainda não atingiu o limite desejado, aumenta o limit da próxima tentativa
-    if (status === "open" && tickets.length < limitBase && newTickets.length > 0) {
+    if ((status === "open" || status === "pending" ) && tickets.length < limitBase && newTickets.length > 0) {
       limit += 10;
-    } else {
-      break;
     }
   } while (tickets.length < limitBase);
-  count = tickets.length;
-  const hasMore = count > offset + tickets.length;
+
+  const hasMore = count > offset;
   return {
     tickets,
     count,

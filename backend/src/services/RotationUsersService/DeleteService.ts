@@ -7,7 +7,7 @@ import logger from "../../utils/logger";
 const DeleteService = async (id: number): Promise<void> => {
   const record = await RotationUsers.findOne({
     where: {id},
-    logging: console.log
+    //logging: console.log
   });
 
   if(!record) {
