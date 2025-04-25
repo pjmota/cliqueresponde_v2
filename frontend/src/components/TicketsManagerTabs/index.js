@@ -934,6 +934,7 @@ const TicketsManagerTabs = () => {
                     classes={{ badge: classes.customBadge }}
                     badgeContent={openCount}
                     color="primary"
+                    max={999}
                   >
                     <MessageSharpIcon
                       style={{
@@ -970,6 +971,7 @@ const TicketsManagerTabs = () => {
                     classes={{ badge: classes.customBadge }}
                     badgeContent={pendingCount}
                     color="primary"
+                    max={999}
                   >
                     <ClockIcon
                       style={{
@@ -1007,6 +1009,7 @@ const TicketsManagerTabs = () => {
                       classes={{ badge: classes.customBadge }}
                       badgeContent={groupingCount}
                       color="primary"
+                      max={999}
                     >
                       <Group
                         style={{
