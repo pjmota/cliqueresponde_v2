@@ -59,7 +59,7 @@ const UpdateContactService = async ({
   }
 
   if (extraInfo) {
-    await Promise.all(
+    /* await Promise.all(
       extraInfo.map(async (info: any) => {
         await ContactCustomField.upsert({ ...info, contactId: contact.id });
       })
@@ -73,7 +73,7 @@ const UpdateContactService = async ({
           await ContactCustomField.destroy({ where: { id: oldInfo.id } });
         }
       })
-    );
+    ); */
   }
 
   if (wallets) {
