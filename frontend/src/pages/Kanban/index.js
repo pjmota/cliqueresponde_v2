@@ -12,6 +12,7 @@ import { Can } from "../../components/Can";
 import toastError from "../../errors/toastError";
 import { Badge, Tooltip, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, useMediaQuery } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
+import Brightness1SharpIcon from '@mui/icons-material/Brightness1Sharp';
 import "./Kanban.css"
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,10 +35,10 @@ const useStyles = makeStyles(theme => ({
   },
   
   ticketLabel: {
-    backgroundColor: theme.palette.primary.main,
+   
     borderRadius: theme.shape.borderRadius,
     display: "flex",
-    color: theme.palette.common.white,
+    color: theme.palette.common.black,
     justifyContent: "center",
 
 
@@ -88,6 +89,35 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(0),
   },
 }));
+
+const StatusIcon = ({ status }) => {
+
+  const colorMap = {
+    pending: "#c4c5bd",
+    closed: "#4CAF50",
+    open: "#f7b904",
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <Brightness1SharpIcon
+        style={{
+          color: colorMap[status],
+          fontSize: "10px",
+          marginRight: "5px",
+          animation: "blink 10s linear infinite"
+        }}
+      />
+      <style>{`
+        @keyframes blink {
+          0% { opacity: 0.5; }
+          
+          100% { opacity: 1; }
+        }
+      `}</style>
+    </div>
+  );
+}
 
 const Kanban = () => {
   const classes = useStyles();
@@ -226,7 +256,12 @@ const Kanban = () => {
         label: filteredTickets.length.toString(),
         cards: filteredTickets.map(ticket => ({
           id: ticket.id.toString(),
-          label: "Ticket nº " + ticket.id.toString(),
+          label: <>
+            <div style={{ display: 'flex', justifyContent: 'end', gap: '5px' }}>
+              <div className={classes.ticketLabel}>
+                {"Ticket nº " + ticket.id.toString()}</div>
+              <StatusIcon status={ticket.status} /></div></>,
+
           description: (
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -244,6 +279,7 @@ const Kanban = () => {
                 </Typography>
               </div>
               <div style={{ textAlign: 'left' }}>{ticket.lastMessage || " "}</div>
+              {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
               <Button
                 className={`${classes.button} ${classes.cardButton}`}
                 onClick={() => {
@@ -252,7 +288,7 @@ const Kanban = () => {
                 Ver Ticket
               </Button>
               <span style={{ marginRight: '8px' }} />
-              {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
+
             </div>
           ),
           title: <>
@@ -284,17 +320,21 @@ const Kanban = () => {
               id: ticket.id.toString(),
               label:
                 <>
-                  <div
+                  <div style={{ display: 'flex', justifyContent: 'end', gap: '5px' }}>
+                    <div
 
-                    className={classes.ticketLabel}>
-                    {"Ticket nº " + ticket.id.toString()}
-                  </div></>,
+                      className={classes.ticketLabel}>
+                      {"Ticket nº " + ticket.id.toString()}</div>
+                    <StatusIcon status={ticket.status} /></div></>,
               description: (
                 <div>
                   <p>
                     {ticket.contact.number}
                     <br />
                     {ticket.lastMessage || " "}
+                  </p>
+                  <p>
+                    {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
                   </p>
                   <Button
                     className={`${classes.button} ${classes.cardButton}`}
@@ -304,17 +344,15 @@ const Kanban = () => {
                     Ver Ticket
                   </Button>
                   <span style={{ marginRight: '8px' }} />
-                  <p>
-                    {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
-                  </p>
+
                 </div>
               ),
               title: <>
-              <div className={classes.cardName}>
-                <Tooltip title={ticket.whatsapp?.name}>
-                  {IconChannel(ticket.channel)}
-                </Tooltip> {ticket.contact.name}
-             </div> </>,
+                <div className={classes.cardName}>
+                  <Tooltip title={ticket.whatsapp?.name}>
+                    {IconChannel(ticket.channel)}
+                  </Tooltip> {ticket.contact.name}
+                </div> </>,
               draggable: true,
               href: "/tickets/" + ticket.uuid,
             })),
