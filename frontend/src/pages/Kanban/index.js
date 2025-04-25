@@ -112,7 +112,7 @@ const Kanban = () => {
   const jsonString = user.queues.map(queue => queue.UserQueue.queueId);
 
   useEffect(() => {
-    fetchTags().then(() => {
+    fetchTags().then((tags) => {
       fetchTickets({
         queueIds: JSON.stringify(jsonString),
         users: JSON.stringify(user.id),
@@ -131,6 +131,7 @@ const Kanban = () => {
       const userTagIds = user.tags.map(tag => tag.id);
       const filteredTags = fetchedTags.filter(tag => userTagIds.includes(tag.id));
       setTags(filteredTags);
+      return filteredTags;
       //fetchTickets();
     } catch (error) {
       console.log(error);
@@ -179,19 +180,19 @@ const Kanban = () => {
       socket.off(`company-${companyId}-ticket`, onAppMessage);
       socket.off(`company-${companyId}-appMessage`, onAppMessage);
     };
-  }, [socket, startDate, endDate]);
+  }, [socket, startDate, endDate,tags]);
 
-  const handleSearchClick = () => {
-    fetchTickets();
-  };
+  // const handleSearchClick = () => {
+  //   fetchTickets();
+  // };
 
-  const handleStartDateChange = (event) => {
-    setStartDate(event.target.value);
-  };
+  // const handleStartDateChange = (event) => {
+  //   setStartDate(event.target.value);
+  // };
 
-  const handleEndDateChange = (event) => {
-    setEndDate(event.target.value);
-  };
+  // const handleEndDateChange = (event) => {
+  //   setEndDate(event.target.value);
+  // };
 
   const IconChannel = (channel) => {
     switch (channel) {
