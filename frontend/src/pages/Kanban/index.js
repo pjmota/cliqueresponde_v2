@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useReducer } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
 import { AuthContext } from "../../context/Auth/AuthContext";
@@ -12,7 +12,8 @@ import { Can } from "../../components/Can";
 import toastError from "../../errors/toastError";
 import { Badge, Tooltip, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, useMediaQuery } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
-
+import Brightness1SharpIcon from '@mui/icons-material/Brightness1Sharp';
+import "./Kanban.css"
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -32,12 +33,12 @@ const useStyles = makeStyles(theme => ({
 
 
   },
-  
+
   ticketLabel: {
-    backgroundColor: theme.palette.primary.main,
+   
     borderRadius: theme.shape.borderRadius,
     display: "flex",
-    color: theme.palette.common.white,
+    color: theme.palette.common.black,
     justifyContent: "center",
 
 
@@ -50,6 +51,7 @@ const useStyles = makeStyles(theme => ({
     overflowX: "auto",
     margin: "0 auto",
     position: "static",
+    height: "82vh",
   },
   connectionTag: {
     background: theme.palette.success.main,
@@ -88,6 +90,35 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const StatusIcon = ({ status }) => {
+
+  const colorMap = {
+    pending: "#c4c5bd",
+    closed: "#4CAF50",
+    open: "#f7b904",
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <Brightness1SharpIcon
+        style={{
+          color: colorMap[status],
+          fontSize: "10px",
+          marginRight: "5px",
+          animation: "blink 10s linear infinite"
+        }}
+      />
+      <style>{`
+        @keyframes blink {
+          0% { opacity: 0.5; }
+          
+          100% { opacity: 1; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 const Kanban = () => {
   const classes = useStyles();
   //const theme = useTheme(); // Obter o tema atual
@@ -108,10 +139,57 @@ const Kanban = () => {
   const isAdmin = user.profile === "admin" || user.profile === "supervisor";
   const isSM = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
-  const jsonString = user.queues.map(queue => queue.UserQueue.queueId);
+  const userQueueIds = user.queues.map(queue => queue.UserQueue.queueId);
+
+
+  const initialFilterSettings = {
+    queueIds: userQueueIds,
+    users: [],
+    status: ['pending', 'open'],
+    searchParam: '',
+    hasTags: false
+  };
+
+
+
+
+  function searchParamsReducer(state, action) {
+    switch (action.type) {
+      case 'INITIALIZE':
+
+        return {
+          ...state,
+          queueIds: action.payload.queueIds ? action.payload.queueIds : [],
+          users: action.payload.userId ? [action.payload.userId] : [],
+        };
+      case 'SET_USERS':
+        return { ...state, users: action.payload };
+      case 'SET_STATUS':
+        return { ...state, status: action.payload };
+      case 'SET_SEARCH_TERM':
+        return { ...state, searchParam: action.payload };
+      default:
+        return state;
+    }
+  }
+
+  const [filterSettings, dispatch] = useReducer(searchParamsReducer, initialFilterSettings);
+
 
   useEffect(() => {
-    fetchTags();
+    // Initialize reducer state with user's queues and ID
+    setSelectedStatus(initialFilterSettings.status);
+    dispatch({
+      type: 'INITIALIZE',
+      payload: {
+        queueIds: userQueueIds,
+        userId: null,
+      }
+    });
+
+    fetchTags().then((tags) => {
+      fetchTickets(filterSettings, tags);
+    });
     fetchUsers();
   }, [user]);
 
@@ -123,23 +201,42 @@ const Kanban = () => {
       const userTagIds = user.tags.map(tag => tag.id);
       const filteredTags = fetchedTags.filter(tag => userTagIds.includes(tag.id));
       setTags(filteredTags);
-      fetchTickets();
+      return filteredTags;
     } catch (error) {
       console.log(error);
     }
   };
 
-  const fetchTickets = async (params, tags) => {
+  const fetchTickets = async (filterParams, tags) => {
     try {
-      const { data } = await api.get("/ticket/kanban", {
-        params: {
-          queueIds: JSON.stringify(jsonString),
-          startDate: startDate,
-          endDate: endDate,
-          ...params
+      const params = {
+        queueIds: JSON.stringify(filterParams.queueIds),
+        users: JSON.stringify(filterParams.users),
+        status: JSON.stringify(filterParams.status),
+        searchParam: filterParams.searchParam,
+        hasTags: filterParams.hasTags
+      };
+
+      const requests = tags.map(tag => api.get("/ticket/kanban", {
+        params: { ...params, tags: JSON.stringify([tag.id]) }
+      }));
+
+      requests.push(api.get("/ticket/kanban", {
+        params: { ...params, hasTags: false }
+      }));
+
+      const response = await Promise.all(requests);
+
+      const tickets = [];
+
+      response.map(({ data }) => data.tickets).flat().forEach(ticket => {
+        if (tickets.some(item => item.id === ticket.id)) {
+          return;
         }
+        tickets.push({ ...ticket });
       });
-      setTickets(data.tickets);
+
+      setTickets(tickets);
     } catch (err) {
       console.log(err);
       setTickets([]);
@@ -150,7 +247,7 @@ const Kanban = () => {
     const companyId = user.companyId;
     const onAppMessage = (data) => {
       if (data.action === "create" || data.action === "update" || data.action === "delete") {
-        fetchTickets();
+        fetchTickets(filterSettings, tags);
       }
     };
     socket.on(`company-${companyId}-ticket`, onAppMessage);
@@ -160,19 +257,19 @@ const Kanban = () => {
       socket.off(`company-${companyId}-ticket`, onAppMessage);
       socket.off(`company-${companyId}-appMessage`, onAppMessage);
     };
-  }, [socket, startDate, endDate]);
+  }, [socket, startDate, endDate, tags, filterSettings]);
 
-  const handleSearchClick = () => {
-    fetchTickets();
-  };
+  // const handleSearchClick = () => {
+  //   fetchTickets();
+  // };
 
-  const handleStartDateChange = (event) => {
-    setStartDate(event.target.value);
-  };
+  // const handleStartDateChange = (event) => {
+  //   setStartDate(event.target.value);
+  // };
 
-  const handleEndDateChange = (event) => {
-    setEndDate(event.target.value);
-  };
+  // const handleEndDateChange = (event) => {
+  //   setEndDate(event.target.value);
+  // };
 
   const IconChannel = (channel) => {
     switch (channel) {
@@ -206,7 +303,12 @@ const Kanban = () => {
         label: filteredTickets.length.toString(),
         cards: filteredTickets.map(ticket => ({
           id: ticket.id.toString(),
-          label: "Ticket nº " + ticket.id.toString(),
+          label: <>
+            <div style={{ display: 'flex', justifyContent: 'end', gap: '5px' }}>
+              <div className={classes.ticketLabel}>
+                {"Ticket nº " + ticket.id.toString()}</div>
+              <StatusIcon status={ticket.status} /></div></>,
+
           description: (
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -224,6 +326,7 @@ const Kanban = () => {
                 </Typography>
               </div>
               <div style={{ textAlign: 'left' }}>{ticket.lastMessage || " "}</div>
+              {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
               <Button
                 className={`${classes.button} ${classes.cardButton}`}
                 onClick={() => {
@@ -232,7 +335,7 @@ const Kanban = () => {
                 Ver Ticket
               </Button>
               <span style={{ marginRight: '8px' }} />
-              {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
+
             </div>
           ),
           title: <>
@@ -264,17 +367,21 @@ const Kanban = () => {
               id: ticket.id.toString(),
               label:
                 <>
-                  <div
+                  <div style={{ display: 'flex', justifyContent: 'end', gap: '5px' }}>
+                    <div
 
-                    className={classes.ticketLabel}>
-                    {"Ticket nº " + ticket.id.toString()}
-                  </div></>,
+                      className={classes.ticketLabel}>
+                      {"Ticket nº " + ticket.id.toString()}</div>
+                    <StatusIcon status={ticket.status} /></div></>,
               description: (
                 <div>
                   <p>
                     {ticket.contact.number}
                     <br />
                     {ticket.lastMessage || " "}
+                  </p>
+                  <p>
+                    {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
                   </p>
                   <Button
                     className={`${classes.button} ${classes.cardButton}`}
@@ -284,17 +391,15 @@ const Kanban = () => {
                     Ver Ticket
                   </Button>
                   <span style={{ marginRight: '8px' }} />
-                  <p>
-                    {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
-                  </p>
+
                 </div>
               ),
               title: <>
-              <div className={classes.cardName}>
-                <Tooltip title={ticket.whatsapp?.name}>
-                  {IconChannel(ticket.channel)}
-                </Tooltip> {ticket.contact.name}
-             </div> </>,
+                <div className={classes.cardName}>
+                  <Tooltip title={ticket.whatsapp?.name}>
+                    {IconChannel(ticket.channel)}
+                  </Tooltip> {ticket.contact.name}
+                </div> </>,
               draggable: true,
               href: "/tickets/" + ticket.uuid,
             })),
@@ -311,7 +416,7 @@ const Kanban = () => {
   };
 
   useEffect(() => {
-    popularCards(jsonString);
+    popularCards(userQueueIds);
   }, [tags, tickets]);
 
   const handleCardMove = async (cardId, sourceLaneId, targetLaneId, event) => {
@@ -326,7 +431,7 @@ const Kanban = () => {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
-      await fetchTickets(jsonString);
+      //await fetchTickets(jsonString);
       const { data } = await api.get(`/tags/list`, { params: { kanban: 1 } });
 
       //popularCards(jsonString);
@@ -365,39 +470,51 @@ const Kanban = () => {
   };
 
   const handleChangeUser = (selected) => {
+    dispatch({
+      type: 'SET_USERS',
+      payload: selected
+    });
 
-    const params = {
-      queueIds: JSON.stringify(jsonString),
-      users: JSON.stringify(selected),
-      status: JSON.stringify(status.map(item => item.id)),
-      searchParam: searchParam
+    // Create temporary merged state for immediate fetch
+    const updatedSettings = {
+      ...filterSettings,
+      users: selected
     };
 
-    fetchTickets(params, tags);
+    fetchTickets(updatedSettings, tags);
     setSelectedUsers(selected);
-
   }
   const handleChangeStatus = (selected) => {
-    const params = {
-      queueIds: JSON.stringify(jsonString),
-      users: JSON.stringify(users.map(item => item.id)),
-      status: JSON.stringify(selected),
-      searchParam: searchParam
+    dispatch({
+      type: 'SET_STATUS',
+      payload: selected
+    });
+
+    // Create temporary merged state for immediate fetch
+    const updatedSettings = {
+      ...filterSettings,
+      status: selected
     };
 
-    fetchTickets(params, tags);
+    fetchTickets(updatedSettings, tags);
     setSelectedStatus(selected);
   }
   const handleSearch = (e) => {
-    const params = {
-      queueIds: JSON.stringify(jsonString),
+    const searchValue = e.target.value.toLowerCase();
 
-      searchParam: e.target.value
+    dispatch({
+      type: 'SET_SEARCH_TERM',
+      payload: searchValue
+    });
+
+    // Create temporary merged state for immediate fetch
+    const updatedSettings = {
+      ...filterSettings,
+      searchParam: searchValue
     };
 
-    setSearchParam(e.target.value.toLowerCase());
-    fetchTickets(params, tags);
-
+    fetchTickets(updatedSettings, tags);
+    setSearchParam(searchValue);
   }
 
 
@@ -546,7 +663,8 @@ const Kanban = () => {
 
           style={{
             backgroundColor: 'rgba(252, 252, 252, 0.03)',
-            height: isSM ? '85vh' : '80vh',
+
+            height: "100%"
           }}
         />
       </div>

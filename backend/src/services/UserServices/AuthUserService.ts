@@ -31,6 +31,7 @@ interface SerializedUser {
   token?: string;
   allTicketsQueuesWaiting?: string;
   viewAllContacts?: string;
+  allowConnections?: string;
 }
 
 interface Request {

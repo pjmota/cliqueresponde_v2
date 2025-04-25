@@ -180,6 +180,7 @@ const Reports = () => {
           id: ticket.id,
           Conexão: ticket.whatsappName,
           Contato: ticket.contactName,
+          Numero: ticket.contactNumber,
           Usuário: ticket.userName,
           Fila: ticket.queueName,
           Status: ticket.status,
@@ -392,7 +393,7 @@ const Reports = () => {
               />
             </Grid>
 
-            <Grid item xs={12} sm={3} md={3}>
+            <Grid item xs={12} sm={2} md={2}>
               <TextField
                 label="Data Inicial"
                 type="date"
@@ -406,7 +407,7 @@ const Reports = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={3} md={3}>
+            <Grid item xs={12} sm={2} md={2}>
               <TextField
                 label="Data Final"
                 type="date"
@@ -420,7 +421,16 @@ const Reports = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={3} md={3} style={{ display: 'flex', justifyContent: 'center' }}>
+            <Grid 
+              item 
+              xs={12} 
+              sm={5} 
+              md={5} 
+              style={{ 
+                display: 'flex', 
+                justifyContent: 'space-evenly',
+                alignItems: 'center' 
+              }}>
               <FormControlLabel
                 control={
                   <Switch
@@ -429,19 +439,30 @@ const Reports = () => {
                     onChange={() => setOnlyRated(!onlyRated)}
                   />
                 }
-
+                style={{whiteSpace: "nowrap"}}
                 label={i18n.t("reports.buttons.onlyRated")}
               />
-              <IconButton onClick={exportarGridParaExcel} aria-label="Exportar para Excel">
-
-                <SaveAlt />
-              </IconButton>
+              <Tooltip 
+                title={i18n.t("reports.buttons.exportExcel")}
+                placement="top"
+              >
+                <IconButton onClick={exportarGridParaExcel} aria-label={i18n.t("reports.buttons.exportExcel")}>
+                  <SaveAlt />
+                </IconButton>
+              </Tooltip>
               <Button
                 variant="contained"
                 color="primary"
                 onClick={() => handleFilter(pageNumber)}
                 size="small"
-              >{i18n.t("reports.buttons.filter")}</Button>
+                style={{
+                  whiteSpace: "nowrap",
+                  minWidth: "auto", // Remove a largura mínima padrão
+                  padding: "4px 8px", // Ajusta o padding para ser mais compacto
+                }}
+              >
+                {i18n.t("reports.buttons.filter")}
+              </Button>
             </Grid>
           </Grid>
 
@@ -459,6 +480,7 @@ const Reports = () => {
               <TableCell align="center">{i18n.t("reports.table.id")}</TableCell>
               <TableCell align="left">{i18n.t("reports.table.whatsapp")}</TableCell>
               <TableCell align="left">{i18n.t("reports.table.contact")}</TableCell>
+              <TableCell align="left">{i18n.t("reports.table.contactNumber")}</TableCell>
               <TableCell align="left">{i18n.t("reports.table.user")}</TableCell>
               <TableCell align="left">{i18n.t("reports.table.queue")}</TableCell>
               <TableCell align="center">{i18n.t("reports.table.status")}</TableCell>
@@ -474,18 +496,19 @@ const Reports = () => {
             <>
               {tickets.map((ticket) => (
                 <TableRow key={ticket.id}>
-                  <TableCell align="center">{ticket.id}</TableCell>
-                  <TableCell align="left">{ticket?.whatsappName}</TableCell>
-                  <TableCell align="left">{ticket?.contactName}</TableCell>
-                  <TableCell align="left">{ticket?.userName}</TableCell>
-                  <TableCell align="left">{ticket?.queueName}</TableCell>
-                  <TableCell align="center">{ticket?.status}</TableCell>
-                  <TableCell align="left">{ticket?.lastMessage}</TableCell>
-                  <TableCell align="center">{ticket?.createdAt}</TableCell>
-                  <TableCell align="center">{ticket?.closedAt}</TableCell>
-                  <TableCell align="center">{ticket?.supportTime}</TableCell>
-                  <TableCell align="center">{ticket?.NPS}</TableCell>
-                  <TableCell align="center">
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="center">{ticket.id}</TableCell>
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="left">{ticket?.whatsappName}</TableCell>
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="left">{ticket?.contactName}</TableCell>
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="left">{ticket?.contactNumber}</TableCell>
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="left">{ticket?.userName}</TableCell>
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="left">{ticket?.queueName}</TableCell>
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="center">{ticket?.status}</TableCell>
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="left">{ticket?.lastMessage}</TableCell>
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="center">{ticket?.createdAt}</TableCell>
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="center">{ticket?.closedAt}</TableCell>
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="center">{ticket?.supportTime}</TableCell>
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="center">{ticket?.NPS}</TableCell>
+                  <TableCell style={{ whiteSpace: "nowrap" }} align="center">
                     <Typography
                       noWrap
                       component="span"

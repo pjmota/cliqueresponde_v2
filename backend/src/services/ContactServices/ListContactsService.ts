@@ -327,7 +327,7 @@ const ListContactsService = async ({
       }
     ],
     order: [["name", "ASC"]],
-    logging: console.log
+    //logging: console.log
   });
 
   const hasMore = count > offset + contacts.length;

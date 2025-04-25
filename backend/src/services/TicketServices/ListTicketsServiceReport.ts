@@ -42,6 +42,7 @@ export default async function ListTicketsServiceReport(
 	  t.id,
 	  w."name" as "whatsappName",
     c."name" as "contactName",
+    c."number" as "contactNumber",
 	  u."name" as "userName",
 	  q."name" as "queueName",
 	  t."lastMessage",
@@ -87,6 +88,7 @@ export default async function ListTicketsServiceReport(
 	  t.id,
 	  w."name" as "whatsappName",
     c."name" as "contactName",
+    c."number" as "contactNumber",
 	  u."name" as "userName",
 	  q."name" as "queueName",
 	  t."lastMessage",
@@ -167,14 +169,16 @@ export default async function ListTicketsServiceReport(
     ${where}  `;
 
   const totalTicketsResult = await sequelize.query(totalTicketsQuery, {
-    type: QueryTypes.SELECT
+    type: QueryTypes.SELECT,
+    //logging: console.log
   });
   const totalTickets = totalTicketsResult[0];
 
   const paginatedQuery = `${finalQuery} ORDER BY t."createdAt" DESC LIMIT ${pageSize} OFFSET ${offset}`;
 
   const responseData: any[] = await sequelize.query(paginatedQuery, {
-    type: QueryTypes.SELECT
+    type: QueryTypes.SELECT,
+    logging: console.log
   });
 
   return { tickets: responseData, totalTickets };
