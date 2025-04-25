@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useReducer } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
 import { AuthContext } from "../../context/Auth/AuthContext";
@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
 
 
   },
-  
+
   ticketLabel: {
    
     borderRadius: theme.shape.borderRadius,
@@ -139,16 +139,56 @@ const Kanban = () => {
   const isAdmin = user.profile === "admin" || user.profile === "supervisor";
   const isSM = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
-  const jsonString = user.queues.map(queue => queue.UserQueue.queueId);
+  const userQueueIds = user.queues.map(queue => queue.UserQueue.queueId);
+
+
+  const initialFilterSettings = {
+    queueIds: userQueueIds,
+    users: [],
+    status: ['pending', 'open'],
+    searchParam: '',
+    hasTags: false
+  };
+
+
+
+
+  function searchParamsReducer(state, action) {
+    switch (action.type) {
+      case 'INITIALIZE':
+
+        return {
+          ...state,
+          queueIds: action.payload.queueIds ? action.payload.queueIds : [],
+          users: action.payload.userId ? [action.payload.userId] : [],
+        };
+      case 'SET_USERS':
+        return { ...state, users: action.payload };
+      case 'SET_STATUS':
+        return { ...state, status: action.payload };
+      case 'SET_SEARCH_TERM':
+        return { ...state, searchParam: action.payload };
+      default:
+        return state;
+    }
+  }
+
+  const [filterSettings, dispatch] = useReducer(searchParamsReducer, initialFilterSettings);
+
 
   useEffect(() => {
+    // Initialize reducer state with user's queues and ID
+    setSelectedStatus(initialFilterSettings.status);
+    dispatch({
+      type: 'INITIALIZE',
+      payload: {
+        queueIds: userQueueIds,
+        userId: null,
+      }
+    });
+
     fetchTags().then((tags) => {
-      fetchTickets({
-        queueIds: JSON.stringify(jsonString),
-        users: JSON.stringify(user.id),
-        status: JSON.stringify(status.map(item => item.id)),
-        searchParam: searchParam
-      }, tags);
+      fetchTickets(filterSettings, tags);
     });
     fetchUsers();
   }, [user]);
@@ -162,17 +202,29 @@ const Kanban = () => {
       const filteredTags = fetchedTags.filter(tag => userTagIds.includes(tag.id));
       setTags(filteredTags);
       return filteredTags;
-      //fetchTickets();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const fetchTickets = async (params, tags) => {
-    
+  const fetchTickets = async (filterParams, tags) => {
     try {
-      const requests = tags.map(tag => api.get("/ticket/kanban", { params: { ...params, tags: JSON.stringify([tag.id]) } }));
-      requests.push(api.get("/ticket/kanban", { params: { ...params, hasTags: false } }));
+      const params = {
+        queueIds: JSON.stringify(filterParams.queueIds),
+        users: JSON.stringify(filterParams.users),
+        status: JSON.stringify(filterParams.status),
+        searchParam: filterParams.searchParam,
+        hasTags: filterParams.hasTags
+      };
+
+      const requests = tags.map(tag => api.get("/ticket/kanban", {
+        params: { ...params, tags: JSON.stringify([tag.id]) }
+      }));
+
+      requests.push(api.get("/ticket/kanban", {
+        params: { ...params, hasTags: false }
+      }));
+
       const response = await Promise.all(requests);
 
       const tickets = [];
@@ -181,7 +233,7 @@ const Kanban = () => {
         if (tickets.some(item => item.id === ticket.id)) {
           return;
         }
-        tickets.push({...ticket});
+        tickets.push({ ...ticket });
       });
 
       setTickets(tickets);
@@ -195,12 +247,7 @@ const Kanban = () => {
     const companyId = user.companyId;
     const onAppMessage = (data) => {
       if (data.action === "create" || data.action === "update" || data.action === "delete") {
-        fetchTickets({
-          queueIds: JSON.stringify(jsonString),
-          users: JSON.stringify(user.id),
-          status: JSON.stringify(status.map(item => item.id)),
-          searchParam: searchParam
-        }, tags);
+        fetchTickets(filterSettings, tags);
       }
     };
     socket.on(`company-${companyId}-ticket`, onAppMessage);
@@ -210,7 +257,7 @@ const Kanban = () => {
       socket.off(`company-${companyId}-ticket`, onAppMessage);
       socket.off(`company-${companyId}-appMessage`, onAppMessage);
     };
-  }, [socket, startDate, endDate,tags]);
+  }, [socket, startDate, endDate, tags, filterSettings]);
 
   // const handleSearchClick = () => {
   //   fetchTickets();
@@ -369,7 +416,7 @@ const Kanban = () => {
   };
 
   useEffect(() => {
-    popularCards(jsonString);
+    popularCards(userQueueIds);
   }, [tags, tickets]);
 
   const handleCardMove = async (cardId, sourceLaneId, targetLaneId, event) => {
@@ -423,39 +470,51 @@ const Kanban = () => {
   };
 
   const handleChangeUser = (selected) => {
+    dispatch({
+      type: 'SET_USERS',
+      payload: selected
+    });
 
-    const params = {
-      queueIds: JSON.stringify(jsonString),
-      users: JSON.stringify(selected),
-      status: JSON.stringify(status.map(item => item.id)),
-      searchParam: searchParam
+    // Create temporary merged state for immediate fetch
+    const updatedSettings = {
+      ...filterSettings,
+      users: selected
     };
 
-    fetchTickets(params, tags);
+    fetchTickets(updatedSettings, tags);
     setSelectedUsers(selected);
-
   }
   const handleChangeStatus = (selected) => {
-    const params = {
-      queueIds: JSON.stringify(jsonString),
-      users: JSON.stringify(users.map(item => item.id)),
-      status: JSON.stringify(selected),
-      searchParam: searchParam
+    dispatch({
+      type: 'SET_STATUS',
+      payload: selected
+    });
+
+    // Create temporary merged state for immediate fetch
+    const updatedSettings = {
+      ...filterSettings,
+      status: selected
     };
 
-    fetchTickets(params, tags);
+    fetchTickets(updatedSettings, tags);
     setSelectedStatus(selected);
   }
   const handleSearch = (e) => {
-    const params = {
-      queueIds: JSON.stringify(jsonString),
+    const searchValue = e.target.value.toLowerCase();
 
-      searchParam: e.target.value
+    dispatch({
+      type: 'SET_SEARCH_TERM',
+      payload: searchValue
+    });
+
+    // Create temporary merged state for immediate fetch
+    const updatedSettings = {
+      ...filterSettings,
+      searchParam: searchValue
     };
 
-    setSearchParam(e.target.value.toLowerCase());
-    fetchTickets(params, tags);
-
+    fetchTickets(updatedSettings, tags);
+    setSearchParam(searchValue);
   }
 
 
