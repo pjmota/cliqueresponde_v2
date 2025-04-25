@@ -4,7 +4,7 @@ import { getWbot } from "../../libs/wbot";
 import logger from "../../utils/logger";
 
 const checker = async (number: string, wbot: any) => {
-  const [validNumber] = await wbot.onWhatsApp(`${number}@s.whatsapp.net`);
+  const validNumber = await wbot.onWhatsApp(`${number}@s.whatsapp.net`);
   return validNumber;
 };
 
@@ -24,7 +24,7 @@ const checkerGroup = async (number: string, wbot: any) => {
 const CheckContactNumber = async (
   number: string, companyId: number, isGroup: boolean = false, userId?: number
 ): Promise<string> => {
-  const whatsappList = await GetDefaultWhatsApp(companyId);
+  const whatsappList = await GetDefaultWhatsApp(companyId, userId);
 
   if (whatsappList.channel === "whatsapp_oficial") {
     return number;

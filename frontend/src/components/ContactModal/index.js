@@ -118,9 +118,11 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 	const handleSaveContact = async values => {
 		try {
 			if (contactId) {
+				values.isGroup = Number(values.number.length) > 13 ? true : false;
 				await api.put(`/contacts/${contactId}`, { ...values, disableBot: disableBot });
 				handleClose();
 			} else {
+				values.isGroup = Number(values.number.length) > 13 ? true : false;
 				const { data } = await api.post("/contacts", { ...values, disableBot: disableBot });
 				if (onSave) {
 					onSave(data);

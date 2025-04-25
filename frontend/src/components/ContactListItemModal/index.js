@@ -119,8 +119,7 @@ const ContactListItemModal = ({
   const handleSaveContact = async (values) => {
     try {
       if (contactId) {
-        values.isGroup = values.number > 12 ? true : false;
-
+        values.isGroup = Number(values.number.length) > 13 ? true : false;
         await api.put(`/contact-list-items/${contactId}`, {
           ...values,
           companyId: user.companyId,
@@ -129,7 +128,7 @@ const ContactListItemModal = ({
         });
         handleClose();
       } else {
-        values.isGroup = values.number > 12 ? true : false;
+        values.isGroup = Number(values.number.length) > 13 ? true : false;
         const { data } = await api.post("/contact-list-items", {
           ...values,
           companyId: user.companyId,
