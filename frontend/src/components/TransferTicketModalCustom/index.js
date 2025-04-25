@@ -261,7 +261,7 @@ const TransferTicketModalCustom = ({
             />
           </Grid>
         </Grid>
-        {user.profile === "admin" && (
+        {(user.profile === "admin" || user.allowConnections === "enabled") && (
           <Grid container spacing={2}>
             <Grid item xs={12} sm={12} xl={12}>
               <FormControl
