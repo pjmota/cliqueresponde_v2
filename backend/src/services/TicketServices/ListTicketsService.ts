@@ -600,6 +600,21 @@ const ListTicketsService = async ({
         status: { [Op.in]: statusFilters }
       };
     }
+
+    
+    if (!user.super && user.profile !== "admin") {
+      whereCondition = {
+        ...whereCondition,
+        [Op.and]: [
+        {
+          userId: {
+          [Op.or]: [userId, null]
+          }
+        }
+        ]
+      };
+    }
+
   } else if (withUnreadMessages === "true") {
     whereCondition = {
       [Op.or]: [
