@@ -1,11 +1,30 @@
 import AppError from "../../errors/AppError";
 import GetDefaultWhatsApp from "../../helpers/GetDefaultWhatsApp";
 import { getWbot } from "../../libs/wbot";
+import logger from "../../utils/logger";
+
+const checker = async (number: string, wbot: any) => {
+  const [validNumber] = await wbot.onWhatsApp(`${number}@s.whatsapp.net`);
+  return validNumber;
+};
+
+const checkerGroup = async (number: string, wbot: any) => {
+  try {
+    const validGroup = await wbot.groupMetadata(`${number}@g.us`);
+    return validGroup;
+  } catch (error){
+    if (error.message.includes("not found")) {
+      throw new AppError("ERR_GROUP_NOT_FOUND");
+    }
+    console.error('Error checking group:', error);
+    throw new AppError("ERR_CHECK_GROUP");
+  }
+};
 
 const CheckContactNumber = async (
   number: string, companyId: number, isGroup: boolean = false, userId?: number
 ): Promise<string> => {
-  const whatsappList = await GetDefaultWhatsApp(companyId, userId);
+  const whatsappList = await GetDefaultWhatsApp(companyId);
 
   if (whatsappList.channel === "whatsapp_oficial") {
     return number;
@@ -16,15 +35,16 @@ const CheckContactNumber = async (
   let numberArray;
 
   if (isGroup) {
-    const grupoMeta = await wbot.groupMetadata(number);
+    const grupoMeta = await checkerGroup(number, wbot);
     numberArray = [
       {
+        ...grupoMeta,
         jid: grupoMeta.id,
         exists: true
       }
-    ]; 
+    ];
   } else {
-    numberArray = await wbot.onWhatsApp(`${number}@s.whatsapp.net`);
+    numberArray = await checker(number, wbot);
   }
 
   const isNumberExit = numberArray;
