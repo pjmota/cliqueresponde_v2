@@ -6,8 +6,6 @@ import sequelize from "../../database";
 import path from "path";
 import logger from "../../utils/logger";
 import getHappeningsNotContinued from "./DashboardTicketsHappeningsNotConotinued";
-import logger from "../../utils/logger";
-import getHappeningsNotContinued from "./DashboardTicketsHappeningsNotConotinued";
 const fs = require('fs');
 
 
@@ -70,13 +68,13 @@ export default async function DashboardDataService(
           where "finishedAt" >= '${params.date_from} 00:00:00' and "finishedAt" <= '${params.date_to} 23:59:59'
         ) "supportFinished",
         (
-          select count(distinct tk."ticketId")
+          select count(tk."ticketId")
           from traking tk
           left join "Tickets" t on t.id = tk."ticketId"
           where t.status like 'open' and tk."finishedAt" is null and t."isGroup" = 'false'
         ) "supportHappening",
         (
-          select count(distinct tk."ticketId")
+          select count(tk."ticketId")
           from traking tk
           left join "Tickets" t on t.id = tk."ticketId"
           where t."status" = 'pending' and tk."finishedAt" is null

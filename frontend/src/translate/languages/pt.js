@@ -80,6 +80,8 @@ const messages = {
           activeTickets: "Tickets Ativos",
           passiveTickets: "Tickets Passivos",
           groups: "Grupos",
+          queueDetails: "Detalhe das Filas",
+          ticketsWithoutAnswers: "Tikets sem Respostas"
         },
         users: {
           name: "Nome",
@@ -1408,10 +1410,11 @@ const messages = {
           actions: "Ações",
           lastMessage: "Últ. Mensagem",
           contact: "Cliente",
+          contactNumber: "Número",
           supportTime: "Tempo de Atendimento",
         },
         buttons: {
-
+          exportExcel: "Exportar para Excel",
           filter: "Aplicar Filtro",
           onlyRated: "Apenas Avaliados",
         },
