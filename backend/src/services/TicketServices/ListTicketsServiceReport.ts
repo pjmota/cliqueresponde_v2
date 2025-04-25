@@ -178,7 +178,7 @@ export default async function ListTicketsServiceReport(
 
   const responseData: any[] = await sequelize.query(paginatedQuery, {
     type: QueryTypes.SELECT,
-    logging: console.log
+    //logging: console.log
   });
 
   return { tickets: responseData, totalTickets };
