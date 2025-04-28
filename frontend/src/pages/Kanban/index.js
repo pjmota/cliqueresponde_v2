@@ -14,6 +14,7 @@ import { Badge, Tooltip, Typography, Button, TextField, FormControl, InputLabel,
 import SearchIcon from "@material-ui/icons/Search";
 import Brightness1SharpIcon from '@mui/icons-material/Brightness1Sharp';
 import "./Kanban.css"
+import { use } from "react";
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -35,7 +36,7 @@ const useStyles = makeStyles(theme => ({
   },
 
   ticketLabel: {
-   
+
     borderRadius: theme.shape.borderRadius,
     display: "flex",
     color: theme.palette.common.black,
@@ -117,6 +118,65 @@ const StatusIcon = ({ status }) => {
       `}</style>
     </div>
   );
+}
+
+const CardFooter = ({ ticket }) => {
+
+  const [schedules, setSchedules] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchSchedules = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/schedules`, { params: { ticketId: ticket.id } });
+      if (response.data.schedules.length === 0) {
+        return;
+      }
+      setSchedules(response.data.schedules);
+    } catch (error) {
+      console.error("Error fetching schedules:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getLastSchedule = () => {
+    if (schedules?.length === 0) {
+      return null;
+    }
+    const lastSchedule = schedules.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+
+    return lastSchedule;
+  }
+
+  useEffect(() => {
+    fetchSchedules();
+  }, []);
+
+  return (<>
+
+    <Typography
+      variant="body2"
+      color="textSecondary"
+      component="p"
+    >
+      {loading ? (
+        <span>Carregando...</span>
+      ) : (
+        <>
+          {schedules?.length > 0 ? <>
+
+            <span>Ult. agendamento: {new Date(getLastSchedule().createdAt).toLocaleDateString()}</span>
+          </> : (
+           /*  <span>Sem agendamentos</span> */
+           <></>
+          )}
+        </>
+      )}
+    </Typography>
+
+
+  </>)
 }
 
 const Kanban = () => {
@@ -391,7 +451,7 @@ const Kanban = () => {
                     Ver Ticket
                   </Button>
                   <span style={{ marginRight: '8px' }} />
-
+                  <CardFooter ticket={ticket} />
                 </div>
               ),
               title: <>
