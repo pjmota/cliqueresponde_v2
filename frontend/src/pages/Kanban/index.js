@@ -10,10 +10,14 @@ import { Facebook, Instagram, WhatsApp } from "@material-ui/icons";
 import { format, isSameDay, parseISO } from "date-fns";
 import { Can } from "../../components/Can";
 import toastError from "../../errors/toastError";
-import { Badge, Tooltip, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, useMediaQuery } from "@material-ui/core";
+import { Badge, Tooltip, IconButton, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, useMediaQuery } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
+import Timer from "@material-ui/icons/Timer";
 import Brightness1SharpIcon from '@mui/icons-material/Brightness1Sharp';
+import ScheduleModal from "../../components/ScheduleModal";
+
 import "./Kanban.css"
+import { use } from "react";
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -35,7 +39,7 @@ const useStyles = makeStyles(theme => ({
   },
 
   ticketLabel: {
-   
+
     borderRadius: theme.shape.borderRadius,
     display: "flex",
     color: theme.palette.common.black,
@@ -119,6 +123,80 @@ const StatusIcon = ({ status }) => {
   );
 }
 
+const CardFooter = ({ ticket, onScheduleButton }) => {
+
+  const [schedules, setSchedules] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchSchedules = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/schedules`, { params: { ticketId: ticket.id } });
+      if (response.data.schedules.length === 0) {
+        return;
+      }
+      setSchedules(response.data.schedules);
+    } catch (error) {
+      console.error("Error fetching schedules:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getLastSchedule = () => {
+    if (schedules?.length === 0) {
+      return null;
+    }
+    const lastSchedule = schedules.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+
+    return lastSchedule;
+  }
+
+  useEffect(() => {
+    fetchSchedules();
+  }, []);
+
+  return (<>
+
+    <Typography
+      variant="body2"
+      color="textSecondary"
+      component="p"
+    >
+      {loading ? (
+        <span>Carregando...</span>
+      ) : (
+        <>
+          {schedules?.length > 0 ? <>
+            <div
+
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Ult. agendamento: {new Date(getLastSchedule().sendAt).toLocaleDateString()} {new Date(getLastSchedule().sendAt).toLocaleTimeString()}</span>
+              <IconButton
+                aria-label="scheduleMessage"
+                component="span"
+                onClick={() => {
+
+                  onScheduleButton(getLastSchedule().id, ticket.contactId, ticket);
+
+                }}
+                disabled={loading}
+              >
+                <Timer />
+              </IconButton>
+            </div>
+          </> : (
+            /*  <span>Sem agendamentos</span> */
+            <></>
+          )}
+        </>
+      )}
+    </Typography>
+
+
+  </>)
+}
+
 const Kanban = () => {
   const classes = useStyles();
   //const theme = useTheme(); // Obter o tema atual
@@ -137,8 +215,10 @@ const Kanban = () => {
   const [users, setUsers] = useState([]);
   const [status, setStatus] = useState([{ id: 'pending', label: 'Pendente' }, { id: 'closed', label: 'Fechado' }, { id: 'open', label: 'Aberto' }]);
   const isAdmin = user.profile === "admin" || user.profile === "supervisor";
-  const isSM = useMediaQuery(theme => theme.breakpoints.down('sm'));
-
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
+  const [scheduleContactId, setScheduleContactId] = useState(null);
+  const [scheduleTicket, setScheduleTicket] = useState(null);
   const userQueueIds = user.queues.map(queue => queue.UserQueue.queueId);
 
 
@@ -151,6 +231,23 @@ const Kanban = () => {
   };
 
 
+
+  const handleOpenScheduleModal = (scheduleId, contactId,ticket) => {
+    setSelectedSchedule(scheduleId);
+    setScheduleContactId(contactId);
+    setScheduleTicket(ticket);
+    setScheduleModalOpen(true);
+  };
+
+  const handleCloseScheduleModal = () => {
+    setSelectedSchedule(null);
+    setScheduleModalOpen(false);
+    setScheduleContactId(null);
+    setScheduleTicket(null);
+    
+  };
+
+  
 
 
   function searchParamsReducer(state, action) {
@@ -326,14 +423,16 @@ const Kanban = () => {
                 </Typography>
               </div>
               <div style={{ textAlign: 'left' }}>{ticket.lastMessage || " "}</div>
-              {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
-              <Button
-                className={`${classes.button} ${classes.cardButton}`}
-                onClick={() => {
-                  handleCardClick(ticket.uuid)
-                }}>
-                Ver Ticket
-              </Button>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'start',gap: '5px' }}>
+                {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
+                <Button
+                  className={`${classes.button} ${classes.cardButton}`}
+                  onClick={() => {
+                    handleCardClick(ticket.uuid)
+                  }}>
+                  Ver Ticket
+                </Button>
+              </div>
               <span style={{ marginRight: '8px' }} />
 
             </div>
@@ -380,6 +479,7 @@ const Kanban = () => {
                     <br />
                     {ticket.lastMessage || " "}
                   </p>
+
                   <p>
                     {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
                   </p>
@@ -389,9 +489,10 @@ const Kanban = () => {
                       handleCardClick(ticket.uuid)
                     }}>
                     Ver Ticket
+
                   </Button>
                   <span style={{ marginRight: '8px' }} />
-
+                  <CardFooter onScheduleButton={handleOpenScheduleModal} ticket={ticket} />
                 </div>
               ),
               title: <>
@@ -657,6 +758,16 @@ const Kanban = () => {
         </div>
       </div>
       <div className={classes.kanbanContainer}>
+        {scheduleModalOpen && (
+          <ScheduleModal
+            open={scheduleModalOpen}
+            isEditing={true}
+            scheduleId={selectedSchedule}
+            onClose={handleCloseScheduleModal}
+            contactId={scheduleContactId}
+            ticket={scheduleTicket}
+          />
+        )}
         <Board
           data={file}
           onCardMoveAcrossLanes={handleCardMove}
