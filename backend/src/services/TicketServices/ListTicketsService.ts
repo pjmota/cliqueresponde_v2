@@ -714,7 +714,7 @@ const ListTicketsService = async ({
     console.log("Nenhum exceptionsIds recebido para filtragem.");
   }
 
-  const limitBase = 10;
+  const limitBase = 15;
   let limit = limitBase;
   let offset = limit * (+pageNumber - 1);
   let tickets = [];
