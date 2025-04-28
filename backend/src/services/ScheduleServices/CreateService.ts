@@ -377,18 +377,21 @@ const justNotifyMeFunc = async (
     date.setMinutes(date.getMinutes() - (notifyBefore ?? 15));
 
   
+    const formattedHours = _sendAt.getHours().toString().padStart(2, "0");
+    const formattedMinutes = _sendAt.getMinutes().toString().padStart(2, "0");
+
     const body = `
-🔔 Aviso Agendamento
+  🔔 Aviso Agendamento
 
-*Data do Agendamento:* ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${_sendAt.getHours()}:${_sendAt.getMinutes()}
-*Nome do Contato:* ${contact.name}
+  📅 *Data do Agendamento:* ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${formattedHours}:${formattedMinutes}
+  
+  ☎️ *Nome do Contato:* ${contact.name}
 
-*Whatsapp:* https://wa.me/${contact.number}
+  🟢 *Whatsapp:* https://wa.me/${contact.number}
 
-*Origem:* ${ticket?.whatsapp?.name}
+  ↩️ *Origem:* ${ticket?.whatsapp?.name}
 
-${lastNote ? `Ultima Observação: ${lastNote.note}` : ""}
-
+  ${lastNote ? `📃 *Ultima Observação:* ${lastNote.note}` : ""}
     `;
 
 

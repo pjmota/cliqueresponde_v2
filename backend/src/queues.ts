@@ -195,6 +195,24 @@ async function handleSendScheduledMessage(job) {
       );
     }
 
+    //Adiciona TAG atualizada ao agendamento
+    if(schedule.justNotifyMe) {
+      const funilValue = (await sequelize.query(
+        `select
+          t."name"
+        from "Tags" t
+          left join "TicketTags" tt on tt."tagId" = t.id
+          left join "Schedules" s on s."ticketId" = tt."ticketId"
+        where
+          s."ticketId" = ${schedule.ticketId} AND s."justNotifyMe" = ${schedule.justNotifyMe}`,
+        { type: QueryTypes.SELECT }
+      ));
+      //logger.info(`FunilValue: ${JSON.stringify(funilValue)}`);
+      schedule.body = schedule.body.replace(/(\bData do Agendamento:.*?)(\r?\n)/, `$1\n\n  *Funil:* ${funilValue[0]?.['name'] ?? 'sem funil'}$2\n`);
+    }
+
+
+
     if (schedule.openTicket === "enabled") {
       let ticket = await Ticket.findOne({
         where: {
