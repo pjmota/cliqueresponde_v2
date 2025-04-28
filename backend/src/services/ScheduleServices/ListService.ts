@@ -3,6 +3,7 @@ import Contact from "../../models/Contact";
 import Schedule from "../../models/Schedule";
 import User from "../../models/User";
 import Whatsapp from "../../models/Whatsapp";
+import Ticket from "../../models/Ticket";
 
 interface Request {
   searchParam?: string;
@@ -10,6 +11,7 @@ interface Request {
   userId?: number | string;
   companyId?: number;
   pageNumber?: string | number;
+  ticketId?: string | number
 }
 
 interface Response {
@@ -23,7 +25,8 @@ const ListService = async ({
   contactId = "",
   userId,
   pageNumber = "1",
-  companyId
+  companyId,
+  ticketId
 }: Request): Promise<Response> => {
   let whereCondition = {};
   const limit = 20;
@@ -59,6 +62,13 @@ const ListService = async ({
     }
   }
 
+  if (ticketId) {
+    whereCondition = {
+      ...whereCondition,
+      ticketId
+    }
+  }
+
   if (!user?.super && user?.profile !== "admin") {
     whereCondition = {
       ...whereCondition,
@@ -81,7 +91,8 @@ const ListService = async ({
     include: [
       { model: Contact, as: "contact", attributes: ["id", "name", "companyId", "urlPicture"] },
       { model: User, as: "user", attributes: ["id", "name"] },
-      { model: Whatsapp, as: "whatsapp", attributes: ["id", "name", "channel"] }
+      { model: Whatsapp, as: "whatsapp", attributes: ["id", "name", "channel"] },
+      { model:Ticket, as: "ticket", attributes: ["id"] },
     ],
     //logging: console.log
   });

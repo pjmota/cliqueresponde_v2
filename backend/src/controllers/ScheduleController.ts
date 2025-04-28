@@ -19,10 +19,11 @@ type IndexQuery = {
   contactId?: number | string;
   userId?: number | string;
   pageNumber?: string | number;
+  ticketId?: string;
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const { contactId, pageNumber, searchParam } = req.query as IndexQuery;
+  const { contactId, pageNumber, searchParam,ticketId } = req.query as IndexQuery;
   const { companyId, id: userId } = req.user;
 
   const { schedules, count, hasMore } = await ListService({
@@ -30,7 +31,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     contactId,
     userId,
     pageNumber,
-    companyId
+    companyId,
+    ticketId
   });
 
   return res.json({ schedules, count, hasMore });
