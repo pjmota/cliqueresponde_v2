@@ -383,14 +383,15 @@ const justNotifyMeFunc = async (
     const body = `
   🔔 Aviso Agendamento
 
-  *Data do Agendamento:* ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${formattedHours}:${formattedMinutes}
-  *Nome do Contato:* ${contact.name}
+  📅 *Data do Agendamento:* ${_sendAt.getDate()}/${_sendAt.getMonth() + 1}/${_sendAt.getFullYear()} ${formattedHours}:${formattedMinutes}
+  
+  ☎️ *Nome do Contato:* ${contact.name}
 
-  *Whatsapp:* https://wa.me/${contact.number}
+  🟢 *Whatsapp:* https://wa.me/${contact.number}
 
-  *Origem:* ${ticket?.whatsapp?.name}
+  ↩️ *Origem:* ${ticket?.whatsapp?.name}
 
-  ${lastNote ? `Ultima Observação: ${lastNote.note}` : ""}
+  ${lastNote ? `📃 *Ultima Observação:* ${lastNote.note}` : ""}
     `;
 
 
