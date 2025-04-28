@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useReducer,
   useContext,
+  useCallback,
 } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -97,7 +98,6 @@ const ticketSortDesc = (a, b) => {
 };
 
 const reducer = (state, action) => {
-  //console.log("action", action, state)
   const sortDir = action.sortDir;
 
   if (action.type === "LOAD_TICKETS") {
@@ -237,6 +237,8 @@ const TicketsListCustom = (props) => {
   const { profile, queues } = user;
   const showTicketWithoutQueue = user.allTicket === "enable";
   const companyId = user.companyId;
+  const [isFetching, setIsFetching] = useState(false);
+  const [exceptionsIds, setExceptionsIds] = useState([])
 
   useEffect(() => {
     dispatch({ type: "RESET" });
@@ -269,26 +271,31 @@ const TicketsListCustom = (props) => {
     statusFilter: JSON.stringify(statusFilter),
     userFilter,
     sortTickets,
+    exceptionsIds: JSON.stringify(exceptionsIds)
   });
 
   useEffect(() => {
-    // const queueIds = queues.map((q) => q.id);
-    // const filteredTickets = tickets.filter(
-    //     (t) => queueIds.indexOf(t.queueId) > -1
-    // );
-    // const allticket = user.allTicket === 'enabled';
-    // if (profile === "admin" || allTicket || allowGroup || allHistoric) {
     if (companyId) {
+      const isParaVerificar = tickets.map((ticket) => ticket.id);
+      // Combinar tickets
+      const combinedTickets = [...ticketsList, ...tickets];
+      // Opcional: Remover duplicatas, se desejar
+      const uniqueTickets = Array.from(
+        new Map(combinedTickets.map((ticket) => [ticket.id, ticket])).values()
+      );
+
+      const exceptionsIds = uniqueTickets.map((ticket) => ticket.id);
+
+      // Atualizar o estado com os IDs
+      setExceptionsIds(exceptionsIds);
+
       dispatch({
         type: "LOAD_TICKETS",
-        payload: tickets,
+        payload: uniqueTickets, // ou combinedTickets, se quiser manter duplicatas
         status,
         sortDir: sortTickets,
       });
     }
-    // } else {
-    //  dispatch({ type: "LOAD_TICKETS", payload: filteredTickets });
-    // }
   }, [tickets]);
 
   useEffect(() => {
@@ -307,7 +314,6 @@ const TicketsListCustom = (props) => {
       ticket.queueId && selectedQueueIds.indexOf(ticket.queueId) === -1;
 
     const onCompanyTicketTicketsList = (data) => {
-      // console.log("onCompanyTicketTicketsList", data)
       if (data.action === "updateUnread") {
         dispatch({
           type: "RESET_UNREAD",
@@ -316,7 +322,7 @@ const TicketsListCustom = (props) => {
           sortDir: sortTickets,
         });
       }
-      // console.log(shouldUpdateTicket(data.ticket))
+
       if (
         data.action === "update" &&
         shouldUpdateTicket(data.ticket) &&
@@ -427,8 +433,8 @@ const TicketsListCustom = (props) => {
     profile,
     queues,
     sortTickets,
-    showTicketWithoutQueue,
-    pageNumber
+    showTicketWithoutQueue
+    
   ]);
 
   useEffect(() => {
@@ -450,19 +456,32 @@ const TicketsListCustom = (props) => {
   }, [ticketsList]);
 
   const loadMore = () => {
-    setPageNumber((prevState) => prevState + 1);
+    if (!loading && hasMore && !isFetching) {
+      setIsFetching(true);
+      setPageNumber((prevState) => {
+        const nextPage = prevState + 1;
+        console.log(`Carregando página ${nextPage}`);
+        return nextPage;
+      });
+    }
   };
 
-  const handleScroll = (e) => {
-    console.log("hasMore", hasMore)
-    if (!hasMore || loading) return;
+  const handleScroll = useCallback((e) => {
+    if (!hasMore || loading || isFetching) return;
 
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
 
-    if (scrollHeight - (scrollTop + status === "open" ? 100 : 40) < clientHeight) {
+    if (scrollHeight - scrollTop - clientHeight < 10) {
       loadMore();
     }
-  };
+  }, [hasMore, loading, isFetching]);
+
+  // Resetar isFetching quando a requisição terminar
+  useEffect(() => {
+    if (!loading) {
+      setIsFetching(false);
+    }
+  }, [loading]);
 
   if (status && status !== "search") {
     ticketsList = ticketsList.filter((ticket) => ticket.status === status);

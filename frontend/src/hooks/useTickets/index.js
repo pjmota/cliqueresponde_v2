@@ -19,7 +19,8 @@ const useTickets = ({
   forceSearch,
   userFilter,
   sortTickets,
-  searchOnMessages
+  searchOnMessages,
+  exceptionsIds
 }) => {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(false);
@@ -47,7 +48,8 @@ const useTickets = ({
                 whatsapps: whatsappIds,
                 statusFilter,
                 sortTickets,
-                searchOnMessages
+                searchOnMessages,
+                exceptionsIds
               },
             });
             
