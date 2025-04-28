@@ -433,8 +433,8 @@ const TicketsListCustom = (props) => {
     profile,
     queues,
     sortTickets,
-    showTicketWithoutQueue,
-    pageNumber
+    showTicketWithoutQueue
+    
   ]);
 
   useEffect(() => {
