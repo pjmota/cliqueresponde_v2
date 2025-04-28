@@ -913,7 +913,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 								<Grid container spacing={2}>
 
 									<Grid item xs={12} md={6} xl={6}>
-										<Button
+										{ (!scheduleId) ?  (<Button
 
 											color="secondary"
 											disabled={isSubmitting}
@@ -936,7 +936,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											{i18n.t("scheduleModal.buttons.justNotifyMe")}
 
 
-										</Button>
+										</Button>) :<></>}
 									</Grid>
 
 
