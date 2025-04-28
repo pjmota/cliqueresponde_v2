@@ -4,6 +4,7 @@ import Schedule from "../../models/Schedule";
 import User from "../../models/User";
 import Whatsapp from "../../models/Whatsapp";
 import Ticket from "../../models/Ticket";
+import { id } from "date-fns/locale";
 
 interface Request {
   searchParam?: string;
@@ -34,6 +35,15 @@ const ListService = async ({
 
   const user = await User.findOne({ where: { id: userId } });
 
+/*   console.log("REQUEST", {
+    searchParam,
+    contactId,
+    userId,
+    pageNumber,
+    companyId,
+    ticketId
+  }); */
+
   if (searchParam) {
     whereCondition = {
       [Op.or]: [
@@ -63,9 +73,10 @@ const ListService = async ({
   }
 
   if (ticketId) {
+    //console.log("ticketId", ticketId);
     whereCondition = {
       ...whereCondition,
-      ticketId
+      ticketId: parseInt(ticketId as string)
     }
   }
 
