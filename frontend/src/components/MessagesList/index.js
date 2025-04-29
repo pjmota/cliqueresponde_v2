@@ -719,6 +719,7 @@ const MessagesList = ({
     const today = format(new Date(), "dd/MM/yyyy")
 
     if (index === 0) {
+
       return (
         <span
           className={classes.dailyTimestamp}
@@ -730,10 +731,9 @@ const MessagesList = ({
         </span>
       );
     } else
-      if (index < messagesList.length - 1) {
+      if (index < messagesList.length) {
         let messageDay = parseISO(messagesList[index].createdAt);
         let previousMessageDay = parseISO(messagesList[index - 1].createdAt);
-
         if (!isSameDay(messageDay, previousMessageDay)) {
           return (
             <span
