@@ -276,7 +276,6 @@ const TicketsListCustom = (props) => {
 
   useEffect(() => {
     if (companyId) {
-      const isParaVerificar = tickets.map((ticket) => ticket.id);
       // Combinar tickets
       const combinedTickets = [...ticketsList, ...tickets];
       // Opcional: Remover duplicatas, se desejar
