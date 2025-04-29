@@ -15,6 +15,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import Timer from "@material-ui/icons/Timer";
 import Brightness1SharpIcon from '@mui/icons-material/Brightness1Sharp';
 import ScheduleModal from "../../components/ScheduleModal";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 import "./Kanban.css"
 import { use } from "react";
@@ -135,7 +136,11 @@ const CardFooter = ({ ticket, onScheduleButton }) => {
       if (response.data.schedules.length === 0) {
         return;
       }
-      setSchedules(response.data.schedules);
+
+      //tira em todos os agendamentos que são justNotifyMe && type COMMON
+      const filteredSchedules = response.data.schedules.filter(schedule => (!(schedule.justNotifyMe === false) || !(schedule.type === 'COMMON')));
+
+      setSchedules(filteredSchedules);
     } catch (error) {
       console.error("Error fetching schedules:", error);
     } finally {
@@ -147,6 +152,10 @@ const CardFooter = ({ ticket, onScheduleButton }) => {
     if (schedules?.length === 0) {
       return null;
     }
+
+    
+    
+
     const lastSchedule = schedules.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
 
     return lastSchedule;
@@ -208,6 +217,7 @@ const Kanban = () => {
   const [file, setFile] = useState({ lanes: [] });
   const [startDate, setStartDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const [searchParam, setSearchParam] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -247,11 +257,36 @@ const Kanban = () => {
     
   };
 
+
+  //TODO: Implementar o gerenciamento do estado cada ticket para atualizar cada ticket
+  const handleSaveScheduleModal = () => {
+    setInitialLoading(true);
+    fetchTags().then((tags) => {
+      setTickets([]);
+      fetchTickets(filterSettings, tags).finally(() => {
+        setInitialLoading(false);
+      });
+    });
+  }
+
+  const handleDeleteScheduleModal = () => {
+    setInitialLoading(true);
+    fetchTags().then((tags) => {
+      setTickets([]);
+      fetchTickets(filterSettings, tags).finally(() => {
+        setInitialLoading(false);
+      });
+    });
+  }
+
   
 
 
   function searchParamsReducer(state, action) {
     switch (action.type) {
+      case 'CLEAR':
+        return {}
+
       case 'INITIALIZE':
 
         return {
@@ -284,14 +319,24 @@ const Kanban = () => {
       }
     });
 
-    fetchTags().then((tags) => {
-      fetchTickets(filterSettings, tags);
-    });
+    loadInitialData();
     fetchUsers();
   }, [user]);
 
+  // Separate the initial data loading function for better organization
+  const loadInitialData = async () => {
+    try {
+      setInitialLoading(true);
+      const fetchedTags = await fetchTags();
+      await fetchTickets(filterSettings, fetchedTags);
+    } finally {
+      setInitialLoading(false);
+    }
+  };
+
   const fetchTags = async () => {
     try {
+      setInitialLoading(true);
       const response = await api.get("/tag/kanban/");
       const fetchedTags = response.data.lista || [];
 
@@ -301,6 +346,10 @@ const Kanban = () => {
       return filteredTags;
     } catch (error) {
       console.log(error);
+      return [];
+    } finally {
+      // Don't set initialLoading to false here, as we want it to remain true
+      // until fetchTickets also completes in the calling function
     }
   };
 
@@ -766,18 +815,34 @@ const Kanban = () => {
             onClose={handleCloseScheduleModal}
             contactId={scheduleContactId}
             ticket={scheduleTicket}
+            onSave={handleSaveScheduleModal}
+            onDelete={handleDeleteScheduleModal}
           />
         )}
-        <Board
-          data={file}
-          onCardMoveAcrossLanes={handleCardMove}
-
-          style={{
-            backgroundColor: 'rgba(252, 252, 252, 0.03)',
-
-            height: "100%"
-          }}
-        />
+        
+        {initialLoading ? (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '100%',
+            flexDirection: 'column'
+          }}>
+            <CircularProgress size={60} />
+            <Typography variant="h6" style={{ marginTop: 16 }}>
+              Carregando quadro kanban...
+            </Typography>
+          </div>
+        ) : (
+          <Board
+            data={file}
+            onCardMoveAcrossLanes={handleCardMove}
+            style={{
+              backgroundColor: 'rgba(252, 252, 252, 0.03)',
+              height: "100%"
+            }}
+          />
+        )}
       </div>
     </div>
   );

@@ -61,6 +61,18 @@ const useStyles = makeStyles(theme => ({
 	// 	margin: theme.spacing(1),
 	// 	minWidth: 120,
 	// },
+	loadingOverlay: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		width: "100%",
+		height: "100%",
+		backgroundColor: "rgba(255, 255, 255, 0.7)",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+		zIndex: 9999,
+	},
 }));
 
 const ScheduleSchema = Yup.object().shape({
@@ -71,7 +83,7 @@ const ScheduleSchema = Yup.object().shape({
 	sendAt: Yup.string().required("Obrigatório")
 });
 
-const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload, ticket, isEditing = false }) => {
+const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload, ticket, isEditing = false, onSave = (() => { }), onDelete = (() => { }) }) => {
 	const classes = useStyles();
 	const history = useHistory();
 	const { user } = useContext(AuthContext);
@@ -118,10 +130,12 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 	const [attachment, setAttachment] = useState(null);
 	const attachmentFile = useRef(null);
 	const [confirmationOpen, setConfirmationOpen] = useState(false);
+	const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
 	const [channelFilter, setChannelFilter] = useState("whatsapp");
 	const [whatsapps, setWhatsapps] = useState([]);
 	const [selectedWhatsapps, setSelectedWhatsapps] = useState([]);
 	const [loading, setLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 	const [queues, setQueues] = useState([]);
 	const [allQueues, setAllQueues] = useState([]);
 	const [selectedUser, setSelectedUser] = useState(null);
@@ -174,6 +188,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 	}, [searchParam]);
 
 	useEffect(() => {
+		setIsLoading(true);
 		api
 			.get(`/whatsapp/filter`, { params: { session: 0, channel: channelFilter } })
 			.then(({ data }) => {
@@ -188,6 +203,9 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 				if (mappedWhatsapps.length && mappedWhatsapps?.length === 1) {
 					setSelectedWhatsapps(mappedWhatsapps[0].id)
 				}
+			})
+			.finally(() => {
+				setIsLoading(false);
 			});
 	}, [currentContact, channelFilter])
 
@@ -205,46 +223,52 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		if (open) {
 			try {
 				(async () => {
-					const { data: contactList } = await api.get('/contacts/list', { params: { companyId: companyId } });
-					let customList = contactList.map((c) => ({ id: c.id, name: c.name, channel: c.channel }));
-					if (isArray(customList)) {
-						setContacts([{ id: "", name: "", channel: "" }, ...customList]);
-					}
-					if (contactId) {
+					setIsLoading(true);
+					try {
+						const { data: contactList } = await api.get('/contacts/list', { params: { companyId: companyId } });
+						let customList = contactList.map((c) => ({ id: c.id, name: c.name, channel: c.channel }));
+						if (isArray(customList)) {
+							setContacts([{ id: "", name: "", channel: "" }, ...customList]);
+						}
+						if (contactId) {
+							setSchedule(prevState => {
+								return { ...prevState, contactId }
+							});
+						}
+
+						if (!scheduleId) return;
+
+						const { data } = await api.get(`/schedules/${scheduleId}`);
 						setSchedule(prevState => {
-							return { ...prevState, contactId }
+							return { ...prevState, ...data, sendAt: moment(data.sendAt).format('YYYY-MM-DDTHH:mm') };
 						});
-					}
+						console.log(data)
+						if (data.whatsapp) {
+							setSelectedWhatsapps(data.whatsapp.id);
+						}
 
-					if (!scheduleId) return;
+						if (data.ticketUser) {
+							setSelectedUser(data.ticketUser);
+						}
+						if (data.queueId) {
+							setSelectedQueue(data.queueId);
+						}
 
-					const { data } = await api.get(`/schedules/${scheduleId}`);
-					setSchedule(prevState => {
-						return { ...prevState, ...data, sendAt: moment(data.sendAt).format('YYYY-MM-DDTHH:mm') };
-					});
-					console.log(data)
-					if (data.whatsapp) {
-						setSelectedWhatsapps(data.whatsapp.id);
-					}
+						if (data.intervalo) {
+							setIntervalo(data.intervalo);
+						}
 
-					if (data.ticketUser) {
-						setSelectedUser(data.ticketUser);
-					}
-					if (data.queueId) {
-						setSelectedQueue(data.queueId);
-					}
+						if (data.tipoDias) {
+							setTipoDias(data.tipoDias);
+						}
 
-					if (data.intervalo) {
-						setIntervalo(data.intervalo);
+						setCurrentContact(data.contact);
+					} finally {
+						setIsLoading(false);
 					}
-
-					if (data.tipoDias) {
-						setTipoDias(data.tipoDias);
-					}
-
-					setCurrentContact(data.contact);
 				})()
 			} catch (err) {
+				setIsLoading(false);
 				toastError(err);
 			}
 		}
@@ -348,10 +372,10 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 			notifyBefore: values.notifyBefore || 0,
 			justNotifyMe: values.justNotifyMe || false,
 			ticketId: ticket?.id || null,
-
 		};
 
 		try {
+			setIsLoading(true);
 			if (scheduleId) {
 				await api.put(`/schedules/${scheduleId}`, scheduleData);
 				if (attachment != null) {
@@ -382,11 +406,32 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 			}
 		} catch (err) {
 			toastError(err);
+		} finally {
+			setIsLoading(false);
 		}
 		setCurrentContact(initialContact);
 		setSchedule(initialState);
+		onSave();
 		handleClose();
 	};
+
+	const handleDeleteSchedule = async (scheduleId) => {
+		try {
+			setIsLoading(true);
+			await api.delete(`/schedules/${scheduleId}`);
+			toast.success(i18n.t("schedules.toasts.deleted"));
+			if (typeof reload === 'function') {
+				reload();
+			}
+		} catch (err) {
+			toastError(err);
+		} finally {
+			setIsLoading(false);
+			handleClose();
+			onDelete();
+		}
+	};
+
 	const handleClickMsgVar = async (msgVar, setValueFunc, ref, field) => {
 		const el = ref.current;
 		const firstHalfText = el.value.substring(0, el.selectionStart);
@@ -406,16 +451,19 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		}
 
 		if (schedule.mediaPath) {
-			await api.delete(`/schedules/${schedule.id}/media-upload`);
-			setSchedule((prev) => ({
-				...prev,
-				mediaPath: null,
-			}));
-			toast.success(i18n.t("scheduleModal.toasts.deleted"));
-			if (typeof reload == "function") {
-				console.log(reload);
-				console.log("1");
-				reload();
+			try {
+				setIsLoading(true);
+				await api.delete(`/schedules/${schedule.id}/media-upload`);
+				setSchedule((prev) => ({
+					...prev,
+					mediaPath: null,
+				}));
+				toast.success(i18n.t("scheduleModal.toasts.deleted"));
+				if (typeof reload == "function") {
+					reload();
+				}
+			} finally {
+				setIsLoading(false);
 			}
 		}
 	};
@@ -430,6 +478,16 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 			>
 				{i18n.t("scheduleModal.confirmationModal.deleteMessage")}
 			</ConfirmationModal>
+
+			<ConfirmationModal
+				title={i18n.t("schedules.confirmationModal.deleteTitle")}
+				open={deleteConfirmationOpen}
+				onClose={() => setDeleteConfirmationOpen(false)}
+				onConfirm={() => handleDeleteSchedule(scheduleId)}
+			>
+				{i18n.t("schedules.confirmationModal.deleteMessage")}
+			</ConfirmationModal>
+
 			<Dialog
 				open={open}
 				onClose={handleClose}
@@ -461,7 +519,13 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 				>
 					{({ touched, errors, isSubmitting, values, setFieldValue }) => (
 						<Form>
-							<DialogContent dividers>
+							<DialogContent dividers style={{ position: "relative" }}>
+								{isLoading && (
+									<div className={classes.loadingOverlay}>
+										<CircularProgress size={50} />
+									</div>
+								)}
+								
 								<div className={classes.multFieldLine}>
 									<FormControl
 										variant="outlined"
@@ -913,7 +977,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 								<Grid container spacing={2}>
 
 									<Grid item xs={12} md={6} xl={6}>
-										{ (!scheduleId) ?  (<Button
+										{(!scheduleId) ? (<Button
 
 											color="secondary"
 											disabled={isSubmitting}
@@ -923,7 +987,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											onClick={() => {
 												handleSaveSchedule({ ...values, justNotifyMe: true, notifyBefore: values.notifyBefore }).then(
 													() => {
-														
+
 														//TODO: Descobrir porque após fechar o modal de agendamento na tela do calendário ele está disparando um loop ifinito
 														if (reload) { handleClose(true) }
 													}
@@ -936,7 +1000,21 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 											{i18n.t("scheduleModal.buttons.justNotifyMe")}
 
 
-										</Button>) :<></>}
+										</Button>) : <>
+
+											<Button
+												color="secondary"
+												disabled={isSubmitting}
+												variant="outlined"
+												onClick={() => setDeleteConfirmationOpen(true)}
+											>
+												Excluir
+											</Button>
+
+
+
+
+										</>}
 									</Grid>
 
 
