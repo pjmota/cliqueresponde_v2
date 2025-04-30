@@ -16,6 +16,7 @@ import Timer from "@material-ui/icons/Timer";
 import Brightness1SharpIcon from '@mui/icons-material/Brightness1Sharp';
 import ScheduleModal from "../../components/ScheduleModal";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import EventIcon from '@material-ui/icons/Event';
 
 import "./Kanban.css"
 import { use } from "react";
@@ -173,14 +174,14 @@ const CardFooter = ({ ticket, onScheduleButton }) => {
       component="p"
     >
       {loading ? (
-        <span>Carregando...</span>
+        <span>{i18n.t("kanban.cards.loading")}</span>
       ) : (
         <>
           {schedules?.length > 0 ? <>
             <div
 
               style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>Ult. agendamento: {new Date(getLastSchedule().sendAt).toLocaleDateString()} {new Date(getLastSchedule().sendAt).toLocaleTimeString()}</span>
+              <span>{i18n.t("kanban.cards.lastSchedule")} {new Date(getLastSchedule().sendAt).toLocaleDateString()} {new Date(getLastSchedule().sendAt).toLocaleTimeString()}</span>
               <IconButton
                 aria-label="scheduleMessage"
                 component="span"
@@ -195,7 +196,7 @@ const CardFooter = ({ ticket, onScheduleButton }) => {
               </IconButton>
             </div>
           </> : (
-            /*  <span>Sem agendamentos</span> */
+            /*  <span>{i18n.t("kanban.cards.noSchedules")}</span> */
             <></>
           )}
         </>
@@ -452,7 +453,7 @@ const Kanban = () => {
           label: <>
             <div style={{ display: 'flex', justifyContent: 'end', gap: '5px' }}>
               <div className={classes.ticketLabel}>
-                {"Ticket nº " + ticket.id.toString()}</div>
+                {i18n.t("kanban.cards.ticketNumber") + ticket.id.toString()}</div>
               <StatusIcon status={ticket.status} /></div></>,
 
           description: (
@@ -479,7 +480,7 @@ const Kanban = () => {
                   onClick={() => {
                     handleCardClick(ticket.uuid)
                   }}>
-                  Ver Ticket
+                  {i18n.t("kanban.cards.viewTicket")}
                 </Button>
               </div>
               <span style={{ marginRight: '8px' }} />
@@ -519,7 +520,7 @@ const Kanban = () => {
                     <div
 
                       className={classes.ticketLabel}>
-                      {"Ticket nº " + ticket.id.toString()}</div>
+                      {i18n.t("kanban.cards.ticketNumber") + ticket.id.toString()}</div>
                     <StatusIcon status={ticket.status} /></div></>,
               description: (
                 <div>
@@ -537,7 +538,7 @@ const Kanban = () => {
                     onClick={() => {
                       handleCardClick(ticket.uuid)
                     }}>
-                    Ver Ticket
+                    {i18n.t("kanban.cards.viewTicket")}
 
                   </Button>
                   <span style={{ marginRight: '8px' }} />
@@ -572,12 +573,12 @@ const Kanban = () => {
   const handleCardMove = async (cardId, sourceLaneId, targetLaneId, event) => {
     try {
       await api.delete(`/ticket-tags/${targetLaneId}`);
-      toast.success('Ticket Tag Removido!', {
+      toast.success(i18n.t("kanban.notifications.tagRemoved"), {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
       await api.put(`/ticket-tags/${targetLaneId}/${sourceLaneId}`);
-      toast.success('Ticket Tag Adicionado com Sucesso!', {
+      toast.success(i18n.t("kanban.notifications.tagAdded"), {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
@@ -801,7 +802,7 @@ const Kanban = () => {
               color="primary"
               onClick={handleAddConnectionClick}
             >
-              {'+ Adicionar colunas'}
+              {i18n.t("kanban.cards.addColumns")}
             </Button>
           )} />
         </div>
@@ -830,13 +831,14 @@ const Kanban = () => {
           }}>
             <CircularProgress size={60} />
             <Typography variant="h6" style={{ marginTop: 16 }}>
-              Carregando quadro kanban...
+              {i18n.t("kanban.preLaoding")}
             </Typography>
           </div>
         ) : (
           <Board
             data={file}
             onCardMoveAcrossLanes={handleCardMove}
+            
             style={{
               backgroundColor: 'rgba(252, 252, 252, 0.03)',
               height: "100%"
