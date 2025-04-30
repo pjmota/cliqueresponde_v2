@@ -140,7 +140,7 @@ const ListService = async ({
 
     const count = await Tag.count({
       where: { ...whereCondition, companyId, kanban },
-      logging: console.log
+      //logging: console.log
     })
 
     const hasMore = count > offset + tags.length;
