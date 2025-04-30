@@ -192,7 +192,7 @@ const Tags = () => {
   const handleScroll = (e) => {
     if (!hasMore || loading) return;
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    if (scrollHeight - (scrollTop + 100) < clientHeight) {
+    if (scrollHeight - (scrollTop + 200) < clientHeight) {
       loadMore();
     }
   };
