@@ -122,7 +122,7 @@ const ListService = async ({
       where: { ...whereCondition, companyId, kanban },
       limit,
       offset,
-      order: [["name", "ASC"]],
+      order: [["sequence", "ASC"]],
       include: [
         {
           model: TicketTag,
