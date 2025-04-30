@@ -40,7 +40,6 @@ const CreateService = async (data: Data): Promise<ContactListItem> => {
 
   try {
     const response = await CheckContactNumber(record.number, record.companyId, data.isGroup, data.userId);
-    logger.warn(`response ---- ${JSON.stringify(response)}`)
     record.isWhatsappValid = response ? true : false;
     const number = response;
     record.number = number;
