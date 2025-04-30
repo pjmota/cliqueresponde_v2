@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useReducer } from "react";
+import React, { useState, useEffect, useContext, useReducer, Children } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
 import { AuthContext } from "../../context/Auth/AuthContext";
@@ -10,7 +10,7 @@ import { Facebook, Instagram, WhatsApp } from "@material-ui/icons";
 import { format, isSameDay, parseISO } from "date-fns";
 import { Can } from "../../components/Can";
 import toastError from "../../errors/toastError";
-import { Badge, Tooltip, IconButton, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, useMediaQuery } from "@material-ui/core";
+import { Badge, Box, Tooltip, IconButton, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, useMediaQuery } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Timer from "@material-ui/icons/Timer";
 import Brightness1SharpIcon from '@mui/icons-material/Brightness1Sharp';
@@ -125,7 +125,8 @@ const StatusIcon = ({ status }) => {
   );
 }
 
-const CardFooter = ({ ticket, onScheduleButton }) => {
+const CardFooter = ({ ticket, onScheduleButton, children }) => {
+
 
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -154,9 +155,6 @@ const CardFooter = ({ ticket, onScheduleButton }) => {
       return null;
     }
 
-    
-    
-
     const lastSchedule = schedules.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
 
     return lastSchedule;
@@ -167,42 +165,62 @@ const CardFooter = ({ ticket, onScheduleButton }) => {
   }, []);
 
   return (<>
+    
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}>
 
-    <Typography
-      variant="body2"
-      color="textSecondary"
-      component="p"
-    >
-      {loading ? (
-        <span>{i18n.t("kanban.cards.loading")}</span>
-      ) : (
-        <>
-          {schedules?.length > 0 ? <>
-            <div
+        {children}
 
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>{i18n.t("kanban.cards.lastSchedule")} {new Date(getLastSchedule().sendAt).toLocaleDateString()} {new Date(getLastSchedule().sendAt).toLocaleTimeString()}</span>
-              <IconButton
-                aria-label="scheduleMessage"
-                component="span"
-                onClick={() => {
+        <IconButton
+          aria-label="scheduleMessage"
+          component="span"
+          onClick={() => {
+            onScheduleButton(null, ticket.contactId, ticket);
+          }}
+          disabled={loading}
+        >
+          <EventIcon />
+        </IconButton>
 
-                  onScheduleButton(getLastSchedule().id, ticket.contactId, ticket);
+      </div>
+      <Typography
+        variant="body2"
+        color="textSecondary"
+        component="p"
+      >
+        {loading ? (
+          <span>{i18n.t("kanban.cards.loading")}</span>
+        ) : (
+          <>
+            {schedules?.length > 0 ? <>
+              <div
 
-                }}
-                disabled={loading}
-              >
-                <Timer />
-              </IconButton>
-            </div>
-          </> : (
-            /*  <span>{i18n.t("kanban.cards.noSchedules")}</span> */
-            <></>
-          )}
-        </>
-      )}
-    </Typography>
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>{i18n.t("kanban.cards.lastSchedule")} {new Date(getLastSchedule().sendAt).toLocaleDateString()} {new Date(getLastSchedule().sendAt).toLocaleTimeString()}</span>
+                <IconButton
+                  aria-label="scheduleMessage"
+                  component="span"
+                  onClick={() => {
 
+                    onScheduleButton(getLastSchedule().id, ticket.contactId, ticket);
+
+                  }}
+                  disabled={loading}
+                >
+                  <Timer />
+                </IconButton>
+              </div>
+            </> : (
+              /*  <span>{i18n.t("kanban.cards.noSchedules")}</span> */
+              <></>
+            )}
+          </>
+        )}
+      </Typography>
+    
 
   </>)
 }
@@ -243,7 +261,7 @@ const Kanban = () => {
 
 
 
-  const handleOpenScheduleModal = (scheduleId, contactId,ticket) => {
+  const handleOpenScheduleModal = (scheduleId, contactId, ticket) => {
     setSelectedSchedule(scheduleId);
     setScheduleContactId(contactId);
     setScheduleTicket(ticket);
@@ -255,7 +273,7 @@ const Kanban = () => {
     setScheduleModalOpen(false);
     setScheduleContactId(null);
     setScheduleTicket(null);
-    
+
   };
 
 
@@ -280,13 +298,12 @@ const Kanban = () => {
     });
   }
 
-  
+
 
 
   function searchParamsReducer(state, action) {
     switch (action.type) {
-      case 'CLEAR':
-        return {}
+      
 
       case 'INITIALIZE':
 
@@ -322,7 +339,7 @@ const Kanban = () => {
 
     loadInitialData();
     fetchUsers();
-  }, [user]);
+  }, []);
 
   // Separate the initial data loading function for better organization
   const loadInitialData = async () => {
@@ -386,7 +403,7 @@ const Kanban = () => {
       setTickets(tickets);
     } catch (err) {
       console.log(err);
-      setTickets([]);
+      //setTickets([]);
     }
   };
 
@@ -473,7 +490,7 @@ const Kanban = () => {
                 </Typography>
               </div>
               <div style={{ textAlign: 'left' }}>{ticket.lastMessage || " "}</div>
-              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'start',gap: '5px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'start', gap: '5px' }}>
                 {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
                 <Button
                   className={`${classes.button} ${classes.cardButton}`}
@@ -533,16 +550,20 @@ const Kanban = () => {
                   <p>
                     {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
                   </p>
-                  <Button
-                    className={`${classes.button} ${classes.cardButton}`}
-                    onClick={() => {
-                      handleCardClick(ticket.uuid)
-                    }}>
-                    {i18n.t("kanban.cards.viewTicket")}
 
-                  </Button>
                   <span style={{ marginRight: '8px' }} />
-                  <CardFooter onScheduleButton={handleOpenScheduleModal} ticket={ticket} />
+                  <CardFooter onScheduleButton={handleOpenScheduleModal} ticket={ticket} >
+                    <Button
+                      className={`${classes.button} ${classes.cardButton}`}
+                      size="small"
+                      
+                      onClick={() => {
+                        handleCardClick(ticket.uuid)
+                      }}>
+                      {i18n.t("kanban.cards.viewTicket")}
+
+                    </Button>
+                    </CardFooter>
                 </div>
               ),
               title: <>
@@ -820,12 +841,12 @@ const Kanban = () => {
             onDelete={handleDeleteScheduleModal}
           />
         )}
-        
+
         {initialLoading ? (
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
             height: '100%',
             flexDirection: 'column'
           }}>
@@ -838,7 +859,7 @@ const Kanban = () => {
           <Board
             data={file}
             onCardMoveAcrossLanes={handleCardMove}
-            
+
             style={{
               backgroundColor: 'rgba(252, 252, 252, 0.03)',
               height: "100%"
