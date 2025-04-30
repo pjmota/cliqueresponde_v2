@@ -3,6 +3,8 @@ import Contact from "../../models/Contact";
 import Schedule from "../../models/Schedule";
 import User from "../../models/User";
 import Whatsapp from "../../models/Whatsapp";
+import Ticket from "../../models/Ticket";
+import { id } from "date-fns/locale";
 
 interface Request {
   searchParam?: string;
@@ -10,6 +12,7 @@ interface Request {
   userId?: number | string;
   companyId?: number;
   pageNumber?: string | number;
+  ticketId?: string | number
 }
 
 interface Response {
@@ -23,13 +26,23 @@ const ListService = async ({
   contactId = "",
   userId,
   pageNumber = "1",
-  companyId
+  companyId,
+  ticketId
 }: Request): Promise<Response> => {
   let whereCondition = {};
   const limit = 20;
   const offset = limit * (+pageNumber - 1);
 
   const user = await User.findOne({ where: { id: userId } });
+
+/*   console.log("REQUEST", {
+    searchParam,
+    contactId,
+    userId,
+    pageNumber,
+    companyId,
+    ticketId
+  }); */
 
   if (searchParam) {
     whereCondition = {
@@ -59,6 +72,14 @@ const ListService = async ({
     }
   }
 
+  if (ticketId) {
+    //console.log("ticketId", ticketId);
+    whereCondition = {
+      ...whereCondition,
+      ticketId: parseInt(ticketId as string)
+    }
+  }
+
   if (!user?.super && user?.profile !== "admin") {
     whereCondition = {
       ...whereCondition,
@@ -81,7 +102,8 @@ const ListService = async ({
     include: [
       { model: Contact, as: "contact", attributes: ["id", "name", "companyId", "urlPicture"] },
       { model: User, as: "user", attributes: ["id", "name"] },
-      { model: Whatsapp, as: "whatsapp", attributes: ["id", "name", "channel"] }
+      { model: Whatsapp, as: "whatsapp", attributes: ["id", "name", "channel"] },
+      { model:Ticket, as: "ticket", attributes: ["id"] },
     ],
     //logging: console.log
   });

@@ -54,6 +54,7 @@ interface Request {
   sortTickets?: string;
   searchOnMessages?: string;
   contactNumber?: string;
+  exceptionsIds?: string[];
 }
 
 interface Response {
@@ -81,7 +82,8 @@ const ListTicketsService = async ({
   companyId,
   sortTickets = "DESC",
   searchOnMessages = "false",
-  contactNumber
+  contactNumber,
+  exceptionsIds
 }: Request): Promise<Response> => {
   const user = await ShowUserService(userId, companyId);
   const userQueueIds = user.queues.map(queue => queue.id);
@@ -681,7 +683,38 @@ const ListTicketsService = async ({
     }
   }
 
-  const limitBase = status === 'open' ? 500 : 40;
+  let parsedExceptionsIds = [];
+
+  // Validar exceptionsIds
+  if (exceptionsIds) {
+
+    if (Array.isArray(exceptionsIds)) {
+      parsedExceptionsIds = exceptionsIds.filter((id) => typeof id === "string" || typeof id === "number");
+    } else if (exceptionsIds && typeof exceptionsIds === "object") {
+      // Converter objeto array-like para array
+      parsedExceptionsIds = Array.from(exceptionsIds).filter(
+        (id) => typeof id === "string" || typeof id === "number"
+      );
+    } else if (typeof exceptionsIds === "string") {
+      // Tentar parsear como JSON, caso seja uma string JSON
+      try {
+        const parsed = JSON.parse(exceptionsIds);
+        if (Array.isArray(parsed)) {
+          parsedExceptionsIds = parsed.filter((id) => typeof id === "string" || typeof id === "number");
+        } else {
+          console.error("exceptionsIds JSON não é um array:", parsed);
+        }
+      } catch (error) {
+        console.error("Erro ao parsear exceptionsIds como JSON:", error.message);
+      }
+    } else {
+      console.error("exceptionsIds não é um array nem objeto válido:", exceptionsIds);
+    }
+  } else {
+    console.log("Nenhum exceptionsIds recebido para filtragem.");
+  }
+
+  const limitBase = 15;
   let limit = limitBase;
   let offset = limit * (+pageNumber - 1);
   let tickets = [];
@@ -689,7 +722,14 @@ const ListTicketsService = async ({
   
   do {
     const result = await Ticket.findAndCountAll({
-      where: whereCondition,
+      where: {
+        ...whereCondition,
+        ...(parsedExceptionsIds?.length > 0 ? {
+          id: {
+            [Op.notIn]: parsedExceptionsIds, // Exclui os IDs recebidos
+          },
+        } : {}),
+      },
       include: includeCondition,
       attributes: [
         "id",
@@ -710,7 +750,7 @@ const ListTicketsService = async ({
       offset,
       order: [["updatedAt", sortTickets]],
       subQuery: false,
-      //...(status === 'open' ? {logging: console.log} : {})
+      //...(status === 'pending' ? {logging: console.log} : {})
     });
 
     const newTickets = result.rows;
@@ -720,18 +760,24 @@ const ListTicketsService = async ({
     // Remove duplicados baseado no ID
     tickets = Array.from(new Map(tickets.map(t => [t.id, t])).values());
 
+    tickets = tickets.slice(0, limitBase);
+
     // Atualiza o offset pra posição real acumulada
     offset += newTickets.length;
 
+    count = result.count;
+
+    if (newTickets.length === 0 || tickets.length >= limitBase) {
+      break; // Sai se não há mais registros ou se atingiu o limite desejado
+    }
+
     // Se ainda não atingiu o limite desejado, aumenta o limit da próxima tentativa
-    if (status === "open" && tickets.length < limitBase && newTickets.length > 0) {
+    if ((status === "open" || status === "pending" ) && tickets.length < limitBase && newTickets.length > 0) {
       limit += 10;
-    } else {
-      break;
     }
   } while (tickets.length < limitBase);
-  count = tickets.length;
-  const hasMore = count > offset + tickets.length;
+
+  const hasMore = count > offset;
   return {
     tickets,
     count,

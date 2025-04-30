@@ -19,18 +19,24 @@ const useTickets = ({
   forceSearch,
   userFilter,
   sortTickets,
-  searchOnMessages
+  searchOnMessages,
+  exceptionsIds
 }) => {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(false);
   const [tickets, setTickets] = useState([]);
   const [count, setCount] = useState(0);
+  let previousShowAll;
 
   useEffect(() => {
     setLoading(true);
     const delayDebounceFn = setTimeout(() => {
       const fetchTickets = async () => {
         if (userFilter === undefined || userFilter === null) {
+          if (showAll !== previousShowAll) {
+            exceptionsIds = [];
+          }
+
           try {            
             const { data } = await api.get("/tickets", {
               params: {
@@ -47,7 +53,8 @@ const useTickets = ({
                 whatsapps: whatsappIds,
                 statusFilter,
                 sortTickets,
-                searchOnMessages
+                searchOnMessages,
+                exceptionsIds
               },
             });
             
@@ -96,6 +103,7 @@ const useTickets = ({
             toastError(err);
           }
         }
+        previousShowAll = showAll
       };
     fetchTickets();
     }, 500);
