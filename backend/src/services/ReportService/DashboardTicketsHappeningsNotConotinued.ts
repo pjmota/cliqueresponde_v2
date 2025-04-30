@@ -43,8 +43,9 @@ export default async function getHappeningsNotContinued(
       where
         t.status = 'open'
         and t."companyId" = ${companyId}
-        --and t."fromMe" = 'false'
-        and t."isGroup" = 'false'
+        and t."fromMe" = false
+        and m."fromMe" = false
+        and t."isGroup" = false
         --and t."updatedAt" < '${date}'
       group by
         t.id,
@@ -61,7 +62,7 @@ export default async function getHappeningsNotContinued(
     query,
     { 
       type: QueryTypes.SELECT, 
-      //logging: console.log 
+      logging: console.log 
     }
   );
   
