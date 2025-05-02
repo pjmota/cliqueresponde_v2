@@ -87,11 +87,10 @@ const ListTicketsService = async ({
 }: Request): Promise<Response> => {
   const user = await ShowUserService(userId, companyId);
   const userQueueIds = user.queues.map(queue => queue.id);
-  
+
   //Isto é porque a rota exige nessa versão que o queueIds seja enviado
   queueIds = (!queueIds || isEmpty(queueIds)) ? (contactNumber || (whatsappIds && !isEmpty(whatsappIds)) ? userQueueIds : queueIds) : queueIds;
-  
- 
+   
   const showTicketAllQueues = user.allHistoric === "enabled";
   const showTicketWithoutQueue = user.allTicket === "enable";
   const showGroups = user.allowGroup === true;
@@ -164,23 +163,24 @@ const ListTicketsService = async ({
 
   
   if (status === "open") {
+    
     whereCondition = {
       ...whereCondition,
       ...(user.allTicketsQueuesAttending === "enable" && user.profile === "user"
         ? {}
         : { userId }),
-      queueId: { [Op.in]: queueIds }
+      queueId: queueIds
     };
   } else if (status === "group" && user.allowGroup && user.whatsappId) {
     whereCondition = {
       companyId,
-      queueId: { [Op.or]: [queueIds, null] },
+      ...(queueIds === null ? {queueId: null} : {queueId: { [Op.or]: [queueIds, null] }}),
       whatsappId: user.whatsappId
     };
   } else if (status === "group" && user.allowGroup && !user.whatsappId) {
     whereCondition = {
       companyId,
-      queueId: { [Op.or]: [queueIds, null] }
+      ...(queueIds === null ? {queueId: null} : {queueId: { [Op.or]: [queueIds, null] }})
     };
   } else if (
     user.profile === "user" &&
@@ -287,7 +287,10 @@ const ListTicketsService = async ({
     status !== "search"
   ) {
     if (user.allHistoric === "enabled" && showTicketWithoutQueue) {
-      whereCondition = { companyId };
+      whereCondition = { 
+        companyId,
+        ...(queueIds === null ? {queueId: null} : {queueId: { [Op.or]: [queueIds, null] }})
+      };
     } else if (user.allHistoric === "enabled" && !showTicketWithoutQueue) {
       whereCondition = { companyId, queueId: { [Op.ne]: null } };
     } else if (user.allHistoric === "disabled" && showTicketWithoutQueue) {
@@ -750,7 +753,7 @@ const ListTicketsService = async ({
       offset,
       order: [["updatedAt", sortTickets]],
       subQuery: false,
-      //...(status === 'pending' ? {logging: console.log} : {})
+      //...(status === 'group' ? {logging: console.log} : {})
     });
 
     const newTickets = result.rows;
