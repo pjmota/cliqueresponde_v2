@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useReducer, Children } from "react";
+import React, { useState, useEffect, useContext, useReducer } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
 import { AuthContext } from "../../context/Auth/AuthContext";
@@ -10,7 +10,7 @@ import { Facebook, Instagram, WhatsApp } from "@material-ui/icons";
 import { format, isSameDay, parseISO } from "date-fns";
 import { Can } from "../../components/Can";
 import toastError from "../../errors/toastError";
-import { Badge, Box, Tooltip, IconButton, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, useMediaQuery } from "@material-ui/core";
+import { Badge, Tooltip, IconButton, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Timer from "@material-ui/icons/Timer";
 import Brightness1SharpIcon from '@mui/icons-material/Brightness1Sharp';
@@ -18,8 +18,7 @@ import ScheduleModal from "../../components/ScheduleModal";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import EventIcon from '@material-ui/icons/Event';
 
-import "./Kanban.css"
-import { use } from "react";
+import "./Kanban.css";
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -86,6 +85,7 @@ const useStyles = makeStyles(theme => ({
   cardButton: {
     marginRight: theme.spacing(1),
     color: theme.palette.common.white,
+    size: "small",
     backgroundColor: theme.palette.primary.main,
     "&:hover": {
       backgroundColor: theme.palette.primary.dark,
@@ -94,6 +94,10 @@ const useStyles = makeStyles(theme => ({
   dateInput: {
     marginRight: theme.spacing(0),
   },
+  newsScheduleButton: {
+
+    color: theme.mode === "light" ? '#0872b9' : '#FFF',
+  }
 }));
 
 const StatusIcon = ({ status }) => {
@@ -130,7 +134,7 @@ const CardFooter = ({ ticket, onScheduleButton, children }) => {
 
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const classes = useStyles();
   const fetchSchedules = async () => {
     setLoading(true);
     try {
@@ -165,62 +169,67 @@ const CardFooter = ({ ticket, onScheduleButton, children }) => {
   }, []);
 
   return (<>
-    
+
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+      }}>
+
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}>
+          alignContent: 'center',
+        }}
+      >{children}</div>
 
-        {children}
-
-        <IconButton
-          aria-label="scheduleMessage"
-          component="span"
-          onClick={() => {
-            onScheduleButton(null, ticket.contactId, ticket);
-          }}
-          disabled={loading}
-        >
-          <EventIcon />
-        </IconButton>
-
-      </div>
-      <Typography
-        variant="body2"
-        color="textSecondary"
-        component="p"
+      <IconButton
+        aria-label="scheduleMessage"
+        component="span"
+        className={classes.newsScheduleButton}
+        onClick={() => {
+          onScheduleButton(null, ticket.contactId, ticket);
+        }}
+        disabled={loading}
       >
-        {loading ? (
-          <span>{i18n.t("kanban.cards.loading")}</span>
-        ) : (
-          <>
-            {schedules?.length > 0 ? <>
-              <div
+        <EventIcon />
+      </IconButton>
 
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>{i18n.t("kanban.cards.lastSchedule")} {new Date(getLastSchedule().sendAt).toLocaleDateString()} {new Date(getLastSchedule().sendAt).toLocaleTimeString()}</span>
-                <IconButton
-                  aria-label="scheduleMessage"
-                  component="span"
-                  onClick={() => {
+    </div>
+    <Typography
+      variant="body2"
+      color="textSecondary"
+      component="p"
+    >
+      {loading ? (
+        <span>{i18n.t("kanban.cards.loading")}</span>
+      ) : (
+        <>
+          {schedules?.length > 0 ? <>
+            <div
 
-                    onScheduleButton(getLastSchedule().id, ticket.contactId, ticket);
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>{i18n.t("kanban.cards.lastSchedule")} {new Date(getLastSchedule().sendAt).toLocaleDateString()} {new Date(getLastSchedule().sendAt).toLocaleTimeString()}</span>
+              <IconButton
+                aria-label="scheduleMessage"
+                component="span"
+                onClick={() => {
 
-                  }}
-                  disabled={loading}
-                >
-                  <Timer />
-                </IconButton>
-              </div>
-            </> : (
-              /*  <span>{i18n.t("kanban.cards.noSchedules")}</span> */
-              <></>
-            )}
-          </>
-        )}
-      </Typography>
-    
+                  onScheduleButton(getLastSchedule().id, ticket.contactId, ticket);
+
+                }}
+                disabled={loading}
+              >
+                <Timer />
+              </IconButton>
+            </div>
+          </> : (
+            /*  <span>{i18n.t("kanban.cards.noSchedules")}</span> */
+            <></>
+          )}
+        </>
+      )}
+    </Typography>
+
 
   </>)
 }
@@ -303,7 +312,7 @@ const Kanban = () => {
 
   function searchParamsReducer(state, action) {
     switch (action.type) {
-      
+
 
       case 'INITIALIZE':
 
@@ -555,15 +564,15 @@ const Kanban = () => {
                   <CardFooter onScheduleButton={handleOpenScheduleModal} ticket={ticket} >
                     <Button
                       className={`${classes.button} ${classes.cardButton}`}
-                      size="small"
-                      
+
+
                       onClick={() => {
                         handleCardClick(ticket.uuid)
                       }}>
                       {i18n.t("kanban.cards.viewTicket")}
 
                     </Button>
-                    </CardFooter>
+                  </CardFooter>
                 </div>
               ),
               title: <>
