@@ -691,7 +691,8 @@ const Kanban = () => {
       }
     } catch (err) {
       console.error("Error fetching more tickets:", err);
-      return Promise.reject(err);
+      setLoadingMoreTickets(prev => ({ ...prev, [laneId]: false }));
+      return Promise.resolve({ cards: [], noLoadMore: false });
     } finally {
       setLoadingMoreTickets(prev => ({ ...prev, [laneId]: false }));
       //return Promise.resolve({ cards: [], noLoadMore: false });
