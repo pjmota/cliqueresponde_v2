@@ -240,7 +240,8 @@ const Kanban = () => {
   const [scheduleContactId, setScheduleContactId] = useState(null);
   const [scheduleTicket, setScheduleTicket] = useState(null);
   const userQueueIds = user.queues.map(queue => queue.UserQueue.queueId);
-  const [pageSize, setPageSize] = useState(15);
+  const [pageSize, setPageSize] = useState(10);
+  const [ticketTagcount, setTicketTagCount] = useState({});
 
   const initialFilterSettings = {
     queueIds: userQueueIds,
@@ -285,7 +286,10 @@ const Kanban = () => {
   }
 
   function searchParamsReducer(state, action) {
+    
+    
     switch (action.type) {
+      
       case 'INITIALIZE':
         return {
           ...state,
@@ -293,10 +297,13 @@ const Kanban = () => {
           users: action.payload.userId ? [action.payload.userId] : [],
         };
       case 'SET_USERS':
+        
         return { ...state, users: action.payload };
       case 'SET_STATUS':
+        
         return { ...state, status: action.payload };
       case 'SET_SEARCH_TERM':
+        
         return { ...state, searchParam: action.payload };
       default:
         return state;
@@ -329,6 +336,11 @@ const Kanban = () => {
     }
   };
 
+  
+  const fetchTicketTagsCount= async (ticketId) => {
+
+  };
+  
   const fetchTags = async () => {
     try {
       setInitialLoading(true);
@@ -338,6 +350,11 @@ const Kanban = () => {
       const userTagIds = user.tags.map(tag => tag.id);
       const filteredTags = fetchedTags.filter(tag => userTagIds.includes(tag.id));
       setTags(filteredTags);
+
+      // Fetch ticket tag count
+      
+
+
       return filteredTags;
     } catch (error) {
       console.log(error);
@@ -376,13 +393,21 @@ const Kanban = () => {
         tag_id: "lane0"
       })
 
-      const response = await Promise.all(requests.map(request => request.r));
+      const response = await Promise.all(
+        requests.map(async request => {
+          const res = await request.r;
+          return { data: res.data, tag_id: request.tag_id };
+        })
+      );
 
       const tickets = [];
 
-      response.map(({ data }) => {
+      response.map(({ data,tag_id }) => {
 
-
+        setTicketTagCount(prevState => ({
+          ...prevState,
+          [tag_id]: data.count
+        }));
 
         return data.tickets
 
@@ -444,7 +469,7 @@ const Kanban = () => {
       {
         id: "lane0",
         title: i18n.t("tagsKanban.laneDefault"),
-        label: filteredTickets.length.toString(),
+        label: filteredTickets.length.toString() + "/"+ ticketTagcount["lane0"],
         cards: filteredTickets.map(ticket => ({
           id: ticket.id.toString(),
           label: <>
@@ -505,7 +530,7 @@ const Kanban = () => {
           return {
             id: tag.id.toString(),
             title: tag.name,
-            label: filteredTickets?.length.toString(),
+            label: filteredTickets?.length.toString() + "/" + ticketTagcount[tag.id],
             cards: filteredTickets.map(ticket => ({
               id: ticket.id.toString(),
               label:
@@ -610,6 +635,7 @@ const Kanban = () => {
   };
 
   const handleChangeUser = (selected) => {
+    refreshScrollLanes();
     dispatch({
       type: 'SET_USERS',
       payload: selected
@@ -625,6 +651,7 @@ const Kanban = () => {
   }
 
   const handleChangeStatus = (selected) => {
+    refreshScrollLanes();
     dispatch({
       type: 'SET_STATUS',
       payload: selected
@@ -656,7 +683,7 @@ const Kanban = () => {
     setSearchParam(searchValue);
   }
 
-  const handleLaneScroll = (requestedPage, laneId) => {
+  const handleLaneScroll = useCallback((requestedPage, laneId) => {
 
     const endLaneScroll = () => {
 
@@ -686,7 +713,9 @@ const Kanban = () => {
 
 
 
-  };
+  });
+
+  
 
   const fetchMoreTickets = async (laneId, page) => {
     try {
@@ -696,7 +725,7 @@ const Kanban = () => {
         status: JSON.stringify(filterSettings.status),
         searchParam: filterSettings.searchParam,
         pageNumber: page,
-        pageSize: pageSize
+        pageSize: 20
       };
 
       if (laneId === "lane0") {
@@ -737,7 +766,8 @@ const Kanban = () => {
 
   };
 
-  useEffect(() => {
+
+  const refreshScrollLanes= () => {
     if (tags.length > 0) {
       const initialPageNumbers = { lane0: 1 };
       const initialHasMore = { lane0: true };
@@ -750,6 +780,10 @@ const Kanban = () => {
       setPageNumbers(initialPageNumbers);
       setHasMore(initialHasMore);
     }
+  }
+
+  useEffect(() => {
+    refreshScrollLanes();
   }, [tags]);
 
   return (
@@ -866,6 +900,8 @@ const Kanban = () => {
             </Typography>
           </div>
         ) : (
+          <>
+          
           <Board
             data={file}
             onCardMoveAcrossLanes={handleCardMove}
@@ -875,6 +911,7 @@ const Kanban = () => {
               height: "100%"
             }}
           />
+          </>
         )}
         {/* 
         {Object.entries(loadingMoreTickets).map(([laneId, isLoading]) => (
