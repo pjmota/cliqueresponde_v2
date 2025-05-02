@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useReducer } from "react";
+import React, { useState, useEffect, useContext, useReducer, useRef, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
 import { AuthContext } from "../../context/Auth/AuthContext";
@@ -35,21 +35,13 @@ const useStyles = makeStyles(theme => ({
   },
   cardName: {
     marginTop: theme.spacing(2),
-
-
   },
-
   ticketLabel: {
-
     borderRadius: theme.shape.borderRadius,
     display: "flex",
     color: theme.palette.common.black,
     justifyContent: "center",
-
-
-
-  }
-  ,
+  },
   kanbanContainer: {
     width: "100%",
     overflowY: "auto",
@@ -95,13 +87,11 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(0),
   },
   newsScheduleButton: {
-
     color: theme.mode === "light" ? '#0872b9' : '#FFF',
   }
 }));
 
 const StatusIcon = ({ status }) => {
-
   const colorMap = {
     pending: "#c4c5bd",
     closed: "#4CAF50",
@@ -121,7 +111,6 @@ const StatusIcon = ({ status }) => {
       <style>{`
         @keyframes blink {
           0% { opacity: 0.5; }
-          
           100% { opacity: 1; }
         }
       `}</style>
@@ -130,8 +119,6 @@ const StatusIcon = ({ status }) => {
 }
 
 const CardFooter = ({ ticket, onScheduleButton, children }) => {
-
-
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(false);
   const classes = useStyles();
@@ -143,7 +130,6 @@ const CardFooter = ({ ticket, onScheduleButton, children }) => {
         return;
       }
 
-      //tira em todos os agendamentos que são justNotifyMe && type COMMON
       const filteredSchedules = response.data.schedules.filter(schedule => (!(schedule.justNotifyMe === false) || !(schedule.type === 'COMMON')));
 
       setSchedules(filteredSchedules);
@@ -168,84 +154,80 @@ const CardFooter = ({ ticket, onScheduleButton, children }) => {
     fetchSchedules();
   }, []);
 
-  return (<>
-
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-      }}>
-
+  return (
+    <>
       <div
         style={{
-          alignContent: 'center',
-        }}
-      >{children}</div>
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}>
+        <div
+          style={{
+            alignContent: 'center',
+          }}
+        >{children}</div>
 
-      <IconButton
-        aria-label="scheduleMessage"
-        component="span"
-        className={classes.newsScheduleButton}
-        onClick={() => {
-          onScheduleButton(null, ticket.contactId, ticket);
-        }}
-        disabled={loading}
+        <IconButton
+          aria-label="scheduleMessage"
+          component="span"
+          className={classes.newsScheduleButton}
+          onClick={() => {
+            onScheduleButton(null, ticket.contactId, ticket);
+          }}
+          disabled={loading}
+        >
+          <EventIcon />
+        </IconButton>
+      </div>
+      <Typography
+        variant="body2"
+        color="textSecondary"
+        component="p"
       >
-        <EventIcon />
-      </IconButton>
-
-    </div>
-    <Typography
-      variant="body2"
-      color="textSecondary"
-      component="p"
-    >
-      {loading ? (
-        <span>{i18n.t("kanban.cards.loading")}</span>
-      ) : (
-        <>
-          {schedules?.length > 0 ? <>
-            <div
-
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>{i18n.t("kanban.cards.lastSchedule")} {new Date(getLastSchedule().sendAt).toLocaleDateString()} {new Date(getLastSchedule().sendAt).toLocaleTimeString()}</span>
-              <IconButton
-                aria-label="scheduleMessage"
-                component="span"
-                onClick={() => {
-
-                  onScheduleButton(getLastSchedule().id, ticket.contactId, ticket);
-
-                }}
-                disabled={loading}
-              >
-                <Timer />
-              </IconButton>
-            </div>
-          </> : (
-            /*  <span>{i18n.t("kanban.cards.noSchedules")}</span> */
-            <></>
-          )}
-        </>
-      )}
-    </Typography>
-
-
-  </>)
+        {loading ? (
+          <span>{i18n.t("kanban.cards.loading")}</span>
+        ) : (
+          <>
+            {schedules?.length > 0 ? <>
+              <div
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>{i18n.t("kanban.cards.lastSchedule")} {new Date(getLastSchedule().sendAt).toLocaleDateString()} {new Date(getLastSchedule().sendAt).toLocaleTimeString()}</span>
+                <IconButton
+                  aria-label="scheduleMessage"
+                  component="span"
+                  onClick={() => {
+                    onScheduleButton(getLastSchedule().id, ticket.contactId, ticket);
+                  }}
+                  disabled={loading}
+                >
+                  <Timer />
+                </IconButton>
+              </div>
+            </> : (
+              <></>
+            )}
+          </>
+        )}
+      </Typography>
+    </>
+  )
 }
 
 const Kanban = () => {
   const classes = useStyles();
-  //const theme = useTheme(); // Obter o tema atual
   const history = useHistory();
   const { user, socket } = useContext(AuthContext);
   const [tags, setTags] = useState([]);
   const [tickets, setTickets] = useState([]);
-  //const [ticketNot, setTicketNot] = useState(0);
   const [file, setFile] = useState({ lanes: [] });
   const [startDate, setStartDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [initialLoading, setInitialLoading] = useState(true);
+
+  const [laneScrollPositions, setLaneScrollPositions] = useState({});
+  const [loadingMoreTickets, setLoadingMoreTickets] = useState({});
+  const [pageNumbers, setPageNumbers] = useState({});
+  const [hasMore, setHasMore] = useState({});
 
   const [searchParam, setSearchParam] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -259,7 +241,6 @@ const Kanban = () => {
   const [scheduleTicket, setScheduleTicket] = useState(null);
   const userQueueIds = user.queues.map(queue => queue.UserQueue.queueId);
 
-
   const initialFilterSettings = {
     queueIds: userQueueIds,
     users: [],
@@ -267,8 +248,6 @@ const Kanban = () => {
     searchParam: '',
     hasTags: false
   };
-
-
 
   const handleOpenScheduleModal = (scheduleId, contactId, ticket) => {
     setSelectedSchedule(scheduleId);
@@ -282,11 +261,8 @@ const Kanban = () => {
     setScheduleModalOpen(false);
     setScheduleContactId(null);
     setScheduleTicket(null);
-
   };
 
-
-  //TODO: Implementar o gerenciamento do estado cada ticket para atualizar cada ticket
   const handleSaveScheduleModal = () => {
     setInitialLoading(true);
     fetchTags().then((tags) => {
@@ -307,15 +283,9 @@ const Kanban = () => {
     });
   }
 
-
-
-
   function searchParamsReducer(state, action) {
     switch (action.type) {
-
-
       case 'INITIALIZE':
-
         return {
           ...state,
           queueIds: action.payload.queueIds ? action.payload.queueIds : [],
@@ -334,9 +304,7 @@ const Kanban = () => {
 
   const [filterSettings, dispatch] = useReducer(searchParamsReducer, initialFilterSettings);
 
-
   useEffect(() => {
-    // Initialize reducer state with user's queues and ID
     setSelectedStatus(initialFilterSettings.status);
     dispatch({
       type: 'INITIALIZE',
@@ -350,7 +318,6 @@ const Kanban = () => {
     fetchUsers();
   }, []);
 
-  // Separate the initial data loading function for better organization
   const loadInitialData = async () => {
     try {
       setInitialLoading(true);
@@ -374,9 +341,6 @@ const Kanban = () => {
     } catch (error) {
       console.log(error);
       return [];
-    } finally {
-      // Don't set initialLoading to false here, as we want it to remain true
-      // until fetchTickets also completes in the calling function
     }
   };
 
@@ -412,7 +376,6 @@ const Kanban = () => {
       setTickets(tickets);
     } catch (err) {
       console.log(err);
-      //setTickets([]);
     }
   };
 
@@ -432,18 +395,6 @@ const Kanban = () => {
     };
   }, [socket, startDate, endDate, tags, filterSettings]);
 
-  // const handleSearchClick = () => {
-  //   fetchTickets();
-  // };
-
-  // const handleStartDateChange = (event) => {
-  //   setStartDate(event.target.value);
-  // };
-
-  // const handleEndDateChange = (event) => {
-  //   setEndDate(event.target.value);
-  // };
-
   const IconChannel = (channel) => {
     switch (channel) {
       case "facebook":
@@ -462,11 +413,11 @@ const Kanban = () => {
       const hasNoQueues = ticket.tags.length === 0;
 
       if (user.allTicketsQueuesWaiting === "disable" && user.profile !== 'admin') {
-        const userQueueIds = user.queues.map(queue => queue.id); // Obtém os IDs das filas do usuário
-        return hasNoQueues && userQueueIds.includes(ticket.queueId); // Filtra apenas os tickets com queueId permitido
+        const userQueueIds = user.queues.map(queue => queue.id);
+        return hasNoQueues && userQueueIds.includes(ticket.queueId);
       }
 
-      return hasNoQueues; // Se não estiver "disable", mantém todos os sem fila
+      return hasNoQueues;
     });
 
     const lanes = [
@@ -510,14 +461,11 @@ const Kanban = () => {
                 </Button>
               </div>
               <span style={{ marginRight: '8px' }} />
-
             </div>
           ),
           title: <>
             <div
-
               className={classes.cardName}
-
             >
               <Tooltip title={ticket.whatsapp?.name}>
                 {IconChannel(ticket.channel)}
@@ -544,7 +492,6 @@ const Kanban = () => {
                 <>
                   <div style={{ display: 'flex', justifyContent: 'end', gap: '5px' }}>
                     <div
-
                       className={classes.ticketLabel}>
                       {i18n.t("kanban.cards.ticketNumber") + ticket.id.toString()}</div>
                     <StatusIcon status={ticket.status} /></div></>,
@@ -564,13 +511,10 @@ const Kanban = () => {
                   <CardFooter onScheduleButton={handleOpenScheduleModal} ticket={ticket} >
                     <Button
                       className={`${classes.button} ${classes.cardButton}`}
-
-
                       onClick={() => {
                         handleCardClick(ticket.uuid)
                       }}>
                       {i18n.t("kanban.cards.viewTicket")}
-
                     </Button>
                   </CardFooter>
                 </div>
@@ -612,11 +556,7 @@ const Kanban = () => {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
-      //await fetchTickets(jsonString);
       const { data } = await api.get(`/tags/list`, { params: { kanban: 1 } });
-
-      //popularCards(jsonString);
-
       await syncTags({ ticketId: targetLaneId, tags: data.filter(e => e.id === Number(sourceLaneId)) });
     } catch (err) {
       console.log(err);
@@ -644,7 +584,6 @@ const Kanban = () => {
 
       const response = await api.get("/users");
       setUsers(response.data.users || []);
-      //setSelectedUsers((response.data.users || []).map(user => user.id));
     } catch (error) {
       console.log(error);
     }
@@ -656,7 +595,6 @@ const Kanban = () => {
       payload: selected
     });
 
-    // Create temporary merged state for immediate fetch
     const updatedSettings = {
       ...filterSettings,
       users: selected
@@ -665,13 +603,13 @@ const Kanban = () => {
     fetchTickets(updatedSettings, tags);
     setSelectedUsers(selected);
   }
+
   const handleChangeStatus = (selected) => {
     dispatch({
       type: 'SET_STATUS',
       payload: selected
     });
 
-    // Create temporary merged state for immediate fetch
     const updatedSettings = {
       ...filterSettings,
       status: selected
@@ -680,6 +618,7 @@ const Kanban = () => {
     fetchTickets(updatedSettings, tags);
     setSelectedStatus(selected);
   }
+
   const handleSearch = (e) => {
     const searchValue = e.target.value.toLowerCase();
 
@@ -688,7 +627,6 @@ const Kanban = () => {
       payload: searchValue
     });
 
-    // Create temporary merged state for immediate fetch
     const updatedSettings = {
       ...filterSettings,
       searchParam: searchValue
@@ -698,7 +636,84 @@ const Kanban = () => {
     setSearchParam(searchValue);
   }
 
+  const handleLaneScroll = (requestedPage, laneId) => {
+    if(loadingMoreTickets[laneId]) return;
+    console.log(`Lane ${laneId} scrolled, requesting page ${requestedPage}`);
 
+    if (loadingMoreTickets[laneId]) return;
+    if (hasMore[laneId] === false) return;
+
+    setLoadingMoreTickets(prev => ({ ...prev, [laneId]: true }));
+
+    const currentPage = pageNumbers[laneId] || 1;
+    const nextPage = currentPage + 1;
+
+    return fetchMoreTickets(laneId, nextPage);
+
+
+
+  };
+
+  const fetchMoreTickets = async (laneId, page) => {
+    try {
+      const params = {
+        queueIds: JSON.stringify(filterSettings.queueIds),
+        users: JSON.stringify(filterSettings.users),
+        status: JSON.stringify(filterSettings.status),
+        searchParam: filterSettings.searchParam,
+        pageNumber: page
+      };
+
+      if (laneId === "lane0") {
+        params.hasTags = false;
+      } else {
+        params.tags = JSON.stringify([parseInt(laneId)]);
+      }
+
+      const { data } = await api.get("/ticket/kanban", { params });
+
+      setPageNumbers(prev => ({ ...prev, [laneId]: page }));
+      setHasMore(prev => ({ ...prev, [laneId]: data.hasMore }));
+
+      if (data.tickets && data.tickets.length > 0) {
+        const newTickets = [...tickets];
+
+        data.tickets.forEach(ticket => {
+          if (!newTickets.some(t => t.id === ticket.id)) {
+            newTickets.push(ticket);
+          }
+        });
+
+        setTickets(newTickets);
+        setLoadingMoreTickets(prev => ({ ...prev, [laneId]: false }));
+        return Promise.resolve({ cards: newTickets, noLoadMore: hasMore[laneId] });
+
+      }
+    } catch (err) {
+      console.error("Error fetching more tickets:", err);
+      return Promise.reject(err);
+    } finally {
+      setLoadingMoreTickets(prev => ({ ...prev, [laneId]: false }));
+      //return Promise.resolve({ cards: [], noLoadMore: false });
+    }
+
+
+  };
+
+  useEffect(() => {
+    if (tags.length > 0) {
+      const initialPageNumbers = { lane0: 1 };
+      const initialHasMore = { lane0: true };
+
+      tags.forEach(tag => {
+        initialPageNumbers[tag.id.toString()] = 1;
+        initialHasMore[tag.id.toString()] = true;
+      });
+
+      setPageNumbers(initialPageNumbers);
+      setHasMore(initialHasMore);
+    }
+  }, [tags]);
 
   return (
     <div className={classes.root}>
@@ -708,9 +723,6 @@ const Kanban = () => {
         >
           {isAdmin && (
             <>
-
-
-
               <FormControl
                 size="small"
                 style={{
@@ -722,7 +734,6 @@ const Kanban = () => {
                   id="grouped-select"
                   label={i18n.t("kanban.user")}
                   minWidth={120}
-
                   value={selectedUsers}
                   onChange={(e) => handleChangeUser(e.target.value)}
                   multiple>
@@ -731,19 +742,10 @@ const Kanban = () => {
                       {user.name}
                     </MenuItem>
                   ))}
-
                 </Select>
               </FormControl>
-
-
-
-
-
-
-            </>)
-
-
-          }
+            </>
+          )}
 
           <FormControl
             size="small"
@@ -757,7 +759,6 @@ const Kanban = () => {
               id="grouped-select"
               label={i18n.t("kanban.status")}
               minWidth={120}
-
               value={selectedStatus}
               onChange={(e) => handleChangeStatus(e.target.value)}
               multiple>
@@ -766,21 +767,17 @@ const Kanban = () => {
                   {status.label}
                 </MenuItem>
               ))}
-
             </Select>
           </FormControl>
 
           <FormControl
-
             size="small"
           >
-
             <TextField
               placeholder="search"
               type="search"
               size="small"
               variant="outlined"
-
               value={searchParam}
               onChange={handleSearch}
               InputProps={{
@@ -792,39 +789,6 @@ const Kanban = () => {
               }}
             />
           </FormControl>
-
-          {/* TODO: Ativar pesquisa por data*/}
-          {/*  <TextField
-            label="Data de início"
-            type="date"
-            value={startDate}
-            onChange={handleStartDateChange}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            variant="outlined"
-            className={classes.dateInput}
-          />
-
-          <TextField
-            label="Data de fim"
-            type="date"
-            value={endDate}
-            onChange={handleEndDateChange}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            variant="outlined"
-            className={classes.dateInput}
-          /> */}
-
-          {/* <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSearchClick}
-          >
-            Buscar
-          </Button> */}
 
           <Can role={user.profile} perform="dashboard:view" yes={() => (
             <Button
@@ -868,17 +832,38 @@ const Kanban = () => {
           <Board
             data={file}
             onCardMoveAcrossLanes={handleCardMove}
-
+            onLaneScroll={handleLaneScroll}
             style={{
               backgroundColor: 'rgba(252, 252, 252, 0.03)',
               height: "100%"
             }}
           />
         )}
+{/* 
+        {Object.entries(loadingMoreTickets).map(([laneId, isLoading]) => (
+          isLoading && (
+            <div
+              key={`loading-${laneId}`}
+              style={{
+                position: 'absolute',
+                bottom: '10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                padding: '8px',
+                borderRadius: '4px',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              <CircularProgress size={24} style={{ marginRight: '8px' }} />
+              <Typography variant="body2">Carregando mais tickets...</Typography>
+            </div>
+          )
+        ))} */}
       </div>
     </div>
   );
-
 };
 
 export default Kanban;
