@@ -10,15 +10,15 @@ import { Facebook, Instagram, WhatsApp } from "@material-ui/icons";
 import { format, isSameDay, parseISO } from "date-fns";
 import { Can } from "../../components/Can";
 import toastError from "../../errors/toastError";
-import { Badge, Tooltip, IconButton, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, useMediaQuery } from "@material-ui/core";
+import { Badge, Tooltip, IconButton, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Timer from "@material-ui/icons/Timer";
 import Brightness1SharpIcon from '@mui/icons-material/Brightness1Sharp';
 import ScheduleModal from "../../components/ScheduleModal";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import EventIcon from '@material-ui/icons/Event';
 
-import "./Kanban.css"
-import { use } from "react";
+import "./Kanban.css";
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -85,6 +85,7 @@ const useStyles = makeStyles(theme => ({
   cardButton: {
     marginRight: theme.spacing(1),
     color: theme.palette.common.white,
+    size: "small",
     backgroundColor: theme.palette.primary.main,
     "&:hover": {
       backgroundColor: theme.palette.primary.dark,
@@ -93,6 +94,10 @@ const useStyles = makeStyles(theme => ({
   dateInput: {
     marginRight: theme.spacing(0),
   },
+  newsScheduleButton: {
+
+    color: theme.mode === "light" ? '#0872b9' : '#FFF',
+  }
 }));
 
 const StatusIcon = ({ status }) => {
@@ -124,11 +129,12 @@ const StatusIcon = ({ status }) => {
   );
 }
 
-const CardFooter = ({ ticket, onScheduleButton }) => {
+const CardFooter = ({ ticket, onScheduleButton, children }) => {
+
 
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const classes = useStyles();
   const fetchSchedules = async () => {
     setLoading(true);
     try {
@@ -153,9 +159,6 @@ const CardFooter = ({ ticket, onScheduleButton }) => {
       return null;
     }
 
-    
-    
-
     const lastSchedule = schedules.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
 
     return lastSchedule;
@@ -167,20 +170,45 @@ const CardFooter = ({ ticket, onScheduleButton }) => {
 
   return (<>
 
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+      }}>
+
+      <div
+        style={{
+          alignContent: 'center',
+        }}
+      >{children}</div>
+
+      <IconButton
+        aria-label="scheduleMessage"
+        component="span"
+        className={classes.newsScheduleButton}
+        onClick={() => {
+          onScheduleButton(null, ticket.contactId, ticket);
+        }}
+        disabled={loading}
+      >
+        <EventIcon />
+      </IconButton>
+
+    </div>
     <Typography
       variant="body2"
       color="textSecondary"
       component="p"
     >
       {loading ? (
-        <span>Carregando...</span>
+        <span>{i18n.t("kanban.cards.loading")}</span>
       ) : (
         <>
           {schedules?.length > 0 ? <>
             <div
 
               style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>Ult. agendamento: {new Date(getLastSchedule().sendAt).toLocaleDateString()} {new Date(getLastSchedule().sendAt).toLocaleTimeString()}</span>
+              <span>{i18n.t("kanban.cards.lastSchedule")} {new Date(getLastSchedule().sendAt).toLocaleDateString()} {new Date(getLastSchedule().sendAt).toLocaleTimeString()}</span>
               <IconButton
                 aria-label="scheduleMessage"
                 component="span"
@@ -195,7 +223,7 @@ const CardFooter = ({ ticket, onScheduleButton }) => {
               </IconButton>
             </div>
           </> : (
-            /*  <span>Sem agendamentos</span> */
+            /*  <span>{i18n.t("kanban.cards.noSchedules")}</span> */
             <></>
           )}
         </>
@@ -242,7 +270,7 @@ const Kanban = () => {
 
 
 
-  const handleOpenScheduleModal = (scheduleId, contactId,ticket) => {
+  const handleOpenScheduleModal = (scheduleId, contactId, ticket) => {
     setSelectedSchedule(scheduleId);
     setScheduleContactId(contactId);
     setScheduleTicket(ticket);
@@ -254,7 +282,7 @@ const Kanban = () => {
     setScheduleModalOpen(false);
     setScheduleContactId(null);
     setScheduleTicket(null);
-    
+
   };
 
 
@@ -279,13 +307,12 @@ const Kanban = () => {
     });
   }
 
-  
+
 
 
   function searchParamsReducer(state, action) {
     switch (action.type) {
-      case 'CLEAR':
-        return {}
+
 
       case 'INITIALIZE':
 
@@ -321,7 +348,7 @@ const Kanban = () => {
 
     loadInitialData();
     fetchUsers();
-  }, [user]);
+  }, []);
 
   // Separate the initial data loading function for better organization
   const loadInitialData = async () => {
@@ -385,7 +412,7 @@ const Kanban = () => {
       setTickets(tickets);
     } catch (err) {
       console.log(err);
-      setTickets([]);
+      //setTickets([]);
     }
   };
 
@@ -452,7 +479,7 @@ const Kanban = () => {
           label: <>
             <div style={{ display: 'flex', justifyContent: 'end', gap: '5px' }}>
               <div className={classes.ticketLabel}>
-                {"Ticket nº " + ticket.id.toString()}</div>
+                {i18n.t("kanban.cards.ticketNumber") + ticket.id.toString()}</div>
               <StatusIcon status={ticket.status} /></div></>,
 
           description: (
@@ -472,14 +499,14 @@ const Kanban = () => {
                 </Typography>
               </div>
               <div style={{ textAlign: 'left' }}>{ticket.lastMessage || " "}</div>
-              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'start',gap: '5px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'start', gap: '5px' }}>
                 {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
                 <Button
                   className={`${classes.button} ${classes.cardButton}`}
                   onClick={() => {
                     handleCardClick(ticket.uuid)
                   }}>
-                  Ver Ticket
+                  {i18n.t("kanban.cards.viewTicket")}
                 </Button>
               </div>
               <span style={{ marginRight: '8px' }} />
@@ -519,7 +546,7 @@ const Kanban = () => {
                     <div
 
                       className={classes.ticketLabel}>
-                      {"Ticket nº " + ticket.id.toString()}</div>
+                      {i18n.t("kanban.cards.ticketNumber") + ticket.id.toString()}</div>
                     <StatusIcon status={ticket.status} /></div></>,
               description: (
                 <div>
@@ -532,16 +559,20 @@ const Kanban = () => {
                   <p>
                     {ticket?.user && (<Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticket.user?.name.toUpperCase()}</Badge>)}
                   </p>
-                  <Button
-                    className={`${classes.button} ${classes.cardButton}`}
-                    onClick={() => {
-                      handleCardClick(ticket.uuid)
-                    }}>
-                    Ver Ticket
 
-                  </Button>
                   <span style={{ marginRight: '8px' }} />
-                  <CardFooter onScheduleButton={handleOpenScheduleModal} ticket={ticket} />
+                  <CardFooter onScheduleButton={handleOpenScheduleModal} ticket={ticket} >
+                    <Button
+                      className={`${classes.button} ${classes.cardButton}`}
+
+
+                      onClick={() => {
+                        handleCardClick(ticket.uuid)
+                      }}>
+                      {i18n.t("kanban.cards.viewTicket")}
+
+                    </Button>
+                  </CardFooter>
                 </div>
               ),
               title: <>
@@ -572,12 +603,12 @@ const Kanban = () => {
   const handleCardMove = async (cardId, sourceLaneId, targetLaneId, event) => {
     try {
       await api.delete(`/ticket-tags/${targetLaneId}`);
-      toast.success('Ticket Tag Removido!', {
+      toast.success(i18n.t("kanban.notifications.tagRemoved"), {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
       await api.put(`/ticket-tags/${targetLaneId}/${sourceLaneId}`);
-      toast.success('Ticket Tag Adicionado com Sucesso!', {
+      toast.success(i18n.t("kanban.notifications.tagAdded"), {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
@@ -801,7 +832,7 @@ const Kanban = () => {
               color="primary"
               onClick={handleAddConnectionClick}
             >
-              {'+ Adicionar colunas'}
+              {i18n.t("kanban.cards.addColumns")}
             </Button>
           )} />
         </div>
@@ -819,24 +850,25 @@ const Kanban = () => {
             onDelete={handleDeleteScheduleModal}
           />
         )}
-        
+
         {initialLoading ? (
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
             height: '100%',
             flexDirection: 'column'
           }}>
             <CircularProgress size={60} />
             <Typography variant="h6" style={{ marginTop: 16 }}>
-              Carregando quadro kanban...
+              {i18n.t("kanban.preLaoding")}
             </Typography>
           </div>
         ) : (
           <Board
             data={file}
             onCardMoveAcrossLanes={handleCardMove}
+
             style={{
               backgroundColor: 'rgba(252, 252, 252, 0.03)',
               height: "100%"
