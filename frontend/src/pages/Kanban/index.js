@@ -240,6 +240,7 @@ const Kanban = () => {
   const [scheduleContactId, setScheduleContactId] = useState(null);
   const [scheduleTicket, setScheduleTicket] = useState(null);
   const userQueueIds = user.queues.map(queue => queue.UserQueue.queueId);
+  const [pageSize, setPageSize] = useState(15);
 
   const initialFilterSettings = {
     queueIds: userQueueIds,
@@ -351,22 +352,41 @@ const Kanban = () => {
         users: JSON.stringify(filterParams.users),
         status: JSON.stringify(filterParams.status),
         searchParam: filterParams.searchParam,
-        hasTags: filterParams.hasTags
+        hasTags: filterParams.hasTags,
+        pageSize:pageSize
       };
 
-      const requests = tags.map(tag => api.get("/ticket/kanban", {
-        params: { ...params, tags: JSON.stringify([tag.id]) }
-      }));
+      const requests = tags.map(tag => {
 
-      requests.push(api.get("/ticket/kanban", {
-        params: { ...params, hasTags: false }
-      }));
+        return {
+          r: api.get("/ticket/kanban", {
+            params: { ...params, tags: JSON.stringify([tag.id]) }
+          }), tag_id: tag.id
+        }
 
-      const response = await Promise.all(requests);
+      }
+      );
+
+
+
+      requests.push({
+        r: api.get("/ticket/kanban", {
+          params: { ...params, hasTags: false }
+        }),
+        tag_id: "lane0"
+      })
+
+      const response = await Promise.all(requests.map(request => request.r));
 
       const tickets = [];
 
-      response.map(({ data }) => data.tickets).flat().forEach(ticket => {
+      response.map(({ data }) => {
+
+
+
+        return data.tickets
+
+      }).flat().forEach(ticket => {
         if (tickets.some(item => item.id === ticket.id)) {
           return;
         }
@@ -637,11 +657,25 @@ const Kanban = () => {
   }
 
   const handleLaneScroll = (requestedPage, laneId) => {
-    if(loadingMoreTickets[laneId]) return;
+
+    const endLaneScroll = () => {
+
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(
+
+          );
+        }, 1000);
+      }
+      );
+
+    }
+
+    if (!hasMore[laneId]) endLaneScroll();
     console.log(`Lane ${laneId} scrolled, requesting page ${requestedPage}`);
 
-    if (loadingMoreTickets[laneId]) return;
-    if (hasMore[laneId] === false) return;
+    if (loadingMoreTickets[laneId]) endLaneScroll();
+    if (hasMore[laneId] === false) endLaneScroll();
 
     setLoadingMoreTickets(prev => ({ ...prev, [laneId]: true }));
 
@@ -661,7 +695,8 @@ const Kanban = () => {
         users: JSON.stringify(filterSettings.users),
         status: JSON.stringify(filterSettings.status),
         searchParam: filterSettings.searchParam,
-        pageNumber: page
+        pageNumber: page,
+        pageSize: pageSize
       };
 
       if (laneId === "lane0") {
@@ -678,6 +713,7 @@ const Kanban = () => {
       if (data.tickets && data.tickets.length > 0) {
         const newTickets = [...tickets];
 
+        //Remove duplicates
         data.tickets.forEach(ticket => {
           if (!newTickets.some(t => t.id === ticket.id)) {
             newTickets.push(ticket);
@@ -840,7 +876,7 @@ const Kanban = () => {
             }}
           />
         )}
-{/* 
+        {/* 
         {Object.entries(loadingMoreTickets).map(([laneId, isLoading]) => (
           isLoading && (
             <div
