@@ -267,6 +267,7 @@ jobs:
             # npm install --force
             
             echo -e "${YELLOW}Executando build do frontend...${NC}"
+            cd "${DEST_DIR_FRONTEND}"
             npm run build
             echo -e "${GREEN}Build executado com sucesso${NC}"
             
