@@ -1,4 +1,4 @@
-name: Clone and Deploy front_and_backend
+name: Clone and Deploy main
 
 on:
   push:
