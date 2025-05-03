@@ -1,0 +1,278 @@
+name: Clone and Deploy front_and_backend
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  clone-repository:
+    name: Clone Repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v3
+
+      - name: Acessar servidor e clonar repositório
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            # Definindo cores para os logs
+            GREEN='\033[0;32m'
+            YELLOW='\033[0;33m'
+            RED='\033[0;31m'
+            BLUE='\033[0;34m'
+            CYAN='\033[0;36m'
+            BOLD='\033[1m'
+            NC='\033[0m' # No Color
+            
+            # Variáveis comuns
+            TOKEN_URL="https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/Clique-Responde/cliqueresponde_v2.git"
+            BRANCH="${GITHUB_REF#refs/heads/}"
+            
+            # Variáveis para clonagem
+            DEST_DIR="/home/repositories/crm_v2"
+            
+            echo -e "${BLUE}${BOLD}======= PARTE 1: CLONAGEM/ATUALIZAÇÃO DO REPOSITÓRIO =======${NC}"
+            
+            # Log para depuração - protege o token
+            echo -e "${CYAN}Usando URL de repositório: https://***@github.com/Clique-Responde/cliqueresponde_v2.git${NC}"
+            echo -e "${CYAN}Branch alvo: ${YELLOW}$BRANCH${NC}"
+            
+            # Criação do diretório se não existir
+            mkdir -p "$DEST_DIR"
+            
+            # Verificar se já é um repositório git
+            if [ -d "$DEST_DIR/.git" ]; then
+              echo -e "${YELLOW}Repositório já existe. Atualizando...${NC}"
+              cd "$DEST_DIR"
+              # Garante URL remota com token para pull
+              git remote set-url origin "$TOKEN_URL"
+              git fetch origin "$BRANCH" || echo -e "${RED}Falha ao buscar branch $BRANCH${NC}"
+              git checkout "$BRANCH" || git checkout master || git checkout main
+              git pull origin "$BRANCH" || echo -e "${RED}Falha ao fazer pull do branch $BRANCH${NC}"
+            else
+              echo -e "${YELLOW}Clonando novo repositório...${NC}"
+              # Remover diretório se existe mas não é um repo git
+              rm -rf "$DEST_DIR"/*
+              git clone "$TOKEN_URL" "$DEST_DIR" || echo -e "${RED}Falha ao clonar repositório${NC}"
+              if [ -d "$DEST_DIR/.git" ]; then
+                cd "$DEST_DIR"
+                git checkout "$BRANCH" || git checkout master || git checkout main
+              else
+                echo -e "${RED}${BOLD}ERRO: Falha ao inicializar repositório Git${NC}"
+              fi
+            fi
+            
+            # Cria o arquivo de sinalização
+            echo "executa_pipeline_backend" > /home/executa_pipeline_backend.txt
+            
+            # Sinal de sucesso para o próximo job
+            echo "CLONE_SUCCESS=$(date +%s)" > /home/clone_status.txt
+            
+            echo -e "${GREEN}${BOLD}Clonagem/atualização concluída com sucesso!${NC}"
+
+  backup:
+    name: Create Backup
+    runs-on: ubuntu-latest
+    needs: clone-repository
+    
+    steps:
+      - name: Acessar servidor e criar backup
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            # Definindo cores para os logs
+            GREEN='\033[0;32m'
+            YELLOW='\033[0;33m'
+            RED='\033[0;31m'
+            BLUE='\033[0;34m'
+            CYAN='\033[0;36m'
+            BOLD='\033[1m'
+            NC='\033[0m' # No Color
+            
+            # Verificar se o clone foi bem-sucedido
+            if [ ! -f "/home/clone_status.txt" ]; then
+              echo -e "${RED}${BOLD}Erro: Clonagem do repositório não foi concluída corretamente.${NC}"
+              exit 1
+            fi
+            
+            echo -e "${BLUE}${BOLD}======= CRIANDO BACKUP =======${NC}"
+            
+            # Variáveis para backup
+            DEST_DIR_BACKEND="/home/sistema/MULTI100OFICIAL-MULTI100-OFICIAL-u21/backend/"
+            DEST_DIR_FRONTEND="/home/sistema/MULTI100OFICIAL-MULTI100-OFICIAL-u21/frontend/"
+            BACKUP_DIR="/home/sistema/MULTI100OFICIAL-MULTI100-OFICIAL-u21/backup/"
+            DATA_ATUAL=$(date +%Y%m%d_%H%M%S)
+            BACKUP_PATH="${BACKUP_DIR}${DATA_ATUAL}"
+            
+            # Criar estrutura de diretórios para backup
+            echo -e "${YELLOW}Criando estrutura de diretórios para backup...${NC}"
+            mkdir -p "${BACKUP_PATH}/backend/src"
+            mkdir -p "${BACKUP_PATH}/backend/dist"
+            mkdir -p "${BACKUP_PATH}/frontend/src"
+            mkdir -p "${BACKUP_PATH}/frontend/build"
+            
+            # Copiar arquivos para o backup
+            echo -e "${YELLOW}Copiando arquivos do backend para o backup...${NC}"
+            cp -r "${DEST_DIR_BACKEND}src/." "${BACKUP_PATH}/backend/src/" 2>/dev/null || true
+            cp -r "${DEST_DIR_BACKEND}dist/." "${BACKUP_PATH}/backend/dist/" 2>/dev/null || true
+            
+            echo -e "${YELLOW}Copiando arquivos do frontend para o backup...${NC}"
+            cp -r "${DEST_DIR_FRONTEND}src/." "${BACKUP_PATH}/frontend/src/" 2>/dev/null || true
+            cp -r "${DEST_DIR_FRONTEND}build/." "${BACKUP_PATH}/frontend/build/" 2>/dev/null || true
+            
+            echo -e "${GREEN}Backup criado com sucesso em ${CYAN}${BACKUP_PATH}${NC}"
+            
+            # Sinal de sucesso para o próximo job
+            echo "BACKUP_SUCCESS=$(date +%s)" > /home/backup_status.txt
+
+  deploy-backend:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    needs: backup
+    
+    steps:
+      - name: Acessar servidor e implantar backend
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            # Definindo cores para os logs
+            GREEN='\033[0;32m'
+            YELLOW='\033[0;33m'
+            RED='\033[0;31m'
+            BLUE='\033[0;34m'
+            CYAN='\033[0;36m'
+            BOLD='\033[1m'
+            NC='\033[0m' # No Color
+            
+            # Verificar se o backup foi bem-sucedido
+            if [ ! -f "/home/backup_status.txt" ]; then
+              echo -e "${RED}${BOLD}Erro: Backup não foi concluído corretamente.${NC}"
+              exit 1
+            fi
+            
+            # Variáveis para deploy
+            REPO_DIR="/home/repositories/crm_v2/backend/"
+            DEST_DIR_BACKEND="/home/sistema/MULTI100OFICIAL-MULTI100-OFICIAL-u21/backend/"
+            SERVICE_BACKEND_NAME="backend"
+            
+            echo -e "${BLUE}${BOLD}======= PARTE 2: DEPLOY DO BACKEND =======${NC}"
+            
+            #copia pasta src para o destino
+            echo -e "${YELLOW}Copiando pasta src para o destino e sobrepondo..${NC}"
+            cp -r "${REPO_DIR}src" "${DEST_DIR_BACKEND}"
+            echo -e "${GREEN}Pasta src copiada com sucesso para ${CYAN}${DEST_DIR_BACKEND}${NC}"
+
+            #para o processo pm2 
+            echo -e "${YELLOW}Parando serviço backend...${NC}"
+            pm2 stop ${SERVICE_BACKEND_NAME}
+
+            #apaga pasta dist
+            echo -e "${YELLOW}Apagando pasta dist..${NC}"
+            rm -rf "${DEST_DIR_BACKEND}dist"
+            echo -e "${GREEN}Pasta dist apagada com sucesso${NC}"
+
+            #executa build
+            echo -e "${YELLOW}Executando build..${NC}"
+            cd "${DEST_DIR_BACKEND}"
+            npm run build
+            echo -e "${GREEN}Build executado com sucesso${NC}"
+
+            #executa migrate sequelize
+            echo -e "${YELLOW}Executando migrate${NC}"
+            cd "${DEST_DIR_BACKEND}"
+            npx sequelize db:migrate
+            echo -e "${GREEN}Migrations executadas com sucesso${NC}"
+            
+            # Reinicia o serviço
+            echo -e "${YELLOW}Reiniciando serviço backend...${NC}"
+            pm2 start ${SERVICE_BACKEND_NAME}
+            echo -e "${GREEN}${BOLD}Backend reiniciado com sucesso${NC}"
+            
+            echo -e "${GREEN}${BOLD}=== DEPLOY CONCLUÍDO COM SUCESSO! ===${NC}"
+
+  deploy-frontend:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    needs: deploy-backend
+    
+    steps:
+      - name: Acessar servidor e implantar frontend
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            # Definindo cores para os logs
+            GREEN='\033[0;32m'
+            YELLOW='\033[0;33m'
+            RED='\033[0;31m'
+            BLUE='\033[0;34m'
+            CYAN='\033[0;36m'
+            BOLD='\033[1m'
+            NC='\033[0m' # No Color
+            
+            # Verificar se o backup foi bem-sucedido
+            if [ ! -f "/home/backup_status.txt" ]; then
+              echo -e "${RED}${BOLD}Erro: Backup não foi concluído corretamente.${NC}"
+              exit 1
+            fi
+            
+            # Variáveis para deploy
+            REPO_DIR="/home/repositories/crm_v2/frontend/"
+            DEST_DIR_FRONTEND="/home/sistema/MULTI100OFICIAL-MULTI100-OFICIAL-u21/frontend/"
+            SERVICE_FRONTEND_NAME="frontends"
+            
+            echo -e "${BLUE}${BOLD}======= PARTE 3: DEPLOY DO FRONTEND =======${NC}"
+            
+            # Copia pasta src para o destino
+            echo -e "${YELLOW}Copiando pasta src para o destino e sobrepondo..${NC}"
+            cp -r "${REPO_DIR}src" "${DEST_DIR_FRONTEND}"
+            echo -e "${GREEN}Pasta src copiada com sucesso para ${CYAN}${DEST_DIR_FRONTEND}${NC}"
+            
+            # Copia arquivos de configuração necessários
+            echo -e "${YELLOW}Copiando arquivos de configuração..${NC}"
+            cp -r "${REPO_DIR}package.json" "${DEST_DIR_FRONTEND}"
+            cp -r "${REPO_DIR}package-lock.json" "${DEST_DIR_FRONTEND}" 2>/dev/null || true
+            echo -e "${GREEN}Arquivos de configuração copiados com sucesso${NC}"
+            
+            # Para o processo pm2 se existir
+            echo -e "${YELLOW}Parando serviço frontend se estiver em execução...${NC}"
+            pm2 stop ${SERVICE_FRONTEND_NAME} 2>/dev/null || true
+            
+            # Apaga pasta build
+            echo -e "${YELLOW}Apagando pasta build..${NC}"
+            rm -rf "${DEST_DIR_FRONTEND}build"
+            echo -e "${GREEN}Pasta build apagada com sucesso${NC}"
+            
+            # # Instala dependências e executa build
+            # echo -e "${YELLOW}Instalando dependências...${NC}"
+            # cd "${DEST_DIR_FRONTEND}"
+            # npm install --force
+            
+            echo -e "${YELLOW}Executando build do frontend...${NC}"
+            npm run build
+            echo -e "${GREEN}Build executado com sucesso${NC}"
+            
+            # Reinicia o serviço se necessário
+            echo -e "${YELLOW}Iniciando serviço frontend...${NC}"
+            pm2 start ${SERVICE_FRONTEND_NAME} 2>/dev/null || true
+            echo -e "${GREEN}${BOLD}Frontend iniciado com sucesso${NC}"
+            
+            echo -e "${GREEN}${BOLD}=== DEPLOY DO FRONTEND CONCLUÍDO COM SUCESSO! ===${NC}"
