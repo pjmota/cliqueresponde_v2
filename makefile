@@ -44,6 +44,10 @@ build_front_end:
 		npm install -f
 
 run_front_end:
+	@echo "Create ENV variables..."
+	export NODE_OPTIONS=--openssl-legacy-provider
+	export REACT_APP_BACKEND_URL=http://localhost:8081
+	export PORT=3000
 	@echo "Running frontend with PM2..."
 	cd ${FOLDER_FRONTEND} && \
 		pm2 start npm --name "frontend-v2" -- run start:devlinux
