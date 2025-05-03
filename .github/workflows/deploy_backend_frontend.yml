@@ -3,7 +3,7 @@ name: Clone and Deploy main
 on:
   push:
     branches:
-      - prod
+      - main
 
 jobs:
   clone-repository:
