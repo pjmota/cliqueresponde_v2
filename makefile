@@ -5,6 +5,11 @@ FOLDER_FRONTEND := frontend
 
 # Target to build and start the Docker containers in detached mode
 build_and_up_containers:
+	@echo "Create folders volumes if not exist..."
+	mkdir -p ${FOLDER_DOCKER_YAMLS}/volumes
+	@echo "Create folder postgres if not exist..."
+	mkdir -p ${FOLDER_DOCKER_YAMLS}/volumes/postgres
+	mkdir -p ${FOLDER_DOCKER_YAMLS}/volumes/postgres/data
 	@echo "Building and starting containers..."
 	docker compose -f ${FOLDER_DOCKER_YAMLS}/config.yml -f ${FOLDER_DOCKER_YAMLS}/development.yml up -d
 
