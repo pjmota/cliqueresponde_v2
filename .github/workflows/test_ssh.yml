@@ -7,11 +7,16 @@ on:
 
 jobs:
   deploy:
-    name: Teste de SSH e Criação de Arquivo
+    name: Teste de SSH e Pull do Repositório
     runs-on: ubuntu-latest
 
     steps:
-      - name: Acessar servidor e criar txt
+      # 1. Checkout do repositório no runner (opcional)
+      - name: Checkout do repositório
+        uses: actions/checkout@v3
+
+      # 2. Conectar ao servidor e executar pull
+      - name: Acessar servidor e atualizar código
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -19,4 +24,18 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            # Variáveis
+            REPO_URL="https://github.com/Clique-Responde/cliqueresponde_v2.git"
+            DEST_DIR="/home/cliqueresponde_v2"
+            BRANCH="${GITHUB_REF#refs/heads/}"
+
+            # Clonar se não existir, senão pull
+            if [ ! -d "$DEST_DIR" ]; then
+              git clone "$REPO_URL" "$DEST_DIR"
+            else
+              cd "$DEST_DIR"
+              git pull origin "$BRANCH"
+            fi
+
+            # Cria o arquivo de sinalização
             echo "executa_pipeline_backend" > /home/executa_pipeline_backend.txt
