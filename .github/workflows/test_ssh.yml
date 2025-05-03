@@ -1,0 +1,22 @@
+name: Deploy Backend - Teste SSH
+
+on:
+  push:
+    branches:
+      - test_ssh
+
+jobs:
+  deploy:
+    name: Teste de SSH e Criação de Arquivo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Acessar servidor e criar txt
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            echo "executa_pipeline_backend" > /home/executa_pipeline_backend.txt
