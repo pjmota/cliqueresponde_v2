@@ -27,6 +27,7 @@ interface Request {
   hasTags?: boolean;
   users: number[];
   companyId: number;
+  pageSize?: number | string;
 }
 
 
@@ -49,7 +50,8 @@ const ListTicketsServiceKanban = async ({
   showAll,
   userId,
   withUnreadMessages,
-  companyId
+  companyId,
+  pageSize = 15
 }: Request): Promise<Response> => {
 
   // console.log("REQUEST", {
@@ -267,7 +269,7 @@ const ListTicketsServiceKanban = async ({
 
   }
 
-  const limit = 40;
+  const limit = parseInt(pageSize as string, 15);
   const offset = limit * (+pageNumber - 1);
 
   whereCondition = {

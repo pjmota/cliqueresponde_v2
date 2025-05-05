@@ -434,7 +434,8 @@ const MessagesList = ({
   whatsappId,
   queueId,
   channel,
-  ticketIdReceived
+  ticketIdReceived,
+  ticketDashboard
 }) => {
   const classes = useStyles();
   const [messagesList, dispatch] = useReducer(reducer, []);
@@ -504,8 +505,13 @@ const MessagesList = ({
         }
         if (isNil(ticketIdEdited)) return;
         try {
+
           const { data } = await api.get("/messages/" + ticketIdEdited, {
-            params: { pageNumber, selectedQueues: JSON.stringify(ticketIdReceived ? user.queues.map(queue => queue.id) : selectedQueuesMessage) },
+            params: { 
+              pageNumber, 
+              selectedQueues: JSON.stringify(ticketIdReceived ? user.queues.map(queue => queue.id) : selectedQueuesMessage),
+              ...(ticketDashboard ? {ticketDashboard} : {})
+            },
           });
 
           if (currentTicketId.current === ticketIdEdited) {

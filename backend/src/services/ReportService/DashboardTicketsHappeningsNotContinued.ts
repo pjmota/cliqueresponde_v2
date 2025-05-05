@@ -62,7 +62,7 @@ export default async function getHappeningsNotContinued(
     query,
     { 
       type: QueryTypes.SELECT, 
-      logging: console.log 
+      //logging: console.log 
     }
   );
   

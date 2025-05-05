@@ -911,7 +911,9 @@ const TicketsManagerTabs = () => {
             <TicketsQueueSelect
               selectedQueueIds={selectedQueueIds}
               userQueues={user?.queues}
-              onChange={(values) => setSelectedQueueIds(values)}
+              onChange={(values) => {
+                setSelectedQueueIds(values)
+              }}
             />
           </Grid>
         </Grid>
@@ -1043,14 +1045,14 @@ const TicketsManagerTabs = () => {
             status="open"
             showAll={showAllTickets}
             sortTickets={sortTickets ? "ASC" : "DESC"}
-            selectedQueueIds={selectedQueueIds}
+            selectedQueueIds={selectedQueueIds.length === 1 && selectedQueueIds[0] === "no-queue" ? null : selectedQueueIds}
             updateCount={(val) => setOpenCount(val)}
             style={applyPanelStyle("open")}
             setTabOpen={setTabOpen}
           />
           <TicketsList
             status="pending"
-            selectedQueueIds={selectedQueueIds}
+            selectedQueueIds={selectedQueueIds.length === 1 && selectedQueueIds[0] === "no-queue" ? null : selectedQueueIds}
             sortTickets={sortTickets ? "ASC" : "DESC"}
             showAll={user.profile === "admin" || user.allUserChat === 'enabled' ? showAllTickets : false}
             updateCount={(val) => setPendingCount(val)}
@@ -1062,7 +1064,7 @@ const TicketsManagerTabs = () => {
               status="group"
               showAll={showAllTickets}
               sortTickets={sortTickets ? "ASC" : "DESC"}
-              selectedQueueIds={selectedQueueIds}
+              selectedQueueIds={selectedQueueIds.length === 1 && selectedQueueIds[0] === "no-queue" ? null : selectedQueueIds}
               updateCount={(val) => setGroupingCount(val)}
               style={applyPanelStyle("group")}
               setTabOpen={setTabOpen}
@@ -1074,7 +1076,7 @@ const TicketsManagerTabs = () => {
         <TicketsList
           status="closed"
           showAll={showAllTickets}
-          selectedQueueIds={selectedQueueIds}
+          selectedQueueIds={selectedQueueIds.length === 1 && selectedQueueIds[0] === "no-queue" ? null : selectedQueueIds}
           setTabOpen={setTabOpen}
         />
       </TabPanel>
@@ -1087,7 +1089,7 @@ const TicketsManagerTabs = () => {
               showAll={showAllTickets}
               tags={selectedTags}
               users={selectedUsers}
-              selectedQueueIds={selectedQueueIds}
+              selectedQueueIds={selectedQueueIds.length === 1 && selectedQueueIds[0] === "no-queue" ? null : selectedQueueIds}
               whatsappIds={selectedWhatsapp}
               forceSearch={forceSearch}
               searchOnMessages={searchOnMessages}
@@ -1102,7 +1104,7 @@ const TicketsManagerTabs = () => {
             searchParam={searchParam}
             showAll={false}
             tags={selectedTags}
-            selectedQueueIds={selectedQueueIds}
+            selectedQueueIds={selectedQueueIds.length === 1 && selectedQueueIds[0] === "no-queue" ? null : selectedQueueIds}
             whatsappIds={selectedWhatsapp}
             forceSearch={forceSearch}
             searchOnMessages={searchOnMessages}

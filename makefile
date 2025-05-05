@@ -5,6 +5,11 @@ FOLDER_FRONTEND := frontend
 
 # Target to build and start the Docker containers in detached mode
 build_and_up_containers:
+	@echo "Create folders volumes if not exist..."
+	mkdir -p ${FOLDER_DOCKER_YAMLS}/volumes
+	@echo "Create folder postgres if not exist..."
+	mkdir -p ${FOLDER_DOCKER_YAMLS}/volumes/postgres
+	mkdir -p ${FOLDER_DOCKER_YAMLS}/volumes/postgres/data
 	@echo "Building and starting containers..."
 	docker compose -f ${FOLDER_DOCKER_YAMLS}/config.yml -f ${FOLDER_DOCKER_YAMLS}/development.yml up -d
 
@@ -39,6 +44,10 @@ build_front_end:
 		npm install -f
 
 run_front_end:
+	@echo "Create ENV variables..."
+	export NODE_OPTIONS=--openssl-legacy-provider
+	export REACT_APP_BACKEND_URL=http://localhost:8081
+	export PORT=3000
 	@echo "Running frontend with PM2..."
 	cd ${FOLDER_FRONTEND} && \
 		pm2 start npm --name "frontend-v2" -- run start:devlinux

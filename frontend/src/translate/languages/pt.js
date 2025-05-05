@@ -1194,10 +1194,23 @@ const messages = {
         searchPlaceholder: "Pesquisa",
         user: "Usuário",
         status: "Status",
+        preLaoding: "Carregando Kanban...",
         subMenus: {
           list: "Painel",
           tags: "Lanes",
         },
+        cards: {
+          ticketNumber: "Ticket nº ",
+          viewTicket: "Ver Ticket",
+          lastSchedule: "Ult. agendamento:",
+          noSchedules: "Sem agendamentos",
+          loading: "Carregando...",
+          addColumns: "+ Adicionar colunas"
+        },
+        notifications: {
+          tagRemoved: "Ticket Tag Removido!",
+          tagAdded: "Ticket Tag Adicionado com Sucesso!"
+        }
       },
 
       campaigns: {

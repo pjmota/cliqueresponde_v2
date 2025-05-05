@@ -6,6 +6,7 @@ import TicketTag from "../../models/TicketTag";
 import removeAccents from "remove-accents";
 import Contact from "../../models/Contact";
 import logger from "../../utils/logger";
+import sequelize from "../../database";
 
 interface Request {
   companyId: number;
@@ -118,7 +119,7 @@ const ListService = async ({
     }
 
     // console.log(whereCondition)
-    const {rows: tags } = await Tag.findAndCountAll({
+    const tags = await Tag.findAll({
       where: { ...whereCondition, companyId, kanban },
       limit,
       offset,
@@ -127,9 +128,7 @@ const ListService = async ({
         {
           model: TicketTag,
           as: "ticketTags",
-
-        },
-      ],
+        }],
       attributes: [
         'id',
         'name',

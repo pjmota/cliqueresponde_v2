@@ -46,6 +46,7 @@ type IndexQuery = {
   pageNumber: string;
   ticketTrakingId: string;
   selectedQueues?: string;
+  ticketDashboard? : string;
 };
 
 interface TokenPayload {
@@ -80,9 +81,11 @@ type MessageTemplateData = {
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
-  const { pageNumber, selectedQueues: queueIdsStringified } = req.query as IndexQuery;
+  const { pageNumber, selectedQueues: queueIdsStringified, ticketDashboard } = req.query as IndexQuery;
   const { companyId, profile } = req.user;
   let queues: number[] = [];
+
+  const ticketDashboardString = typeof ticketDashboard === "string" ? ticketDashboard : undefined;
 
   const user = await User.findByPk(req.user.id, {
     include: [{ model: Queue, as: "queues" }]
@@ -101,7 +104,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     ticketId,
     companyId,
     queues,
-    user
+    user,
+    ticketDashboardString
   });
 
   if (["whatsapp", "whatsapp_oficial"].includes(ticket.channel) && ticket.whatsappId) {

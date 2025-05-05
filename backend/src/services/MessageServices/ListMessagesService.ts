@@ -17,6 +17,7 @@ interface Request {
   pageNumber?: string;
   queues?: number[];
   user?: User;
+  ticketDashboardString?: string
 }
 
 interface Response {
@@ -31,7 +32,8 @@ const ListMessagesService = async ({
   ticketId,
   companyId,
   queues = [],
-  user
+  user,
+  ticketDashboardString
 }: Request): Promise<Response> => {
 
 
@@ -106,7 +108,10 @@ const ListMessagesService = async ({
   const offset = limit * (+pageNumber - 1);
 
   const { count, rows: messages } = await Message.findAndCountAll({
-    where: { ticketId: tickets, companyId },
+    where: { 
+      ticketId: tickets, 
+      companyId,
+    },
     attributes: ["id", "fromMe", "mediaUrl", "body", "mediaType", "ack", "createdAt", "ticketId", "isDeleted", "queueId", "isForwarded", "isEdited", "isPrivate", "companyId", "wid"],
     limit,
     include: [
@@ -148,10 +153,27 @@ const ListMessagesService = async ({
     //logging: console.log
   });
 
-  const hasMore = count > offset + messages.length;
+  let filtredMessage = [];
+  let newCount;
+
+  if (ticketDashboardString === "true" && messages.length > 0) {
+    const lastMessage = messages[0];
+    if (lastMessage.ack === 4 && lastMessage.fromMe) {
+      filtredMessage = messages.slice(1); // Remove o último registro
+      newCount -= 1; // Ajusta o contador
+    } else {
+      filtredMessage = messages;
+      newCount = count;
+    }
+  } else {
+    filtredMessage = messages;
+    newCount = count;
+  }
+
+  const hasMore = newCount > offset + filtredMessage.length;
 
   return {
-    messages: messages.reverse(),
+    messages: filtredMessage.reverse(),
     ticket,
     count,
     hasMore
