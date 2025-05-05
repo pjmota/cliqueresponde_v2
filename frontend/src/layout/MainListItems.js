@@ -39,6 +39,7 @@ import BusinessIcon from "@material-ui/icons/Business";
 import {
   AllInclusive,
   AttachFile,
+  AttachMoney,
   Dashboard,
   Description,
   DeviceHubOutlined,
@@ -513,6 +514,15 @@ const MainListItems = ({ collapsed, drawerClose }) => {
           tooltip={collapsed}
         />
       )}
+
+      {/* {afterSales && (
+      )} */}
+      <ListItemLink
+        to="/afterSales"
+        primary={i18n.t("mainDrawer.listItems.afterSales")}
+        icon={<AttachMoney />}
+        tooltip={collapsed}
+      />
 
       {showSchedules && (
         <>
