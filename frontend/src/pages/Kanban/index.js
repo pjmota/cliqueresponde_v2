@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useReducer, useRef, useCallback } from "react";
+import React, { useState, useEffect, useContext, useReducer, useRef, useCallback,useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
 import { AuthContext } from "../../context/Auth/AuthContext";
@@ -225,6 +225,8 @@ const Kanban = () => {
   const [initialLoading, setInitialLoading] = useState(true);
 
   const [laneScrollPositions, setLaneScrollPositions] = useState({});
+  const [idLanes, setIdLanes] = useState([]);
+  const [laneHtmlObjects, setLaneHtmlObjects] = useState({});
   const [loadingMoreTickets, setLoadingMoreTickets] = useState({});
   const [pageNumbers, setPageNumbers] = useState({});
   const [hasMore, setHasMore] = useState({});
@@ -240,8 +242,9 @@ const Kanban = () => {
   const [scheduleContactId, setScheduleContactId] = useState(null);
   const [scheduleTicket, setScheduleTicket] = useState(null);
   const userQueueIds = user.queues.map(queue => queue.UserQueue.queueId);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(30);
   const [ticketTagcount, setTicketTagCount] = useState({});
+  
 
   const initialFilterSettings = {
     queueIds: userQueueIds,
@@ -337,9 +340,7 @@ const Kanban = () => {
   };
 
   
-  const fetchTicketTagsCount= async (ticketId) => {
-
-  };
+  
   
   const fetchTags = async () => {
     try {
@@ -373,6 +374,8 @@ const Kanban = () => {
         pageSize:pageSize
       };
 
+      
+
       const requests = tags.map(tag => {
 
         return {
@@ -385,13 +388,14 @@ const Kanban = () => {
       );
 
 
-
       requests.push({
         r: api.get("/ticket/kanban", {
-          params: { ...params, hasTags: false }
+          params: { ...params, hasTags: false, pageSize: pageSize }
         }),
         tag_id: "lane0"
       })
+
+      
 
       const response = await Promise.all(
         requests.map(async request => {
@@ -406,7 +410,7 @@ const Kanban = () => {
 
         setTicketTagCount(prevState => ({
           ...prevState,
-          [tag_id]: data.count
+          [tag_id]: tag_id === "lane0" ? data.tickets.length : data.count
         }));
 
         return data.tickets
@@ -469,7 +473,7 @@ const Kanban = () => {
       {
         id: "lane0",
         title: i18n.t("tagsKanban.laneDefault"),
-        label: filteredTickets.length.toString() + "/"+ ticketTagcount["lane0"],
+        label: filteredTickets.length.toString(),
         cards: filteredTickets.map(ticket => ({
           id: ticket.id.toString(),
           label: <>
@@ -530,7 +534,7 @@ const Kanban = () => {
           return {
             id: tag.id.toString(),
             title: tag.name,
-            label: filteredTickets?.length.toString() + "/" + ticketTagcount[tag.id],
+            label: filteredTickets?.length.toString() + "/" + (ticketTagcount[tag.id]  === 0 ? filteredTickets?.length.toString() : ticketTagcount[tag.id]),
             cards: filteredTickets.map(ticket => ({
               id: ticket.id.toString(),
               label:
@@ -578,8 +582,46 @@ const Kanban = () => {
         }),
     ];
 
+    const idLanes= lanes.map(lane => lane.id);
+    setIdLanes(idLanes);
+
     setFile({ lanes });
   };
+
+//  // 1. Primeiro, crie um ref para armazenar a referência ao componente Board
+// const boardRef = useRef(null);
+
+// // 2. Modifique o useMemo para usar useEffect com dependências apropriadas
+// useEffect(() => {
+//   if (!file.lanes.length) return;
+  
+//   // Esperar um momento para garantir que o DOM esteja renderizado
+//   const timer = setTimeout(() => {
+//     const laneObjects = {};
+//     idLanes.forEach((laneId) => {
+//       // Seletor mais específico para encontrar o elemento da lane
+//       const lane = document.querySelector(`.react-trello-lane[data-id="${laneId}"] .react-trello-lane-scrollable`);
+//       if (lane) {
+//         laneObjects[laneId] = lane;
+//       }
+//     });
+//     // Armazenar os objetos das lanes
+//     setLaneHtmlObjects(laneObjects);
+//   }, 200);
+  
+//   return () => clearTimeout(timer);
+// }, [idLanes, file.lanes.length]);
+
+// // 3. Função para controlar o scroll de uma lane específica
+// const scrollLaneTo = useCallback((laneId, position) => {
+//   const laneElement = laneHtmlObjects[laneId];
+//   if (laneElement) {
+//     laneElement.scrollTop = position;
+//   }
+// }, [laneHtmlObjects]);
+
+
+
 
   const handleCardClick = (uuid) => {
     history.push('/tickets/' + uuid);
@@ -719,15 +761,18 @@ const Kanban = () => {
 
   const fetchMoreTickets = async (laneId, page) => {
     try {
-      const params = {
+      let params = {
         queueIds: JSON.stringify(filterSettings.queueIds),
         users: JSON.stringify(filterSettings.users),
         status: JSON.stringify(filterSettings.status),
         searchParam: filterSettings.searchParam,
+        
         pageNumber: page,
-        pageSize: 20
+        pageSize: pageSize
       };
-
+      if(hasMore[laneId] === false) {
+        return Promise.resolve({ cards: [], noLoadMore: false });
+      }
       if (laneId === "lane0") {
         params.hasTags = false;
       } else {
@@ -736,10 +781,10 @@ const Kanban = () => {
 
       const { data } = await api.get("/ticket/kanban", { params });
 
-      setPageNumbers(prev => ({ ...prev, [laneId]: page }));
       setHasMore(prev => ({ ...prev, [laneId]: data.hasMore }));
-
+      
       if (data.tickets && data.tickets.length > 0) {
+        setPageNumbers(prev => ({ ...prev, [laneId]: page }));
         const newTickets = [...tickets];
 
         //Remove duplicates
