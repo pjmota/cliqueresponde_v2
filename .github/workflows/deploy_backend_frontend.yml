@@ -91,6 +91,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            # Preparar ambiente Node.js
+            export NVM_DIR="/root/.nvm"
+            source "$NVM_DIR/nvm.sh"
+            nvm use 20.18.3
+            export PATH="/root/.nvm/versions/node/v20.18.3/bin:$PATH"
+
             # Definindo cores para os logs
             GREEN='\033[0;32m'
             YELLOW='\033[0;33m'
@@ -150,6 +156,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            # Preparar ambiente Node.js
+            export NVM_DIR="/root/.nvm"
+            source "$NVM_DIR/nvm.sh"
+            nvm use 20.18.3
+            export PATH="/root/.nvm/versions/node/v20.18.3/bin:$PATH"
+            
             # Definindo cores para os logs
             GREEN='\033[0;32m'
             YELLOW='\033[0;33m'
