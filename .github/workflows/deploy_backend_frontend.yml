@@ -237,7 +237,6 @@ jobs:
             source "$NVM_DIR/nvm.sh"
             nvm use 20.18.3
             export PATH="/root/.nvm/versions/node/v20.18.3/bin:$PATH"
-            export NODE_OPTIONS="--max_old_space_size=4096"
             export NODE_OPTIONS=--openssl-legacy-provider
 
             # Definindo cores para os logs
