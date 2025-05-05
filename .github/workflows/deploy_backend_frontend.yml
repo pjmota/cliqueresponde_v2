@@ -293,7 +293,6 @@ jobs:
             
             # Reinicia o serviço se necessário
             echo -e "${YELLOW}Iniciando serviço frontend...${NC}"
-            #
             export NODE_OPTIONS=--openssl-legacy-provider && pm2 restart ${SERVICE_FRONTEND_NAME} --update-env 2>/dev/null || true
             echo -e "${GREEN}${BOLD}Frontend iniciado com sucesso${NC}"
             
