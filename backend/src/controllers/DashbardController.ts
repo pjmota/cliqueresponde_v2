@@ -3,7 +3,7 @@ import DashboardDataService, { DashboardData, Params } from "../services/ReportS
 import { TicketsAttendance } from "../services/ReportService/TicketsAttendance";
 import { TicketsDayService } from "../services/ReportService/TicketsDayService";
 import TicketsQueuesService from "../services/TicketServices/TicketsQueuesService";
-import getHappeningsNotContinued from "../services/ReportService/DashboardTicketsHappeningsNotConotinued";
+import getHappeningsNotContinued from "../services/ReportService/DashboardTicketsHappeningsNotContinued";
 
 type IndexQuery = {
   initialDate: string;
