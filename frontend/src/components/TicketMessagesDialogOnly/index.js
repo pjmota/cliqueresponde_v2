@@ -133,6 +133,7 @@ export default function TicketMessagesDialogOnly({ open, handleClose, ticketId }
               ticketIdReceived={ticket.uuid}
               isGroup={ticket.isGroup}
               queueId={ticket.queueId}
+              ticketDashboard={true}
             ></MessagesList>
           </Box>
         </ForwardMessageProvider>

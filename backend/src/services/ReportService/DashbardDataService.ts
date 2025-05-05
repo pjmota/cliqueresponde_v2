@@ -5,7 +5,7 @@ import * as _ from "lodash";
 import sequelize from "../../database";
 import path from "path";
 import logger from "../../utils/logger";
-import getHappeningsNotContinued from "./DashboardTicketsHappeningsNotConotinued";
+import getHappeningsNotContinued from "./DashboardTicketsHappeningsNotContinued";
 const fs = require('fs');
 
 
