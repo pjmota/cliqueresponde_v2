@@ -5,6 +5,7 @@ import path from "path";
 import fs from "fs";
 import downloadFileFromUrl from "../../utils/downloadFileFromUrl";
 import logger from "../../utils/logger";
+import User from "../../models/User";
 
 type Details = {
   name: string;
@@ -18,11 +19,11 @@ const CreateAfterSalesDetailsService = async (
   afterSalesId: number,
   userId
 ) => {
-  const user = await ShowUserService(userId);
-  const userFields = user.contactCustomFields
+  const user = await User.findByPk(userId);
+  const userFields = user.contactCustomFields !== null ? user.contactCustomFields
     .split(";")
-    .map(name => ({ name: name.trim(), value: "" }));
-
+    .map(name => ({ name: name.trim(), value: "" })) : [];
+    
   const data = details.concat(
     userFields.filter(field => userFields.every(_field => _field !== field))
   );
@@ -38,6 +39,7 @@ const CreateAfterSalesDetailsService = async (
 
   details.forEach(async item => {
     try {
+
       const folder = path.resolve(
         process.env.ASSETS_DIRECTORY,
         "images",
