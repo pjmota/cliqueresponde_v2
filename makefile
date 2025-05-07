@@ -52,6 +52,11 @@ run_front_end:
 	cd ${FOLDER_FRONTEND} && \
 		pm2 start npm --name "frontend-v2" -- run start:devlinux
 
+run_production_front_end:
+	@echo "Running development frontend..."
+	cd ${FOLDER_FRONTEND} && \
+		pm2 start npm --name "frontend-v2-prod" -- run serve 
+
 run_backend:
 	@echo "Running backend with PM2..."
 	cd ${FOLDER_BACKEND} && \
