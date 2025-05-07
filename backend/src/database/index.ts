@@ -55,6 +55,8 @@ import ScheduleTagIntegrationWhatsapp from "../models/ScheduleTagIntegrationWhat
 import LogRolette from "../models/LogRolette";
 import UserPermission from "../models/UserPermission";
 import Permission from "../models/Permission";
+import AfterSales from "../models/AfterSales";
+import AfterSalesDetails from "../models/AfterSalesDetails";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -117,7 +119,9 @@ const models = [
   ScheduleTagIntegrationWhatsapp,
   LogRolette,
   UserPermission,
-  Permission
+  Permission,
+  AfterSales,
+  AfterSalesDetails
 ];
 
 sequelize.addModels(models);

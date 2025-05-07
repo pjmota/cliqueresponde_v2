@@ -151,7 +151,9 @@ const UserModal = ({ open, onClose, userId }) => {
 		scheduleNotifyBefore: 15,
 		scheduleNotifyNowText: "",
 		daysUntilNextScheduleNotify: 0,
-		viewAllContacts: "disable"
+		viewAllContacts: "disable",
+		allowAfterSales: false,
+		isAfterSalesManager: false
 	};
 
 	const { user: loggedInUser } = useContext(AuthContext);
@@ -958,6 +960,56 @@ const UserModal = ({ open, onClose, userId }) => {
 																	>
 																		<MenuItem value={"enable"}>{i18n.t("userModal.form.allTicketsQueuesAttendingEnable")}</MenuItem>
 																		<MenuItem value={"disable"}>{i18n.t("userModal.form.allTicketsQueuesAttendingDisable")}</MenuItem>
+																	</Field>
+																</>
+															</FormControl>
+														</Grid>
+														<Grid item xs={12} md={6} xl={6}>
+															<FormControl
+																variant="outlined"
+																className={classes.maxWidth}
+																margin="dense"
+																fullWidth
+															>
+																<>
+																	<InputLabel >
+																		{i18n.t("userModal.form.allowAfterSales")}
+																	</InputLabel>
+
+																	<Field
+																		as={Select}
+																		label={i18n.t("userModal.form.allowAfterSales")}
+																		name="allowAfterSales"
+																		type="allowAfterSales"
+																		required
+																	>
+																		<MenuItem value={true}>{i18n.t("userModal.form.allowAfterSalesEnable")}</MenuItem>
+																		<MenuItem value={false}>{i18n.t("userModal.form.allowAfterSalesDisable")}</MenuItem>
+																	</Field>
+																</>
+															</FormControl>
+														</Grid>
+														<Grid item xs={12} md={6} xl={6}>
+															<FormControl
+																variant="outlined"
+																className={classes.maxWidth}
+																margin="dense"
+																fullWidth
+															>
+																<>
+																	<InputLabel >
+																		{i18n.t("userModal.form.isAfterSalesManager")}
+																	</InputLabel>
+
+																	<Field
+																		as={Select}
+																		label={i18n.t("userModal.form.isAfterSalesManager")}
+																		name="isAfterSalesManager"
+																		type="isAfterSalesManager"
+																		required
+																	>
+																		<MenuItem value={true}>{i18n.t("userModal.form.isAfterSalesManagerEnable")}</MenuItem>
+																		<MenuItem value={false}>{i18n.t("userModal.form.isAfterSalesManagerDisable")}</MenuItem>
 																	</Field>
 																</>
 															</FormControl>

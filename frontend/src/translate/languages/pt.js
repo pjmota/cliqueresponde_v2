@@ -721,6 +721,12 @@ const messages = {
           viewAllContacts: "Visualiza todos os contatos",
           viewAllContactsEnable: "Habilitado",
           viewAllContactsDisable: "Desabilitado",
+          allowAfterSales: "Visualiza Pós-Venda",
+          allowAfterSalesEnable: "Habilitado",
+          allowAfterSalesDisable: "Desabilitado",
+		      isAfterSalesManager: "Coordenador Pós-Venda",
+		      isAfterSalesManagerEnable: "Habilitado",
+		      isAfterSalesManagerDisable: "Desabilitado"
         },
         tabs: {
           general: "Geral",
@@ -1007,7 +1013,8 @@ const messages = {
           prompts: "Talk.Ai",
           allConnections: "Gerenciar conexões",
           reports: "Relatórios",
-          management: "Gerência"
+          management: "Gerência",
+          afterSales: "Pós-venda"
         },
         appBar: {
           user: {

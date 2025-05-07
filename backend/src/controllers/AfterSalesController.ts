@@ -4,6 +4,7 @@ import CreateAfterSalesService from "../services/AfterSalesServices/CreateAfterS
 import UpdateAfterSalesService from "../services/AfterSalesServices/UpdateAfterSalesService";
 import ShowAfterSalesService from "../services/AfterSalesServices/ShowAfterSalesService";
 import DeleteAfterSalesService from "../services/AfterSalesServices/DeleteAfterSalesService";
+import logger from "../utils/logger";
 
 interface IndexQuery {
   contactId: string,
@@ -37,6 +38,7 @@ export const store = async (req: Request, res: Response) => {
   const data  = req.body;
 
   const afterSales = await CreateAfterSalesService(data, companyId, id);
+  logger.warn(`afterSales ----- ${JSON.stringify(afterSales)}`)
   return res.status(200).json(afterSales);
 }
 
