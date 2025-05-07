@@ -101,15 +101,22 @@ const reducer = (state, action) => {
 const AfterSalesDetailsModal = ({ afterSales, open, handleClose }) => {
   const [detail, setDetail] = useState([]);
 
-  useEffect(async () => {
+  useEffect(() => {
     if (!open) {
       return;
     }
-
-    try {
-      const { data } = await api.get(`/aftersales/${afterSales.id}/details`);
-      setDetail(data);
-    } catch (error) {}
+  
+    const fetchDetails = async () => {
+      try {
+        const { data } = await api.get(`/aftersales/${afterSales.id}/details`);
+        setDetail(data);
+      } catch (error) {
+        // Opcional: Tratar o erro, ex.: exibir uma mensagem
+        console.error("Erro ao buscar detalhes:", error);
+      }
+    };
+  
+    fetchDetails();
   }, [open]);
 
   const isImage = (item) => item.name.toLowerCase().startsWith("img");
