@@ -98,12 +98,6 @@ const ListAfterSalesService = async (
     ],
     [
       literal(
-        `(select sector from "Users" u where u.id = "AfterSales"."createdBy")`
-      ),
-      "sellerSector"
-    ],
-    [
-      literal(
         `(select count(1) from "AfterSalesDetails" asd where asd."afterSalesId" = "AfterSales"."id" and asd."name" ilike 'img%' and (asd."value" is not null and asd.value != ''))`
       ),
       "images"
@@ -125,7 +119,8 @@ const ListAfterSalesService = async (
     include,
     limit,
     offset,
-    order: [["updatedAt", "desc"]]
+    order: [["updatedAt", "desc"]],
+    logging: console.log
   });
 
   const hasMore = count > offset + afterSales.length;

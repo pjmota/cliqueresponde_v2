@@ -39,6 +39,7 @@ import BusinessIcon from "@material-ui/icons/Business";
 import {
   AllInclusive,
   AttachFile,
+  AttachMoney,
   Dashboard,
   Description,
   DeviceHubOutlined,
@@ -215,6 +216,7 @@ const MainListItems = ({ collapsed, drawerClose }) => {
   const [showKanban, setShowKanban] = useState(false);
   const [showOpenAi, setShowOpenAi] = useState(false);
   const [showIntegrations, setShowIntegrations] = useState(false);
+  const [showAfterSales, setShowAfterSales] = useState(false);
   
   const [showService, setShowService] = useState(false);
   const [showQuickMessages, setShowQuickMessages] = useState(false);
@@ -296,6 +298,7 @@ const MainListItems = ({ collapsed, drawerClose }) => {
       setShowTags(permissions.some(permission => permission.code === 'tags'));
       setShowInternalChat(permissions.some(permission => permission.code === 'chat-interno'));
       setShowCampaigns(permissions.some(permission => permission.code === 'campanhas'));
+      setShowAfterSales(permissions.some(permission => permission.code === 'pos-venda'));
       setShowOpenAi(planConfigs.plan.useOpenAi);
       setShowIntegrations(planConfigs.plan.useIntegrations);
       //setShowSchedules(planConfigs.plan.useSchedules);
@@ -510,6 +513,15 @@ const MainListItems = ({ collapsed, drawerClose }) => {
           to="/contacts"
           primary={i18n.t("mainDrawer.listItems.contacts")}
           icon={<ContactPhoneOutlinedIcon />}
+          tooltip={collapsed}
+        />
+      )}
+
+      {showAfterSales && (
+        <ListItemLink
+          to="/afterSales"
+          primary={i18n.t("mainDrawer.listItems.afterSales")}
+          icon={<AttachMoney />}
           tooltip={collapsed}
         />
       )}

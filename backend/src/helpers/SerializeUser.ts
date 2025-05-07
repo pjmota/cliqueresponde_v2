@@ -33,6 +33,8 @@ interface SerializedUser {
   allowRealTime: string;
   allowConnections: string;
   viewAllContacts?: string;
+  allowAfterSales?: boolean;
+  isAfterSalesManager?: boolean;
 }
 
 export const SerializeUser = async (user: User): Promise<SerializedUser> => {
@@ -70,6 +72,8 @@ export const SerializeUser = async (user: User): Promise<SerializedUser> => {
     allowGroup: user.allowGroup,
     allowRealTime: user.allowRealTime,
     allowConnections: user.allowConnections,
-    viewAllContacts: user.viewAllContacts
+    viewAllContacts: user.viewAllContacts,
+    allowAfterSales: user.allowAfterSales,
+    isAfterSalesManager: user.isAfterSalesManager
   };
 };

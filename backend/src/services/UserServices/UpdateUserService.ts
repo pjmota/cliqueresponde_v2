@@ -44,6 +44,8 @@ interface UserData {
   daysUntilNextScheduleNotify?: number;
   scheduleConnection?: number;
   viewAllContacts?: string;
+  allowAfterSales?: boolean;
+  isAfterSalesManager?: boolean;
 
 }
 
@@ -120,7 +122,9 @@ const UpdateUserService = async ({
     scheduleSendAt,
     daysUntilNextScheduleNotify,
     scheduleConnection,
-    viewAllContacts
+    viewAllContacts,
+    allowAfterSales,
+    isAfterSalesManager
   } = userData;
 
   try {
@@ -162,7 +166,9 @@ const UpdateUserService = async ({
     scheduleSendAt,
     daysUntilNextScheduleNotify,
     scheduleConnection,
-    viewAllContacts
+    viewAllContacts,
+    allowAfterSales,
+    isAfterSalesManager
   });
 
   await user.$set("queues", queueIds);

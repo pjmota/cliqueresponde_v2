@@ -45,6 +45,7 @@ import ToDoList from "../pages/ToDoList/";
 import Kanban from "../pages/Kanban";
 import TagsKanban from "../pages/TagsKanban";
 import ScheduleTagIntegrations from "../pages/ScheduleTagIntegrations"
+import AfterSales from "../pages/AfterSales";
 const Routes = () => {
   const [showCampaigns, setShowCampaigns] = useState(false);
 
@@ -92,6 +93,7 @@ const Routes = () => {
                 <Route exact path="/prompts" component={Prompts} isPrivate />
                 <Route exact path="/allConnections" component={AllConnections} isPrivate />
                 <Route exact path="/schedule-tag-integrations" component={ScheduleTagIntegrations} isPrivate />
+                <Route exact path="/afterSales" component={AfterSales} isPrivate />
                 {showCampaigns && (
                   <>
                     <Route exact path="/contact-lists" component={ContactLists} isPrivate />

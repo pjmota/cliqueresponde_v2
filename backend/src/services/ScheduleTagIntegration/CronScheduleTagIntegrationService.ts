@@ -6,6 +6,8 @@ import logger from "../../utils/logger";
 import StartTicketIntegrationService from "../TicketServices/StartTicketIntegrationService";
 import Whatsapp from "../../models/Whatsapp";
 import sequelize from "../../database";
+import Tag from "../../models/Tag";
+import Ticket from "../../models/Ticket";
 
 const CronScheduleTagIntegrationService = async () => {
   const companies = await Company.findAll();
@@ -58,6 +60,7 @@ const CronScheduleTagIntegrationService = async () => {
       const tickets: { id: number }[] = await sequelize.query(sql, {
         type: QueryTypes.SELECT
       });
+
       const ticketIds = tickets.map(ticket => ticket.id);
 
       logger.info(`[Automação de tag] ${ticketIds.length} tickets encontrados`);
@@ -74,12 +77,24 @@ const CronScheduleTagIntegrationService = async () => {
         );
 
         if (schedule.nextTagId) {
+          
+          //TRATATIVA PARA FINALIZAR INTEGRAÇÕES CASO A PRÓXIMA LANE DO KANBAN
+          //QUE SERÁ INSERIDA, NÃO TENHA INTEGRAÇÃO
+          const hasIntegration = await Tag.findByPk(schedule.nextTagId)
+          if(!hasIntegration.queueIntegrationId) {
+            await Ticket.update(
+              { useIntegration: false },
+              { where: { id: ticketId } }
+            );
+          }
+
           await TicketTag.destroy({ where: { ticketId } });
           await TicketTag.create({
             ticketId,
             tagId: schedule.nextTagId,
             executedQueueIntegration: false
           });
+
         } else {
           TicketTag.update(
             { executedQueueIntegration: true },
