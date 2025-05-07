@@ -1661,6 +1661,11 @@ const messages = {
       settings: {
         success: "Configurações salvas com sucesso.",
         title: "Configurações",
+        suportContact: {
+          label: "Contato de Suporte",
+          invalid: "Informe um número internacional válido. Ex: +5519996609924",
+          required: "Campo obrigatório",
+        },
         tabs: {
           options: "Opções",
           plans: "Planos",
