@@ -5,7 +5,7 @@ import Whatsapp from "./models/Whatsapp";
 import logger from "./utils/logger";
 import moment from "moment";
 import Schedule from "./models/Schedule";
-import { Op, QueryTypes, Sequelize } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import GetDefaultWhatsApp from "./helpers/GetDefaultWhatsApp";
 import Campaign from "./models/Campaign";
 import Queues from "./models/Queue";
@@ -31,27 +31,23 @@ import ShowTicketService from "./services/TicketServices/ShowTicketService";
 import SendWhatsAppMessage from "./services/WbotServices/SendWhatsAppMessage";
 import UpdateTicketService from "./services/TicketServices/UpdateTicketService";
 import { addSeconds, differenceInSeconds } from "date-fns";
-const CronJob = require("cron").CronJob;
 import CompaniesSettings from "./models/CompaniesSettings";
 import {
   verifyMediaMessage,
   verifyMessage
 } from "./services/WbotServices/wbotMessageListener";
-import FindOrCreateTicketService from "./services/TicketServices/FindOrCreateTicketService";
 import CreateLogTicketService from "./services/TicketServices/CreateLogTicketService";
 import formatBody from "./helpers/Mustache";
 import TicketTag from "./models/TicketTag";
 import Tag from "./models/Tag";
-import { delay, makeWASocket, useMultiFileAuthState } from "@whiskeysockets/baileys";
 import Plan from "./models/Plan";
 import UpdateRotationService from "./services/RotationsService/UpdateService";
 import ShowQueueIntegrationService from "./services/QueueIntegrationServices/ShowQueueIntegrationService";
 import { getWbot } from "./libs/wbot";
 import typebotListener from "./services/TypebotServices/typebotListener";
 import CreateLogRotationService from "./services/RotationsService/CreateLogRotationService";
-import ListUserQueueServices from "./services/UserQueueServices/ListUserQueueServices";
 import { senderMessages } from "./functions/SenderMessages/sendeMessages";
-import { log } from "console";
+const CronJob = require("cron").CronJob;
 
 const connection = process.env.REDIS_URI || "";
 const limiterMax = process.env.REDIS_OPT_LIMITER_MAX || 1;
