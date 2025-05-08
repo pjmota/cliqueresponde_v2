@@ -24,8 +24,9 @@ import {
   Badge,
   withStyles,
   Chip,
-} from "@material-ui/core";
 
+} from "@material-ui/core";
+import ContactSupportIcon from "@mui/icons-material/ContactSupport"
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 // import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -270,9 +271,12 @@ const LoggedInLayout = ({ children, themeToggle }) => {
   const { handleLogout, loading } = useContext(AuthContext);
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [drawerVariant, setDrawerVariant] = useState("permanent");
+  const [suportContact, setSupportContact] = useState([]);
+  const [suportMessage, setSupportMessage] = useState("");
   // const [dueDate, setDueDate] = useState("");
   //   const socketManager = useContext(SocketContext);
   const { user, socket } = useContext(AuthContext);
+
 
   const theme = useTheme();
   const { colorMode } = useContext(ColorModeContext);
@@ -291,10 +295,14 @@ const LoggedInLayout = ({ children, themeToggle }) => {
 
   const settings = useSettings();
 
+
+
   useEffect(() => {
     // if (localStorage.getItem("public-token") === null) {
     //   handleLogout()
     // }
+
+
 
     if (document.body.offsetWidth > 600) {
       if (user.defaultMenu === "closed") {
@@ -320,6 +328,12 @@ const LoggedInLayout = ({ children, themeToggle }) => {
 
     const companyId = user.companyId;
     const userId = user.id;
+
+    settings.getPublicSetting("suportContact").then((res) => {
+      setSupportContact(res);
+    });
+
+
     if (companyId) {
       //    const socket = socketManager.GetSocket();
 
@@ -354,6 +368,16 @@ const LoggedInLayout = ({ children, themeToggle }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
+
+  useEffect(() => {
+    //testa se existe user.name e user.company.name
+    if (!user.name || !user.company.name) {
+      return;
+    }
+    const suportMessage = `Olá necessito obter suporte com o CRM - Clique Responde: *Usuário:* ${user.name} *Empresa:* ${user.company.name}`;
+    setSupportMessage(suportMessage);
+
+  }, [user]);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -472,7 +496,7 @@ const LoggedInLayout = ({ children, themeToggle }) => {
               </>
             )}
           </Typography>
-         
+
           <VersionControl />
 
           {/* DESABILITADO POIS TEM BUGS */}
@@ -506,6 +530,16 @@ const LoggedInLayout = ({ children, themeToggle }) => {
           >
             <CachedIcon style={{ color: "white" }} />
           </IconButton>
+          {suportContact && (
+            <IconButton>
+              {/* Contact Support */}
+              <ContactSupportIcon
+                style={{ color: "white" }}
+                onClick={() => {
+                  window.open(`https://wa.me/${suportContact.replace('+', '')}?text=${suportMessage}`, '_blank');
+                }}
+              />
+            </IconButton>)}
 
           {/* <DarkMode themeToggle={themeToggle} /> */}
 
