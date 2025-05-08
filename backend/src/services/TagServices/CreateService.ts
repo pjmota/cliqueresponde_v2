@@ -18,6 +18,7 @@ interface Request {
   whatsappId?: number | null;
   queueIntegrationId?: number | null;
   sequence?: number | null;
+  notSendSchedule?: boolean;
 }
 
 const CreateService = async ({
@@ -31,7 +32,8 @@ const CreateService = async ({
   rollbackLaneId = null,
   whatsappId = null,
   queueIntegrationId = null,
-  sequence = null
+  sequence = null,
+  notSendSchedule = false
 }: Request): Promise<Tag> => {
   const schema = Yup.object().shape({
     name: Yup.string().required().min(3)
@@ -56,7 +58,8 @@ const CreateService = async ({
       rollbackLaneId: String(rollbackLaneId) === "" ? null : rollbackLaneId,
       whatsappId: String(whatsappId) === "" ? null : whatsappId,
       queueIntegrationId: String(queueIntegrationId) === "" ? null : queueIntegrationId,
-      sequence: sequence ? sequence : 0
+      sequence: sequence ? sequence : 0,
+      notSendSchedule: String(notSendSchedule) === "" ? false : notSendSchedule
 
     }
   });

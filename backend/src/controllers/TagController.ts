@@ -24,6 +24,7 @@ type IndexQuery = {
   tagId?: number;
   paramTag?: string;
   sequence?: number;
+  notSendSchedule?: boolean;
 };
 
 async function obtemUltimoNumeroDaSequencia(
@@ -72,7 +73,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     rollbackLaneId,
     whatsappId,
     queueIntegrationId,
-    sequence
+    sequence,
+    notSendSchedule
   } = req.body;
   const { companyId } = req.user;
 
@@ -96,7 +98,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     rollbackLaneId,
     whatsappId,
     queueIntegrationId: queueIntegrationId ?? null,
-    sequence: sequence ?? lastSequenceNumber
+    sequence: sequence ?? lastSequenceNumber,
+    notSendSchedule
     
   });
 
