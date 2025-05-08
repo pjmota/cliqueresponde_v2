@@ -18,6 +18,7 @@ interface TagData {
   whatsappId?: number;
   queueIntegrationId?: number;
   sequence?: number;
+  notSendSchedule?: boolean;
 }
 
 interface Request {
@@ -42,7 +43,8 @@ const UpdateUserService = async ({
     rollbackLaneId = null,
     whatsappId = null,
     queueIntegrationId = null,
-    sequence = null
+    sequence = null,
+    notSendSchedule = false
   } = tagData;
 
   try {
@@ -61,7 +63,8 @@ const UpdateUserService = async ({
     rollbackLaneId: String(rollbackLaneId) === "" ? null : rollbackLaneId,
     whatsappId : String(whatsappId) === "" ? null : whatsappId,
     queueIntegrationId: String(queueIntegrationId) === "" ? null : queueIntegrationId,
-    sequence: sequence ? sequence : 0
+    sequence: sequence ? sequence : 0,
+    notSendSchedule: String(notSendSchedule) === "" ? false : notSendSchedule
   });
 
   if (kanban) {
