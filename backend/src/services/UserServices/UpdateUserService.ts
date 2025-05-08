@@ -46,6 +46,7 @@ interface UserData {
   viewAllContacts?: string;
   allowAfterSales?: boolean;
   isAfterSalesManager?: boolean;
+  contactCustomFields?: string;
 
 }
 
@@ -124,7 +125,8 @@ const UpdateUserService = async ({
     scheduleConnection,
     viewAllContacts,
     allowAfterSales,
-    isAfterSalesManager
+    isAfterSalesManager,
+    contactCustomFields
   } = userData;
 
   try {
@@ -168,7 +170,8 @@ const UpdateUserService = async ({
     scheduleConnection,
     viewAllContacts,
     allowAfterSales,
-    isAfterSalesManager
+    isAfterSalesManager,
+    contactCustomFields
   });
 
   await user.$set("queues", queueIds);
@@ -215,7 +218,7 @@ const UpdateUserService = async ({
     sendWhatsAppInLeadMessage: user.sendWhatsAppInLeadMessage,
     leadMessage: user.leadMessage,
     viewAllContacts: user.viewAllContacts,
-    
+    contactCustomFields: user.contactCustomFields
   };
 
   return serializedUser;
