@@ -51,6 +51,7 @@ import typebotListener from "./services/TypebotServices/typebotListener";
 import CreateLogRotationService from "./services/RotationsService/CreateLogRotationService";
 import ListUserQueueServices from "./services/UserQueueServices/ListUserQueueServices";
 import { senderMessages } from "./functions/SenderMessages/sendeMessages";
+import { log } from "console";
 
 const connection = process.env.REDIS_URI || "";
 const limiterMax = process.env.REDIS_OPT_LIMITER_MAX || 1;
@@ -164,6 +165,9 @@ async function handleSendScheduledMessage(job) {
   } = job;
   let scheduleRecord: Schedule | null = null;
 
+
+  //logger.info(`Informações do agendamento: ${JSON.stringify(schedule)}`);
+
   try {
     scheduleRecord = await Schedule.findByPk(schedule.id);
   } catch (e) {
@@ -199,7 +203,8 @@ async function handleSendScheduledMessage(job) {
     if(schedule.justNotifyMe) {
       const funilValue = (await sequelize.query(
         `select
-          t."name"
+          t."name",
+          t."notSendSchedule"
         from "Tags" t
           left join "TicketTags" tt on tt."tagId" = t.id
           left join "Schedules" s on s."ticketId" = tt."ticketId"
@@ -208,7 +213,9 @@ async function handleSendScheduledMessage(job) {
         { type: QueryTypes.SELECT }
       ));
       //logger.info(`FunilValue: ${JSON.stringify(funilValue)}`);
+      if(funilValue[0]?.["notSendSchedule"]=== false){
       schedule.body = schedule.body.replace(/(\bData do Agendamento:.*?)(\r?\n)/, `$1\n\n  *Funil:* ${funilValue[0]?.['name'] ?? 'sem funil'}$2\n`);
+      }
     }
 
 
