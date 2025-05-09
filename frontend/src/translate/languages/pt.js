@@ -726,7 +726,8 @@ const messages = {
           allowAfterSalesDisable: "Desabilitado",
 		      isAfterSalesManager: "Coordenador Pós-Venda",
 		      isAfterSalesManagerEnable: "Habilitado",
-		      isAfterSalesManagerDisable: "Desabilitado"
+		      isAfterSalesManagerDisable: "Desabilitado",
+          contactCustomFields: "Campos personalizados",
         },
         tabs: {
           general: "Geral",

@@ -82,7 +82,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     scheduleSendAt,
     daysUntilNextScheduleNotify,
     scheduleConnection,
-    viewAllContacts
+    viewAllContacts,
+    contactCustomFields
   } = req.body;
   let userCompanyId: number | null = null;
 
@@ -215,7 +216,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       scheduleSendAt,
       daysUntilNextScheduleNotify,
       scheduleConnection,
-      viewAllContacts
+      viewAllContacts,
+      contactCustomFields
     });
 
     const io = getIO();

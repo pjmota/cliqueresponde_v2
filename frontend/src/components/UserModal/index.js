@@ -27,7 +27,7 @@ import { AuthContext } from "../../context/Auth/AuthContext";
 import useWhatsApps from "../../hooks/useWhatsApps";
 
 import { Can } from "../Can";
-import { Avatar, Grid, Input, Paper, Tab, Tabs, Box, ListItemText, Typography } from "@material-ui/core";
+import { Avatar, Grid, Input, Paper, Tab, Tabs, Box, ListItemText, Typography, TextareaAutosize } from "@material-ui/core";
 import { getBackendUrl } from "../../config";
 import TabPanel from "../TabPanel";
 import AvatarUploader from "../AvatarUpload";
@@ -153,7 +153,8 @@ const UserModal = ({ open, onClose, userId }) => {
 		daysUntilNextScheduleNotify: 0,
 		viewAllContacts: "disable",
 		allowAfterSales: false,
-		isAfterSalesManager: false
+		isAfterSalesManager: false,
+		contactCustomFields: ""
 	};
 
 	const { user: loggedInUser } = useContext(AuthContext);
@@ -1081,6 +1082,28 @@ const UserModal = ({ open, onClose, userId }) => {
 																	name="leadMessage"
 																	error={touched.leadMessage && Boolean(errors.leadMessage)}
 																	helperText={touched.leadMessage && errors.leadMessage}
+																	variant="outlined"
+																	margin="dense"
+																/>
+															</>
+														</FormControl>
+														<FormControl
+															variant="outlined"
+															className={classes.maxWidth}
+															margin="dense"
+															fullWidth
+														>
+															<>
+																<Field
+																	as={TextareaAutosize}
+																	label={i18n.t("userModal.form.contactCustomFields")}
+																	type="contactCustomFields"
+																	multiline
+																	rows={2}
+																	fullWidth
+																	name="contactCustomFields"
+																	error={touched.contactCustomFields && Boolean(errors.contactCustomFields)}
+																	helperText={touched.contactCustomFields && errors.contactCustomFields}
 																	variant="outlined"
 																	margin="dense"
 																/>
