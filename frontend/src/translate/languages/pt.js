@@ -20,7 +20,7 @@ const messages = {
           login: "Já tem uma conta? Entre!",
         },
       },
-      
+
       login: {
         title: "Login",
         form: {
@@ -569,7 +569,7 @@ const messages = {
           selectIntegration: "Selecione uma Integração",
           addOptions: "Adicionar opções",
         },
-        rotation:{
+        rotation: {
           toolTipTitle: "Adicione opções para configurar rodízio",
           toolTip:
             "O rodízio seguirá a ordem configurada.",
@@ -724,9 +724,9 @@ const messages = {
           allowAfterSales: "Visualiza Pós-Venda",
           allowAfterSalesEnable: "Habilitado",
           allowAfterSalesDisable: "Desabilitado",
-		      isAfterSalesManager: "Coordenador Pós-Venda",
-		      isAfterSalesManagerEnable: "Habilitado",
-		      isAfterSalesManagerDisable: "Desabilitado",
+          isAfterSalesManager: "Coordenador Pós-Venda",
+          isAfterSalesManagerEnable: "Habilitado",
+          isAfterSalesManagerDisable: "Desabilitado",
           contactCustomFields: "Campos personalizados",
         },
         tabs: {
@@ -1628,7 +1628,7 @@ const messages = {
           tickets: "Tickets",
           actions: "Ações",
           id: "Id da tag",
-          sequence:"Sequencia"
+          sequence: "Sequencia"
         },
         buttons: {
           add: "Nova Lane",
@@ -1717,7 +1717,9 @@ const messages = {
             requiredTag: "Tag obrigatoria para fechar ticket",
             closeTicketOnTransfer: "Fechar ticket ao transferir para outra fila",
             DirectTicketsToWallets: "Mover automaticamente cliente para carteira",
-            showNotificationPending: "Mostrar notificação para tickets pendentes"
+            showNotificationPending: "Mostrar notificação para tickets pendentes",
+            allowMetaOficialApi:
+              "Permitir uso da API oficial da Meta para envio e recebimento mensagens",
           },
           customMessages: {
             sendQueuePositionMessage: "Mensagem de posição na fila",
