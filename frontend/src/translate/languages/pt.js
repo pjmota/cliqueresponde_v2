@@ -726,7 +726,8 @@ const messages = {
           allowAfterSalesDisable: "Desabilitado",
 		      isAfterSalesManager: "Coordenador Pós-Venda",
 		      isAfterSalesManagerEnable: "Habilitado",
-		      isAfterSalesManagerDisable: "Desabilitado"
+		      isAfterSalesManagerDisable: "Desabilitado",
+          contactCustomFields: "Campos personalizados",
         },
         tabs: {
           general: "Geral",
@@ -802,7 +803,7 @@ const messages = {
           conection: "Conexão",
           integration: "Integração",
           sequence: "Sequência",
-          notSendSchedule: "Não enviar no aviso de agendamento",
+          notSendSchedule: "Não enviar aviso de agendamento",
         },
         buttons: {
           okAdd: "Adicionar",

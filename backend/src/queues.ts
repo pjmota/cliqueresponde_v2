@@ -209,11 +209,25 @@ async function handleSendScheduledMessage(job) {
         { type: QueryTypes.SELECT }
       ));
       //logger.info(`FunilValue: ${JSON.stringify(funilValue)}`);
-      if(funilValue[0]?.["notSendSchedule"]=== false){
+     
       schedule.body = schedule.body.replace(/(\bData do Agendamento:.*?)(\r?\n)/, `$1\n\n  *Funil:* ${funilValue[0]?.['name'] ?? 'sem funil'}$2\n`);
-      }
+      
     }
 
+    const defineSendSchedule = (await sequelize.query(
+      `select
+        tg.id,
+        tg."notSendSchedule"
+      from "TicketTags" tt
+        left join "Tags" tg on tg.id = tt."tagId"
+      where tt."ticketId" = ${schedule.ticketId}`,
+      { type: QueryTypes.SELECT }
+    ))as { id: number; notSendSchedule: boolean }[];
+
+    if(defineSendSchedule[0]?.notSendSchedule){
+      logger.warn(`[ENTROU NO IF SCHEDULE] - ${JSON.stringify(defineSendSchedule)}`)
+      return;
+    };
 
 
     if (schedule.openTicket === "enabled") {

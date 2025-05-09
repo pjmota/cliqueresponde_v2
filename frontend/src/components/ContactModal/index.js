@@ -139,6 +139,16 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
     return value.toLocaleLowerCase().trim().startsWith("img");
   };
 
+	const imgLabel = (value) => {
+		const match = value.match(/img\s+(.+)/i);
+
+		if (match) {
+			return match[1].trim();
+		}
+
+		return value;
+  };
+
   const isSelect = (value) => {
     return value.match(/CMB\s{1,}(.*)\[(.*)\]/i);
   };
@@ -169,6 +179,13 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
     };
 
     reader.readAsDataURL(file);
+  };
+
+	const handleAdcustomFields = async () => {
+    try {
+      const { data } = await api.post(`/contacts/${contactId}/custom-fields`);
+      setContact(data);
+    } catch (error) {}
   };
 
 	return (
@@ -287,14 +304,16 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 													values.extraInfo.map((info, index) => (
 														<div className={classes.extraAttr} key={`${index}-info`}>
 															{!isSelect(values.extraInfo[index].name) && (
-																<Field
-																	as={TextField}
-																	label={i18n.t("contactModal.form.extraName")}
-																	name={`extraInfo[${index}].name`}
-																	variant="outlined"
-																	margin="dense"
-																	className={classes.textField}
-																/>
+																<>
+																	<Field
+																		as={TextField}
+																		label={i18n.t("contactModal.form.extraName")}
+																		name={`extraInfo[${index}].name`}
+																		variant="outlined"
+																		margin="dense"
+																		className={classes.textField}
+																	/>
+																</>
 															)}
 
 															{isSelect(values.extraInfo[index].name) && (
@@ -388,153 +407,18 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 										);
 									}}
 								</FieldArray>
-
-								{/* <FieldArray name="extraInfo">
-									{({ push, remove }) => (
-										<>
-											{values.extraInfo &&
-												values.extraInfo.length > 0 &&
-												values.extraInfo.map((info, index) => (
-													<div
-														className={classes.extraAttr}
-														key={`${index}-info`}
-													>
-														{!isSelect(values.extraInfo[index].name) && (
-															<TextField
-																label={i18n.t("contactModal.form.extraName")}
-																name={`extraInfo[${index}].name`}
-																variant="outlined"
-																margin="dense"
-																className={classes.textField}
-																value={values.extraInfo[index].name}
-																onChange={setFieldValue}
-															/>
-														)}
-
-														{isSelect(values.extraInfo[index].name) && (
-															<TextField
-																label={i18n.t("contactModal.form.extraName")}
-																name={`extraInfo[${index}].name`}
-																variant="outlined"
-																margin="dense"
-																disabled={true}
-																className={classes.textField}
-																value={cmbLabel(
-																	values.extraInfo[index].name
-																)}
-																onChange={setFieldValue}
-															/>
-														)}
-
-														{!isImage(values.extraInfo[index].name) &&
-															isSelect(values.extraInfo[index].name) && (
-																<Select
-																	label={i18n.t("contactModal.form.extraValue")}
-																	name={`extraInfo[${index}].value`}
-																	variant="outlined"
-																	margin="dense"
-																	className={classes.textField}
-																	value={values.extraInfo[index].value}
-																	onChange={setFieldValue}
-																>
-																	{cmbOptions(
-																		values.extraInfo[index].name
-																	).map((item, index) => (
-																		<MenuItem key={index} value={item}>
-																			{item}
-																		</MenuItem>
-																	))}
-																</Select>
-															)}
-
-														{!isImage(values.extraInfo[index].name) &&
-															!isSelect(values.extraInfo[index].name) && (
-																<TextField
-																	label={i18n.t("contactModal.form.extraValue")}
-																	name={`extraInfo[${index}].value`}
-																	variant="outlined"
-																	margin="dense"
-																	className={classes.textField}
-																	value={values.extraInfo[index].value}
-																	onChange={setFieldValue}
-																/>
-															)}
-
-														{isImage(values.extraInfo[index].name) &&
-															values.extraInfo[index].mediaPath && (
-																<a
-																	href={values.extraInfo[index].mediaPath}
-																	target="_blank"
-																>
-																	{values.extraInfo[index].value}
-																</a>
-															)}
-
-														{isImage(values.extraInfo[index].name) &&
-															values.extraInfo[index].value &&
-															!values.extraInfo[index].mediaPath && (
-																<TextField
-																	value={values.extraInfo[index].value}
-																	label="Imagem"
-																	variant="outlined"
-																	margin="dense"
-																	className={classes.textField}
-																	disabled
-																/>
-															)}
-
-														{isImage(values.extraInfo[index].name) && (
-															<IconButton size="small" component="label">
-																<input
-																	type="file"
-																	hidden
-																	onChange={(ev) =>
-																		handleImage(ev.target.files[0], index)
-																	}
-																/>
-																<InsertPhotoIcon />
-															</IconButton>
-														)} */}
-														{/* <Field
-															as={TextField}
-															label={i18n.t("contactModal.form.extraName")}
-															name={`extraInfo[${index}].name`}
-															variant="outlined"
-															margin="dense"
-															className={classes.textField}
-														/>
-														<Field
-															as={TextField}
-															label={i18n.t("contactModal.form.extraValue")}
-															name={`extraInfo[${index}].value`}
-															variant="outlined"
-															margin="dense"
-															className={classes.textField}
-														/> */}
-														
-													{/* 	<IconButton
-															size="small"
-															onClick={() => remove(index)}
-														>
-															<DeleteOutlineIcon />
-														</IconButton>
-													</div>
-												))}
-											<div className={classes.extraAttr}>
-												<Button
-													style={{ flex: 1, marginTop: 8 }}
-													variant="outlined"
-													color="primary"
-													onClick={() => push({ name: "", value: "" })}
-												>
-													{`+ ${i18n.t("contactModal.buttons.addExtraInfo")}`}
-												</Button>
-											</div>
-										</>
-									)}
-								</FieldArray> */}
 							</DialogContent>
 							<DialogActions>
+								{contactId && (
+									<Button
+										onClick={handleAdcustomFields}
+										color="primary"
+										disabled={isSubmitting}
+										variant="outlined"
+									>
+										{i18n.t("Add Campos Customizados")}
+									</Button>
+								)}
 								<Button
 									onClick={handleClose}
 									color="secondary"
