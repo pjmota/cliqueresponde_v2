@@ -5,7 +5,7 @@ import Whatsapp from "./models/Whatsapp";
 import logger from "./utils/logger";
 import moment from "moment";
 import Schedule from "./models/Schedule";
-import { Op, QueryTypes, Sequelize } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import GetDefaultWhatsApp from "./helpers/GetDefaultWhatsApp";
 import Campaign from "./models/Campaign";
 import Queues from "./models/Queue";
@@ -31,26 +31,23 @@ import ShowTicketService from "./services/TicketServices/ShowTicketService";
 import SendWhatsAppMessage from "./services/WbotServices/SendWhatsAppMessage";
 import UpdateTicketService from "./services/TicketServices/UpdateTicketService";
 import { addSeconds, differenceInSeconds } from "date-fns";
-const CronJob = require("cron").CronJob;
 import CompaniesSettings from "./models/CompaniesSettings";
 import {
   verifyMediaMessage,
   verifyMessage
 } from "./services/WbotServices/wbotMessageListener";
-import FindOrCreateTicketService from "./services/TicketServices/FindOrCreateTicketService";
 import CreateLogTicketService from "./services/TicketServices/CreateLogTicketService";
 import formatBody from "./helpers/Mustache";
 import TicketTag from "./models/TicketTag";
 import Tag from "./models/Tag";
-import { delay, makeWASocket, useMultiFileAuthState } from "@whiskeysockets/baileys";
 import Plan from "./models/Plan";
 import UpdateRotationService from "./services/RotationsService/UpdateService";
 import ShowQueueIntegrationService from "./services/QueueIntegrationServices/ShowQueueIntegrationService";
 import { getWbot } from "./libs/wbot";
 import typebotListener from "./services/TypebotServices/typebotListener";
 import CreateLogRotationService from "./services/RotationsService/CreateLogRotationService";
-import ListUserQueueServices from "./services/UserQueueServices/ListUserQueueServices";
 import { senderMessages } from "./functions/SenderMessages/sendeMessages";
+const CronJob = require("cron").CronJob;
 
 const connection = process.env.REDIS_URI || "";
 const limiterMax = process.env.REDIS_OPT_LIMITER_MAX || 1;
@@ -164,6 +161,9 @@ async function handleSendScheduledMessage(job) {
   } = job;
   let scheduleRecord: Schedule | null = null;
 
+
+  //logger.info(`Informações do agendamento: ${JSON.stringify(schedule)}`);
+
   try {
     scheduleRecord = await Schedule.findByPk(schedule.id);
   } catch (e) {
@@ -199,7 +199,8 @@ async function handleSendScheduledMessage(job) {
     if(schedule.justNotifyMe) {
       const funilValue = (await sequelize.query(
         `select
-          t."name"
+          t."name",
+          t."notSendSchedule"
         from "Tags" t
           left join "TicketTags" tt on tt."tagId" = t.id
           left join "Schedules" s on s."ticketId" = tt."ticketId"
@@ -208,9 +209,25 @@ async function handleSendScheduledMessage(job) {
         { type: QueryTypes.SELECT }
       ));
       //logger.info(`FunilValue: ${JSON.stringify(funilValue)}`);
+     
       schedule.body = schedule.body.replace(/(\bData do Agendamento:.*?)(\r?\n)/, `$1\n\n  *Funil:* ${funilValue[0]?.['name'] ?? 'sem funil'}$2\n`);
+      
     }
 
+    const defineSendSchedule = (await sequelize.query(
+      `select
+        tg.id,
+        tg."notSendSchedule"
+      from "TicketTags" tt
+        left join "Tags" tg on tg.id = tt."tagId"
+      where tt."ticketId" = ${schedule.ticketId}`,
+      { type: QueryTypes.SELECT }
+    ))as { id: number; notSendSchedule: boolean }[];
+
+    if(defineSendSchedule[0]?.notSendSchedule){
+      logger.warn(`[ENTROU NO IF SCHEDULE] - ${JSON.stringify(defineSendSchedule)}`)
+      return;
+    };
 
 
     if (schedule.openTicket === "enabled") {

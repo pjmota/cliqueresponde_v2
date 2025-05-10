@@ -21,7 +21,7 @@ import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import { FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select } from "@material-ui/core";
+import { FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, FormControlLabel, Checkbox } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
@@ -185,6 +185,7 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 			...values, 
 			userId: user?.id, 
 			kanban: kanban, 
+			notSendSchedule: values.notSendSchedule || false,
 			nextLaneId: lane, 
 			whatsappId:  whatsapp || null,
 			queueIntegrationId: queueIntegration || null, 
@@ -506,6 +507,20 @@ const TagModal = ({ open, onClose, tagId, kanban }) => {
 											</Grid>
 										</>
 									)}
+									<Grid item xs={12} md={12} xl={12}>
+										<FormControlLabel
+											control={
+												<Field
+													as={Checkbox}
+													name="notSendSchedule"
+													color="primary"
+													checked={values.notSendSchedule || false}
+													onChange={(e) => setTag(prev => ({ ...prev, notSendSchedule: e.target.checked }))}
+												/>
+											}
+											label={i18n.t("tagModal.form.notSendSchedule")}
+										/>
+									</Grid>
 								</Grid>
 
 							</DialogContent>

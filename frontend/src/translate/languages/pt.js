@@ -726,7 +726,8 @@ const messages = {
           allowAfterSalesDisable: "Desabilitado",
 		      isAfterSalesManager: "Coordenador Pós-Venda",
 		      isAfterSalesManagerEnable: "Habilitado",
-		      isAfterSalesManagerDisable: "Desabilitado"
+		      isAfterSalesManagerDisable: "Desabilitado",
+          contactCustomFields: "Campos personalizados",
         },
         tabs: {
           general: "Geral",
@@ -802,6 +803,7 @@ const messages = {
           conection: "Conexão",
           integration: "Integração",
           sequence: "Sequência",
+          notSendSchedule: "Não enviar aviso de agendamento",
         },
         buttons: {
           okAdd: "Adicionar",
@@ -1661,6 +1663,11 @@ const messages = {
       settings: {
         success: "Configurações salvas com sucesso.",
         title: "Configurações",
+        suportContact: {
+          label: "Contato de Suporte",
+          invalid: "Informe um número internacional válido. Ex: +5519996609924",
+          required: "Campo obrigatório",
+        },
         tabs: {
           options: "Opções",
           plans: "Planos",
