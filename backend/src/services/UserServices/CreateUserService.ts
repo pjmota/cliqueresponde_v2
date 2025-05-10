@@ -44,6 +44,7 @@ interface Request {
   viewAllContacts?: string;
   allowAfterSales?: boolean;
   isAfterSalesManager?: boolean;
+  contactCustomFields?: string;
 }
 
 interface Response {
@@ -90,7 +91,8 @@ const CreateUserService = async ({
   scheduleConnection,
   viewAllContacts,
   allowAfterSales,
-  isAfterSalesManager
+  isAfterSalesManager,
+  contactCustomFields
 }: Request): Promise<Response> => {
   if (companyId !== undefined) {
     const company = await Company.findOne({
@@ -176,7 +178,8 @@ const CreateUserService = async ({
       scheduleConnection,
       viewAllContacts,
       allowAfterSales,
-      isAfterSalesManager
+      isAfterSalesManager,
+      contactCustomFields
     },
     { include: ["queues", "company", "tags", "permissions"] }
   );

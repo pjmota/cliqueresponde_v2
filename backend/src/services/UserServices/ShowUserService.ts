@@ -52,7 +52,8 @@ const ShowUserService = async (id: string | number, companyId?: string | number)
         "scheduleConnection",
         "viewAllContacts",
         "allowAfterSales",
-        "isAfterSalesManager"
+        "isAfterSalesManager",
+        "contactCustomFields"
       ],
       include: [
         { model: Queue, as: "queues", attributes: ["id", "name", "color"] },

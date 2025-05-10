@@ -25,23 +25,26 @@ const VersionControl = () => {
       window.location.reload(true); // Recarregar a página
     }, 1000);
   };
-
+// TODO: ATUALIZA VERSÃO
   return (
     <div>
       {storedVersion !== packageVersion && (
-        <Button
-          variant="contained"
-          size="small"
-          style={{
-            backgroundColor: "red",
-            color: "white",
-            fontWeight: "bold",
-            right: "15px",
-          }}
-          onClick={handleUpdateVersion}
-        >
-          Nova versão disponível! Clique aqui para atualizar
-        </Button>
+        <>
+        
+          {/* <Button
+            variant="contained"
+            size="small"
+            style={{
+              backgroundColor: "red",
+              color: "white",
+              fontWeight: "bold",
+              right: "15px",
+            }}
+            onClick={handleUpdateVersion}
+          >
+            Nova versão disponível! Clique aqui para atualizar
+          </Button> */}
+        </>
       )}
     </div>
   );

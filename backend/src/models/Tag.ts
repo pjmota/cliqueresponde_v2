@@ -81,6 +81,11 @@ class Tag extends Model<Tag> {
   @AllowNull(true)
   @Column
   queueIntegrationId: number;
+
+  @AllowNull(true)
+  @Column
+  notSendSchedule: boolean;
+
 }
 
 export default Tag;
