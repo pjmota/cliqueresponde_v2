@@ -880,6 +880,7 @@ const messages = {
           no: "NÃO",
           open: "Abertos",
           resolverd: "Resolvidos",
+          notResponse: "Sem respostas",
         },
         toasts: {
           deleted: "O atendimento que você estava foi deletado.",

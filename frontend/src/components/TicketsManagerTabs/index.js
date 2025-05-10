@@ -24,6 +24,7 @@ import {
   Add as AddIcon,
   TextRotateUp,
   TextRotationDown,
+  SpeakerNotesOff,
 } from "@material-ui/icons";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
@@ -338,6 +339,7 @@ const TicketsManagerTabs = () => {
   const [isHoveredOpen, setIsHoveredOpen] = useState(false);
   const [isHoveredClosed, setIsHoveredClosed] = useState(false);
   const [isHoveredSort, setIsHoveredSort] = useState(false);
+  const [isHoveredNotResponse, setIsHoveredNotResponse] = useState(false);
 
   const [isFilterActive, setIsFilterActive] = useState(false);
 
@@ -754,7 +756,8 @@ const TicketsManagerTabs = () => {
                   !isHoveredNew &&
                   !isHoveredResolve &&
                   !isHoveredClosed &&
-                  !isHoveredSort
+                  !isHoveredSort &&
+                  !isHoveredNotResponse
                 ) && !isHoveredOpen
               }
               badgeContent={i18n.t("tickets.inbox.open")}
@@ -803,109 +806,173 @@ const TicketsManagerTabs = () => {
                 />
               </IconButton>
             </Badge>
-
-            <Badge
-              color="primary"
-              invisible={
-                !(
-                  tab === "closed" &&
-                  !isHoveredAll &&
-                  !isHoveredNew &&
-                  !isHoveredResolve &&
-                  !isHoveredOpen &&
-                  !isHoveredSort
-                ) && !isHoveredClosed
-              }
-              badgeContent={i18n.t("tickets.inbox.resolverd")}
-              classes={{ badge: classes.tabsBadge }}
-            >
-              <IconButton
-                onMouseEnter={() => {
-                  setIsHoveredClosed(true);
-                  setHoveredButton("closed");
-                }}
-                onMouseLeave={() => {
-                  setIsHoveredClosed(false);
-                  setHoveredButton(null);
-                }}
-                style={{
-                  height: 30,
-                  width: 30,
-                  border: isHoveredClosed
-                    ? theme.mode === "light"
-                      ? "3px solid " + theme.palette.primary.main
-                      : "3px solid #FFF"
-                    : tab === "closed"
-                      ? theme.mode === "light"
-                        ? "3px solid " + theme.palette.primary.main
-                        : "3px solid #FFF"
-                      : theme.mode === "light"
-                        ? "2px solid #aaa"
-                        : "2px solid #aaa",
-                  borderRadius: 8,
-                  marginRight: 8,
-                }}
-                onClick={() => handleChangeTab(null, "closed")}
-              >
-                <CheckBoxIcon
-                  style={{
-                    color: isHoveredClosed
-                      ? theme.mode === "light"
-                        ? theme.palette.primary.main
-                        : "#FFF"
-                      : tab === "closed"
-                        ? theme.mode === "light"
-                          ? theme.palette.primary.main
-                          : "#FFF"
-                        : "#aaa",
-                  }}
-                />
-              </IconButton>
-            </Badge>
-            {tab !== "closed" && tab !== "search" && (
+            {tab !== "notResponse" && (
               <Badge
                 color="primary"
                 invisible={
-                  !isHoveredSort ||
-                  isHoveredAll ||
-                  isHoveredNew ||
-                  isHoveredResolve ||
-                  isHoveredOpen ||
-                  isHoveredClosed
+                  !(
+                    tab === "closed" &&
+                    !isHoveredAll &&
+                    !isHoveredNew &&
+                    !isHoveredResolve &&
+                    !isHoveredOpen &&
+                    !isHoveredSort
+                  ) && !isHoveredClosed
                 }
-                badgeContent={!sortTickets ? "Crescente" : "Decrescente"}
+                badgeContent={i18n.t("tickets.inbox.resolverd")}
                 classes={{ badge: classes.tabsBadge }}
               >
-                <ToggleButton
-                  onMouseEnter={() => setIsHoveredSort(true)}
-                  onMouseLeave={() => setIsHoveredSort(false)}
-                  className={classes.button}
-                  value="uncheck"
-                  selected={sortTickets}
-                  onChange={() =>
-                    setSortTickets((prevState) => !prevState)
-                  }
+                <IconButton
+                  onMouseEnter={() => {
+                    setIsHoveredClosed(true);
+                    setHoveredButton("closed");
+                  }}
+                  onMouseLeave={() => {
+                    setIsHoveredClosed(false);
+                    setHoveredButton(null);
+                  }}
+                  style={{
+                    height: 30,
+                    width: 30,
+                    border: isHoveredClosed
+                      ? theme.mode === "light"
+                        ? "3px solid " + theme.palette.primary.main
+                        : "3px solid #FFF"
+                      : tab === "closed"
+                        ? theme.mode === "light"
+                          ? "3px solid " + theme.palette.primary.main
+                          : "3px solid #FFF"
+                        : theme.mode === "light"
+                          ? "2px solid #aaa"
+                          : "2px solid #aaa",
+                    borderRadius: 8,
+                    marginRight: 8,
+                  }}
+                  onClick={() => handleChangeTab(null, "closed")}
                 >
-                  {!sortTickets ? (
-                    <TextRotateUp style={{
-                      color: sortTickets
+                  <CheckBoxIcon
+                    style={{
+                      color: isHoveredClosed
                         ? theme.mode === "light"
                           ? theme.palette.primary.main
                           : "#FFF"
-                        : "#aaa",
-                    }} />
-                  ) : (
-                    <TextRotationDown style={{
-                      color: sortTickets
-                        ? theme.mode === "light"
-                          ? theme.palette.primary.main
-                          : "#FFF"
-                        : "#aaa",
-                    }} />
-                  )}
-                </ToggleButton>
+                        : tab === "closed"
+                          ? theme.mode === "light"
+                            ? theme.palette.primary.main
+                            : "#FFF"
+                          : "#aaa",
+                    }}
+                  />
+                </IconButton>
               </Badge>
             )}
+            {tab !== "closed" && tab !== "search" && (
+              <>
+                {tab !== "notResponse" && (
+                  <Badge
+                    color="primary"
+                    invisible={
+                      !isHoveredSort ||
+                      isHoveredAll ||
+                      isHoveredNew ||
+                      isHoveredResolve ||
+                      isHoveredOpen ||
+                      isHoveredClosed
+                    }
+                    badgeContent={!sortTickets ? "Crescente" : "Decrescente"}
+                    classes={{ badge: classes.tabsBadge }}
+                  >
+                    <ToggleButton
+                      onMouseEnter={() => setIsHoveredSort(true)}
+                      onMouseLeave={() => setIsHoveredSort(false)}
+                      className={classes.button}
+                      value="uncheck"
+                      selected={sortTickets}
+                      onChange={() =>
+                        setSortTickets((prevState) => !prevState)
+                      }
+                    >
+                      {!sortTickets ? (
+                        <TextRotateUp style={{
+                          color: sortTickets
+                            ? theme.mode === "light"
+                              ? theme.palette.primary.main
+                              : "#FFF"
+                            : "#aaa",
+                        }} />
+                      ) : (
+                        <TextRotationDown style={{
+                          color: sortTickets
+                            ? theme.mode === "light"
+                              ? theme.palette.primary.main
+                              : "#FFF"
+                            : "#aaa",
+                        }} />
+                      )}
+                    </ToggleButton>
+                  </Badge>
+                )}
+                <Badge
+                  color="primary"
+                  invisible={
+                    !(
+                      tab === "notResponse" &&
+                      !isHoveredAll &&
+                      !isHoveredNew &&
+                      !isHoveredResolve &&
+                      !isHoveredOpen &&
+                      !isHoveredSort &&
+                      !isHoveredClosed
+                    ) && !isHoveredNotResponse
+                  }
+                  badgeContent={i18n.t("tickets.inbox.notResponse")}
+                  classes={{ badge: classes.tabsBadge }}
+                >
+                  <IconButton
+                    onMouseEnter={() => {setIsHoveredNotResponse(true);
+                      console.log('enter', isHoveredNotResponse)
+                    }}
+                    onMouseLeave={() => {setIsHoveredNotResponse(false);
+                      console.log('leave', isHoveredNotResponse)
+                    }}
+                    style={{
+                      height: 30,
+                      width: 30,
+                      border: isHoveredNotResponse
+                        ? theme.mode === "light"
+                          ? "3px solid " + theme.palette.primary.main
+                          : "3px solid #FFF"
+                        : tab === "notResponse"
+                          ? theme.mode === "light"
+                            ? "3px solid " + theme.palette.primary.main
+                            : "3px solid #FFF"
+                          : theme.mode === "light"
+                            ? "2px solid #aaa"
+                            : "2px solid #aaa",
+                      borderRadius: 8,
+                      marginRight: 8,
+                    }}
+                    onClick={() => handleChangeTab(null, "notResponse")}
+                  >
+                    <SpeakerNotesOff
+                      style={{
+                        color: isHoveredNotResponse
+                          ? theme.mode === "light"
+                            ? theme.palette.primary.main
+                            : "#FFF"
+                          : tab === "notResponse"
+                            ? theme.mode === "light"
+                              ? theme.palette.primary.main
+                              : "#FFF"
+                            : "#aaa",
+                      }}
+                    />
+                  </IconButton>
+                </Badge>
+              </>
+            )}
+            
+
           </Grid>
           <Grid item>
             <TicketsQueueSelect
@@ -1075,6 +1142,14 @@ const TicketsManagerTabs = () => {
       <TabPanel value={tab} name="closed" className={classes.ticketsWrapper}>
         <TicketsList
           status="closed"
+          showAll={showAllTickets}
+          selectedQueueIds={selectedQueueIds.length === 1 && selectedQueueIds[0] === "no-queue" ? null : selectedQueueIds}
+          setTabOpen={setTabOpen}
+        />
+      </TabPanel>
+      <TabPanel value={tab} name="notResponse" className={classes.ticketsWrapper}>
+        <TicketsList
+          status="notResponse"
           showAll={showAllTickets}
           selectedQueueIds={selectedQueueIds.length === 1 && selectedQueueIds[0] === "no-queue" ? null : selectedQueueIds}
           setTabOpen={setTabOpen}
