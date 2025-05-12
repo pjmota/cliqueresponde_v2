@@ -31,7 +31,7 @@ const VersionControl = () => {
       {storedVersion !== packageVersion && (
         <>
         
-          <Button
+          {/* <Button
             variant="contained"
             size="small"
             style={{
@@ -43,7 +43,7 @@ const VersionControl = () => {
             onClick={handleUpdateVersion}
           >
             Nova versão disponível! Clique aqui para atualizar
-          </Button>
+          </Button> */}
         </>
       )}
     </div>
