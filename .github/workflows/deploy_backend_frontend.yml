@@ -257,7 +257,7 @@ jobs:
             # Variáveis para deploy
             REPO_DIR="/home/repositories/crm_v2/frontend/"
             DEST_DIR_FRONTEND="/home/sistema/MULTI100OFICIAL-MULTI100-OFICIAL-u21/frontend/"
-            SERVICE_FRONTEND_NAME="frontends"
+            SERVICE_FRONTEND_NAME="frontend-2"
             
             echo -e "${BLUE}${BOLD}======= PARTE 3: DEPLOY DO FRONTEND =======${NC}"
             

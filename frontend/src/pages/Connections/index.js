@@ -59,6 +59,7 @@ import usePlans from "../../hooks/usePlans";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import ForbiddenPage from "../../components/ForbiddenPage";
 import { Can } from "../../components/Can";
+import useCompanySettings from "../../hooks/useSettings/companySettings";
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
@@ -171,6 +172,7 @@ const Connections = () => {
   };
   const [confirmModalInfo, setConfirmModalInfo] = useState(confirmationModalInitialState);
   const [planConfig, setPlanConfig] = useState(false);
+  const [companySettings, setCompanySettings] = useState(false);
 
   //   const socketManager = useContext(SocketContext);
   const { user, socket } = useContext(AuthContext);
@@ -178,11 +180,14 @@ const Connections = () => {
   const companyId = user.companyId;
 
   const { getPlanCompany } = usePlans();
+  const { getAll } = useCompanySettings();
 
   useEffect(() => {
     async function fetchData() {
       const planConfigs = await getPlanCompany(undefined, companyId);
+      const companySettings = await getAll(companyId);
       setPlanConfig(planConfigs)
+      setCompanySettings(companySettings);
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -538,6 +543,7 @@ const Connections = () => {
 
   return (
     <MainContainer>
+     
       <ConfirmationModal
         title={confirmModalInfo.title}
         open={confirmModalOpen}
@@ -614,75 +620,77 @@ const Connections = () => {
                               />
                               WhatsApp
                             </MenuItem>
-                            {/* WHATSAPP OFICIAL */}
-                            <MenuItem
-                              disabled={planConfig?.plan?.useWhatsappOfficial ? false : true}
-                              onClick={() => {
-                                handleOpenWhatsAppModal("whatsapp_oficial");
-                                popupState.close();
-                              }}
-                            >
-                              <WhatsApp
-                                fontSize="small"
-                                style={{
-                                  marginRight: "10px",
-                                  color: "#25D366",
-                                }}
-                              />
-                              WhatsApp Oficial
-                            </MenuItem>
-                            {/* FACEBOOK */}
-                            <FacebookLogin
-                              appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-                              autoLoad={false}
-                              fields="name,email,picture"
-                              version="9.0"
-                              scope={process.env.REACT_APP_REQUIRE_BUSINESS_MANAGEMENT?.toUpperCase() === "TRUE" ?
-                                "public_profile,pages_messaging,pages_show_list,pages_manage_metadata,pages_read_engagement,business_management"
-                                : "public_profile,pages_messaging,pages_show_list,pages_manage_metadata,pages_read_engagement"}
-                              callback={responseFacebook}
-                              render={(renderProps) => (
+                            {companySettings.allowMetaOficialApi &&
+                              (<>{/* WHATSAPP OFICIAL */}
                                 <MenuItem
-                                  disabled={planConfig?.plan?.useFacebook ? false : true}
-                                  onClick={renderProps.onClick}
+                                  disabled={planConfig?.plan?.useWhatsappOfficial ? false : true}
+                                  onClick={() => {
+                                    handleOpenWhatsAppModal("whatsapp_oficial");
+                                    popupState.close();
+                                  }}
                                 >
-                                  <Facebook
+                                  <WhatsApp
                                     fontSize="small"
                                     style={{
                                       marginRight: "10px",
-                                      color: "#3b5998",
+                                      color: "#25D366",
                                     }}
                                   />
-                                  Facebook
+                                  WhatsApp Oficial
                                 </MenuItem>
-                              )}
-                            />
-                            {/* INSTAGRAM */}
-                            <FacebookLogin
-                              appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-                              autoLoad={false}
-                              fields="name,email,picture"
-                              version="9.0"
-                              scope={process.env.REACT_APP_REQUIRE_BUSINESS_MANAGEMENT?.toUpperCase() === "TRUE" ?
-                                "public_profile,instagram_basic,instagram_manage_messages,pages_messaging,pages_show_list,pages_manage_metadata,pages_read_engagement,business_management"
-                                : "public_profile,instagram_basic,instagram_manage_messages,pages_messaging,pages_show_list,pages_manage_metadata,pages_read_engagement"}
-                              callback={responseInstagram}
-                              render={(renderProps) => (
-                                <MenuItem
-                                  disabled={planConfig?.plan?.useInstagram ? false : true}
-                                  onClick={renderProps.onClick}
-                                >
-                                  <Instagram
-                                    fontSize="small"
-                                    style={{
-                                      marginRight: "10px",
-                                      color: "#e1306c",
-                                    }}
-                                  />
-                                  Instagram
-                                </MenuItem>
-                              )}
-                            />
+                                {/* FACEBOOK */}
+                                <FacebookLogin
+                                  appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+                                  autoLoad={false}
+                                  fields="name,email,picture"
+                                  version="9.0"
+                                  scope={process.env.REACT_APP_REQUIRE_BUSINESS_MANAGEMENT?.toUpperCase() === "TRUE" ?
+                                    "public_profile,pages_messaging,pages_show_list,pages_manage_metadata,pages_read_engagement,business_management"
+                                    : "public_profile,pages_messaging,pages_show_list,pages_manage_metadata,pages_read_engagement"}
+                                  callback={responseFacebook}
+                                  render={(renderProps) => (
+                                    <MenuItem
+                                      disabled={planConfig?.plan?.useFacebook ? false : true}
+                                      onClick={renderProps.onClick}
+                                    >
+                                      <Facebook
+                                        fontSize="small"
+                                        style={{
+                                          marginRight: "10px",
+                                          color: "#3b5998",
+                                        }}
+                                      />
+                                      Facebook
+                                    </MenuItem>
+                                  )}
+                                />
+                                {/* INSTAGRAM */}
+                                <FacebookLogin
+                                  appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+                                  autoLoad={false}
+                                  fields="name,email,picture"
+                                  version="9.0"
+                                  scope={process.env.REACT_APP_REQUIRE_BUSINESS_MANAGEMENT?.toUpperCase() === "TRUE" ?
+                                    "public_profile,instagram_basic,instagram_manage_messages,pages_messaging,pages_show_list,pages_manage_metadata,pages_read_engagement,business_management"
+                                    : "public_profile,instagram_basic,instagram_manage_messages,pages_messaging,pages_show_list,pages_manage_metadata,pages_read_engagement"}
+                                  callback={responseInstagram}
+                                  render={(renderProps) => (
+                                    <MenuItem
+                                      disabled={planConfig?.plan?.useInstagram ? false : true}
+                                      onClick={renderProps.onClick}
+                                    >
+                                      <Instagram
+                                        fontSize="small"
+                                        style={{
+                                          marginRight: "10px",
+                                          color: "#e1306c",
+                                        }}
+                                      />
+                                      Instagram
+                                    </MenuItem>
+                                  )}
+                                />
+                              </>)}
                           </Menu>
                         </>
                       )}

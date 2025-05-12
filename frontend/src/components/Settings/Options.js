@@ -135,13 +135,17 @@ export default function Options(props) {
   const [directTicketsToWallets, setDirectTicketsToWallets] = useState(false)
   const [loadingDirectTicketsToWallets, setLoadingDirectTicketsToWallets] = useState(false)
 
+  //META OFICIAL API
+  const [allowMetaOficialApi, setAllowMetaOficialApi] = useState(false)
+  const [loadingAllowMetaOficialApi, setLoadingAllowMetaOficialApi] = useState(false)
+
   //MENSAGENS CUSTOMIZADAS
   const [transferMessage, setTransferMessage] = useState("");
   const [loadingTransferMessage, setLoadingTransferMessage] = useState(false);
 
   const [greetingAcceptedMessage, setGreetingAcceptedMessage] = useState("");
   const [loadingGreetingAcceptedMessage, setLoadingGreetingAcceptedMessage] = useState(false);
-  
+
   const [AcceptCallWhatsappMessage, setAcceptCallWhatsappMessage] = useState("");
   const [loadingAcceptCallWhatsappMessage, setLoadingAcceptCallWhatsappMessage] = useState(false);
 
@@ -174,33 +178,41 @@ export default function Options(props) {
 
 
   useEffect(() => {
+    const setters = {
+        userRating: setUserRating,
+        scheduleType: setScheduleType,
+        chatBotType: setChatBotType,
+        acceptCallWhatsapp: setAcceptCallWhatsapp,
+        userRandom: setUserRandom,
+        sendGreetingMessageOneQueues: setSendGreetingMessageOneQueues,
+        sendSignMessage: setSendSignMessage,
+        sendFarewellWaitingTicket: setSendFarewellWaitingTicket,
+        sendGreetingAccepted: setSendGreetingAccepted,
+        sendQueuePosition: setSendQueuePosition,
+        acceptAudioMessageContact: setAcceptAudioMessageContact,
+        enableLGPD: setEnableLGPD,
+        requiredTag: setRequiredTag,
+        lgpdDeleteMessage: setLGPDDeleteMessage,
+        lgpdHideNumber: setLGPDHideNumber,
+        lgpdConsent: setLGPDConsent,
+        lgpdMessage: setLGPDMessage,
+        sendMsgTransfTicket: setSettingsTransfTicket,
+        lgpdLink: setLGPDLink,
+        DirectTicketsToWallets: setDirectTicketsToWallets,
+        closeTicketOnTransfer: setCloseTicketOnTransfer,
+        transferMessage: setTransferMessage,
+        greetingAcceptedMessage: setGreetingAcceptedMessage,
+        AcceptCallWhatsappMessage: setAcceptCallWhatsappMessage,
+        sendQueuePositionMessage: setSendQueuePositionMessage,
+        showNotificationPending: setShowNotificationPending,
+        allowMetaOficialApi: setAllowMetaOficialApi,
+      };
     for (const [key, value] of Object.entries(settings)) {
-      if (key === "userRating") setUserRating(value);
-      if (key === "scheduleType") setScheduleType(value);
-      if (key === "chatBotType") setChatBotType(value);
-      if (key === "acceptCallWhatsapp") setAcceptCallWhatsapp(value);
-      if (key === "userRandom") setUserRandom(value);
-      if (key === "sendGreetingMessageOneQueues") setSendGreetingMessageOneQueues(value);
-      if (key === "sendSignMessage") setSendSignMessage(value);
-      if (key === "sendFarewellWaitingTicket") setSendFarewellWaitingTicket(value);
-      if (key === "sendGreetingAccepted") setSendGreetingAccepted(value);
-      if (key === "sendQueuePosition") setSendQueuePosition(value);
-      if (key === "acceptAudioMessageContact") setAcceptAudioMessageContact(value);
-      if (key === "enableLGPD") setEnableLGPD(value);
-      if (key === "requiredTag") setRequiredTag(value);
-      if (key === "lgpdDeleteMessage") setLGPDDeleteMessage(value)
-      if (key === "lgpdHideNumber") setLGPDHideNumber(value);
-      if (key === "lgpdConsent") setLGPDConsent(value);
-      if (key === "lgpdMessage") setLGPDMessage(value);
-      if (key === "sendMsgTransfTicket") setSettingsTransfTicket(value);
-      if (key === "lgpdLink") setLGPDLink(value);
-      if (key === "DirectTicketsToWallets") setDirectTicketsToWallets(value);
-      if (key === "closeTicketOnTransfer") setCloseTicketOnTransfer(value);
-      if (key === "transferMessage") setTransferMessage(value);
-      if (key === "greetingAcceptedMessage") setGreetingAcceptedMessage(value);
-      if (key === "AcceptCallWhatsappMessage") setAcceptCallWhatsappMessage(value);
-      if (key === "sendQueuePositionMessage") setSendQueuePositionMessage(value);
-      if (key === "showNotificationPending") setShowNotificationPending(value);
+      
+
+      if (setters[key]) {
+        setters[key](value);
+      }
 
     }
   }, [settings]);
@@ -309,6 +321,16 @@ export default function Options(props) {
     setLoadingShowNotificationPending(false);
   }
 
+  async function handleAllowMetaOficialApi(value) {
+    setAllowMetaOficialApi(value);
+    setLoadingAllowMetaOficialApi(true);
+    await update({
+      column: "allowMetaOficialApi",
+      data: value
+    });
+    setLoadingAllowMetaOficialApi(false);
+
+  }
   async function handleLGPDLink(value) {
     setLGPDLink(value);
     setLoadingLGPDLink(true);
@@ -889,6 +911,25 @@ export default function Options(props) {
             </FormHelperText>
           </FormControl>
         </Grid>
+
+        <Grid xs={12} sm={6} md={4} item>
+          <FormControl className={classes.selectContainer}>
+            <InputLabel id="allowMetaOficialApi-label"> {i18n.t("settings.settings.options.allowMetaOficialApi")}</InputLabel>
+            <Select
+              labelId="allowMetaOficialApi-label"
+              value={allowMetaOficialApi}
+              onChange={async (e) => {
+                handleAllowMetaOficialApi(e.target.value);
+              }}
+            >
+              <MenuItem value={false}>{i18n.t("settings.settings.options.disabled")}</MenuItem>
+              <MenuItem value={true}>{i18n.t("settings.settings.options.enabled")}</MenuItem>
+            </Select>
+            <FormHelperText>
+              {loadingAllowMetaOficialApi && i18n.t("settings.settings.options.updating")}
+            </FormHelperText>
+          </FormControl>
+        </Grid>
         {/* <Grid xs={12} sm={6} md={4} item>
           <FormControl className={classes.selectContainer}>
             <InputLabel id="DirectTicketsToWallets-label"> {i18n.t("settings.settings.options.DirectTicketsToWallets")}</InputLabel>
@@ -1126,8 +1167,8 @@ export default function Options(props) {
           </FormControl>
         </Grid>
 
-        
-              
+
+
       </Grid>
     </>
   );
