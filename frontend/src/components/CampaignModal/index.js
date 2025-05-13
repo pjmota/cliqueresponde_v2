@@ -504,10 +504,11 @@ const CampaignModal = ({
                         labelId="confirmation-selection-label"
                         id="confirmation"
                         name="confirmation"
+                        disabled
                         error={
                           touched.confirmation && Boolean(errors.confirmation)
                         }
-                        disabled={!campaignEditable}
+                        
                       >
                         <MenuItem value={false}>Desabilitada</MenuItem>
                         <MenuItem value={true}>Habilitada</MenuItem>
