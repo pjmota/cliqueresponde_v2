@@ -20,7 +20,8 @@ const useTickets = ({
   userFilter,
   sortTickets,
   searchOnMessages,
-  exceptionsIds
+  exceptionsIds,
+  notResponse
 }) => {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(false);
@@ -54,7 +55,8 @@ const useTickets = ({
                 statusFilter,
                 sortTickets,
                 searchOnMessages,
-                exceptionsIds
+                exceptionsIds,
+                notResponse
               },
             });
             

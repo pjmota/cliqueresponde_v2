@@ -55,6 +55,7 @@ interface Request {
   searchOnMessages?: string;
   contactNumber?: string;
   exceptionsIds?: string[];
+  notResponse?: string;
 }
 
 interface Response {
@@ -83,7 +84,8 @@ const ListTicketsService = async ({
   sortTickets = "DESC",
   searchOnMessages = "false",
   contactNumber,
-  exceptionsIds
+  exceptionsIds,
+  notResponse
 }: Request): Promise<Response> => {
   const user = await ShowUserService(userId, companyId);
   const userQueueIds = user.queues.map(queue => queue.id);
@@ -686,6 +688,17 @@ const ListTicketsService = async ({
     }
   }
 
+  if(notResponse === 'true') {
+    whereCondition = {
+      status: 'open',
+      companyId,
+      fromMe: false,
+      isGroup: false,
+      ...(user.profile === 'user' && { userId: user.id }) 
+    }    
+  }
+
+
   let parsedExceptionsIds = [];
 
   // Validar exceptionsIds
@@ -753,7 +766,7 @@ const ListTicketsService = async ({
       offset,
       order: [["updatedAt", sortTickets]],
       subQuery: false,
-      //...(status === 'group' ? {logging: console.log} : {})
+      ...(status === 'open' ? {logging: console.log} : {})
     });
 
     const newTickets = result.rows;

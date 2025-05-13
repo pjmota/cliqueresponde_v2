@@ -1149,10 +1149,11 @@ const TicketsManagerTabs = () => {
       </TabPanel>
       <TabPanel value={tab} name="notResponse" className={classes.ticketsWrapper}>
         <TicketsList
-          status="notResponse"
+          status="open"
           showAll={showAllTickets}
           selectedQueueIds={selectedQueueIds.length === 1 && selectedQueueIds[0] === "no-queue" ? null : selectedQueueIds}
           setTabOpen={setTabOpen}
+          notResponse={true}
         />
       </TabPanel>
       <TabPanel value={tab} name="search" className={classes.ticketsWrapper}>
