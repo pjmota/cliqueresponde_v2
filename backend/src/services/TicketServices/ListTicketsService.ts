@@ -766,7 +766,7 @@ const ListTicketsService = async ({
       offset,
       order: [["updatedAt", sortTickets]],
       subQuery: false,
-      ...(status === 'open' ? {logging: console.log} : {})
+      //...(status === 'open' ? {logging: console.log} : {})
     });
 
     const newTickets = result.rows;
