@@ -2123,23 +2123,26 @@ handleRandomUser();
 export async function startQueueProcess() {
   logger.info("Iniciando processamento de filas");
 
-  messageQueue.process("SendMessage", handleSendMessage);
+  const concurrency = Number(process.env.QUEUE_CONCURRENCY) || 5;
 
-  scheduleMonitor.process("Verify", handleVerifySchedules);
+  // Register queue processors with concurrency for better performance
+  messageQueue.process("SendMessage", concurrency, handleSendMessage);
 
-  sendScheduledMessages.process("SendMessage", handleSendScheduledMessage);
+  scheduleMonitor.process("Verify", concurrency, handleVerifySchedules);
 
-  campaignQueue.process("VerifyCampaignsDaatabase", handleVerifyCampaigns);
+  sendScheduledMessages.process("SendMessage", concurrency, handleSendScheduledMessage);
 
-  campaignQueue.process("ProcessCampaign", handleProcessCampaign);
+  campaignQueue.process("VerifyCampaignsDaatabase", concurrency, handleVerifyCampaigns);
 
-  campaignQueue.process("PrepareContact", handlePrepareContact);
+  campaignQueue.process("ProcessCampaign", concurrency, handleProcessCampaign);
 
-  campaignQueue.process("DispatchCampaign", handleDispatchCampaign);
+  campaignQueue.process("PrepareContact", concurrency, handlePrepareContact);
 
-  userMonitor.process("VerifyLoginStatus", handleLoginStatus);
+  campaignQueue.process("DispatchCampaign", concurrency, handleDispatchCampaign);
 
-  queueMonitor.process("VerifyQueueStatus", handleVerifyQueue);
+  userMonitor.process("VerifyLoginStatus", concurrency, handleLoginStatus);
+
+  queueMonitor.process("VerifyQueueStatus", concurrency, handleVerifyQueue);
 
   scheduleMonitor.add(
     "Verify",
