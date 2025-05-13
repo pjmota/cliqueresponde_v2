@@ -190,7 +190,7 @@ const DashboardTicketsHappeningsNotContinued = ({
                             display: "inline-block" 
                           }}
                         >
-                          {`${differenceInMinutes(new Date(), new Date(ticket.updatedAt))} ${i18n.t("dashboard.ticketsHappeningsNotContinuedModal.table.idleTimeColumnComplement")}`}
+                          {`${ticket?.tempoEmMinutos} ${i18n.t("dashboard.ticketsHappeningsNotContinuedModal.table.idleTimeColumnComplement")}`}
                         </TableCell>
                         <TableCell align="center" sx={{ whiteSpace: "nowrap", display: "inline-block" }}>{format(new Date(ticket.lastDate), 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                       </TableRow>
