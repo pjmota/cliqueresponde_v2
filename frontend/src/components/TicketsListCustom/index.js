@@ -226,6 +226,7 @@ const TicketsListCustom = (props) => {
     statusFilter,
     userFilter,
     sortTickets,
+    notResponse
   } = props;
 
   const classes = useStyles();
@@ -256,6 +257,7 @@ const TicketsListCustom = (props) => {
     statusFilter,
     sortTickets,
     searchOnMessages,
+    notResponse
   ]);
 
   const { tickets, hasMore, loading } = useTickets({
@@ -271,7 +273,8 @@ const TicketsListCustom = (props) => {
     statusFilter: JSON.stringify(statusFilter),
     userFilter,
     sortTickets,
-    exceptionsIds: JSON.stringify(exceptionsIds)
+    exceptionsIds: JSON.stringify(exceptionsIds),
+    notResponse
   });
 
   useEffect(() => {
