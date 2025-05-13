@@ -317,7 +317,10 @@ const CampaignsConfig = () => {
                         <MenuItem value={70}>60 segundos</MenuItem>
                         <MenuItem value={80}>80 segundos</MenuItem>
                         <MenuItem value={100}>100 segundos</MenuItem>
-                        <MenuItem value={120}>120 segundos</MenuItem>                                                `` ``
+                        <MenuItem value={120}>120 segundos</MenuItem>
+                        <MenuItem value={140}>140 segundos</MenuItem>  
+                        <MenuItem value={160}>160 segundos</MenuItem>  
+                        <MenuItem value={180}>180 segundos</MenuItem>                                                  `` ``
                       </Select>
                     </FormControl>
                   </Grid>
