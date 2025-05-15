@@ -1605,7 +1605,7 @@ export default async function handleRandomUser(param?, ticketId?, origin?) {
     WhatsappQueue?: WhatsappQueue; // Opcional para evitar erro se for undefined
   }
 
-  const queue = param?.WhatsappQueue.queueId as ParamType;
+  const queue = param?.WhatsappQueue.queueId as number;
   if (param) {
     setTimeout(async () => {
       await executing(queue, ticketId, origin);
