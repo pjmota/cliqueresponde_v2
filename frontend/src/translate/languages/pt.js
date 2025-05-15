@@ -1634,10 +1634,24 @@ const messages = {
         },
         buttons: {
           add: "Nova Lane",
+          transferTickets: "Transferir tickets para outra tag.",
+          editTag: "Editar lane",
+          deleteTag: "Deletar Lane"
         },
         toasts: {
           deleted: "Lane excluída com sucesso.",
         },
+        transferTicketforTagModal: {
+          title: "Transferir ticket",
+          label: {
+            currentTag: "Tag atual",
+            nextTag: "Próxima tag",
+          },
+          table: {
+            ticketId: "Ticket ID",
+            tagId: "Tag ID"
+          }
+        }
       },
 
       files: {

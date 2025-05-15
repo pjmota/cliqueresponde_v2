@@ -57,6 +57,7 @@ import UserPermission from "../models/UserPermission";
 import Permission from "../models/Permission";
 import AfterSales from "../models/AfterSales";
 import AfterSalesDetails from "../models/AfterSalesDetails";
+import LogTransferTicketsTag from "../models/LogTransferTicketsTag";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -121,7 +122,8 @@ const models = [
   UserPermission,
   Permission,
   AfterSales,
-  AfterSalesDetails
+  AfterSalesDetails,
+  LogTransferTicketsTag
 ];
 
 sequelize.addModels(models);

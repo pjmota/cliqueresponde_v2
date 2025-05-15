@@ -33,10 +33,11 @@ import TableRowSkeleton from "../../components/TableRowSkeleton";
 import TagModal from "../../components/TagModal";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import toastError from "../../errors/toastError";
-import { Chip } from "@material-ui/core";
+import { Chip, Tooltip } from "@material-ui/core";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import { MoreHoriz } from "@material-ui/icons";
+import { MoreHoriz, Transform } from "@material-ui/icons";
 import ContactTagListModal from "../../components/ContactTagListModal";
+import TransferTicketForTagModal from "../../components/TransferTicketForTagModal";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -87,6 +88,8 @@ const Tags = () => {
   const [searchParam, setSearchParam] = useState("");
   const [tags, dispatch] = useReducer(reducer, []);
   const [tagModalOpen, setTagModalOpen] = useState(false);
+  const [ticketTagParams, setTicketTagParams] = useState({})
+  const [ticketTagModalOpen, setTicketTagModalOpen] = useState(false);
   //const pageNumberRef = useRef(1);
 
   useEffect(() => {
@@ -187,6 +190,16 @@ const Tags = () => {
     }
   };
 
+  const handleTransferTicketForTag = async (params) => {
+console.log('params', params)
+    const {data} = await api.get(`/ticket-tags/`, {
+      params: { tagId: params.id },
+    })
+console.log('data', data)
+    setTicketTagParams({...params, ...data});
+    setTicketTagModalOpen(true);
+  };
+
   return (
     <MainContainer className={classes.mainContainer}>
       {contactModalOpen && (
@@ -211,6 +224,16 @@ const Tags = () => {
         tagId={selectedTag && selectedTag.id}
         kanban={0}
       />
+      {ticketTagModalOpen && (
+        <TransferTicketForTagModal
+          open={ticketTagModalOpen}
+          onClose={setTicketTagModalOpen}
+          title={i18n.t("tagsKanban.transferTicketforTagModal.title")}
+          ticketTag={ticketTagParams}
+          kanban={0}
+        >
+        </TransferTicketForTagModal>
+      )}
       <MainHeader>
         <Title>{i18n.t("tags.title")} ({tags.length})</Title>
         <MainHeaderButtonsWrapper>
@@ -296,6 +319,18 @@ const Tags = () => {
                     >
                       <DeleteOutlineIcon />
                     </IconButton>
+                    {/* <Tooltip placement="top" title={i18n.t("tagsKanban.buttons.transferTickets")}>
+                      <span>
+                        <IconButton 
+                          size="small" 
+                          onClick={() => {
+                            handleTransferTicketForTag(tag)
+                          }}
+                        >
+                          <Transform />
+                        </IconButton>
+                      </span>
+                    </Tooltip> */}
                   </TableCell>
                 </TableRow>
               ))}
