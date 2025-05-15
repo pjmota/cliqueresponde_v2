@@ -520,11 +520,11 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                   aria-label="disabled tabs example"
                 >
                   <Tab label={i18n.t("queueModal.title.queueData")} />
-                  {queue.ativarRoteador && (
-                    <Tab label={i18n.t("queueModal.rotation.title.rotation")} />
-                  )}
                   {schedulesEnabled && (
                     <Tab label={i18n.t("queueModal.title.text")} />
+                  )}
+                  {queue.ativarRoteador && (
+                    <Tab label={i18n.t("queueModal.rotation.title.rotation")} />
                   )}
                 </Tabs>
                 {tab === 0 && (
@@ -1491,7 +1491,7 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                     </div>
                   </Box>
                 )}
-                {tab === 1 && (
+                {tab === 2 && (
                   <>
                     {/* <Typography variant="subtitle1">
                       {i18n.t("queueModal.rotation.title.rotation")}
@@ -1542,7 +1542,7 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                     </DialogContent>
                   </>
                 )}
-                {tab === 2 && schedulesEnabled && (
+                {tab === 1 && schedulesEnabled && (
                   <Paper style={{ padding: 20 }}>
                     <SchedulesForm
                       loading={false}
