@@ -15,6 +15,7 @@ import ContactTag from "../models/ContactTag";
 import logger from "../utils/logger";
 import SyncTagLanesService from "../services/TagServices/SyncTagLaneService";
 import Tag from "../models/Tag";
+import ChangeTagTickets from "../services/TagServices/ChangeTagTicketsService";
 
 type IndexQuery = {
   searchParam?: string;
@@ -231,3 +232,19 @@ export const removeContactTag = async (
 
   return res.status(200).json({ message: "Tag deleted" });
 };
+
+export const changeTagsforTickets = async (
+  req: Request,
+  res: Response
+) => {
+
+  const ticketIds = req.body.tickets;
+  const currentTag = req.body.currentTag;
+  const screenInfo = req.body.screenInfo;
+  const user = req.user;
+  const nextTag = Number(req.params.tagId)
+
+  const changed = await ChangeTagTickets({ticketIds, user, nextTag, currentTag, screenInfo})
+
+  return res.status(200).json({ message: `Tickets atualizados com a tag ${nextTag}` });
+} 

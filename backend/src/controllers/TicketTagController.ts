@@ -14,8 +14,12 @@ type IndexQuery = {
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId, tagId } = req.query as IndexQuery;
-  
-  const ticketTags = await TicketTag.findAll({ where: { ticketId, tagId} });
+
+  const where: any = {};
+  if (ticketId) where.ticketId = ticketId;
+  if (tagId) where.tagId = tagId;
+
+  const ticketTags = await TicketTag.findAll({ where });
   
   return res.json({ ticketTags});
 };
