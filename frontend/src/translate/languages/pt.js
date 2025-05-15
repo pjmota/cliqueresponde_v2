@@ -530,6 +530,7 @@ const messages = {
           color: "Cor",
           orderQueue: "Ordem da fila (Bot)",
           rotate: "Rodízio",
+          rotateInfo:"Crie a fila para configurar Rodizio",
           timeRotate: "Tempo de Rodízio",
           greetingMessage: "Mensagem de saudação",
           complationMessage: "Mensagem de conclusão",

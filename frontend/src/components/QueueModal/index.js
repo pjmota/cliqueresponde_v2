@@ -4,14 +4,14 @@ import * as Yup from "yup";
 import { Formik, FieldArray, Form, Field } from "formik";
 import { toast } from "react-toastify";
 
-import { 
-  FormControl, 
-  FormControlLabel, 
-  Grid, 
-  InputLabel, 
-  MenuItem, 
-  Select, 
-  Tab, 
+import {
+  FormControl,
+  FormControlLabel,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Tab,
   Tabs,
   Paper,
   Table,
@@ -288,7 +288,7 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
         integrationId: "",
         fileListId: "",
         closeTicket: false,
-        lastSequence:  0
+        lastSequence: 0
       });
     };
   }, [queueId, open]);
@@ -356,10 +356,28 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
   }, [isNameEdit, activeStep]);
 
   useEffect(() => {
+    resetAllState();
     setSelectedQueueId([1])
   }, [])
 
+  const resetAllState = () => {
+    setQueue(initialState);
+    setActiveStep(null);
+    setSelectedQueue(null);
+    setConfirmModalOpen(false);
+    setIsStepContent(true);
+    setIsNamedEdit(null);
+    setGreetingMessageEdit(null);
+    setTab(0);
+    setColorPickerModalOpen(false);
+    setSchedules(initialStateSchedule);
+    setRotationId(null);
+  };
+
+
+
   const handleClose = () => {
+    resetAllState();
     onClose();
     setIsNamedEdit(null);
     setActiveStep(null);
@@ -466,9 +484,9 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
   //     </Dialog>
   //   )
   // }
-  
+
   const activateRotation = (isActivated) => {
-    setQueue({...queue, ativarRoteador: isActivated})
+    setQueue({ ...queue, ativarRoteador: isActivated })
   };
 
   return (
@@ -520,11 +538,11 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                   aria-label="disabled tabs example"
                 >
                   <Tab label={i18n.t("queueModal.title.queueData")} />
-                  {queue.ativarRoteador && (
-                    <Tab label={i18n.t("queueModal.rotation.title.rotation")} />
-                  )}
                   {schedulesEnabled && (
                     <Tab label={i18n.t("queueModal.title.text")} />
+                  )}
+                  {queue.ativarRoteador && (
+                    <Tab label={i18n.t("queueModal.rotation.title.rotation")} />
                   )}
                 </Tabs>
                 {tab === 0 && (
@@ -607,13 +625,14 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                       }
                       label={i18n.t("queueModal.form.closeTicket")}
                     />
-                    <div>
+                    <div style={{ display: "flex", alignItems: "center",gap: "10px" }}>
                       <FormControlLabel
                         control={
                           <Field
                             as={Switch}
                             color="primary"
                             name="ativarRoteador"
+                            disabled={!queueId}
                             checked={values.ativarRoteador}
                             onChange={(e) => {
                               setFieldValue("ativarRoteador", e.target.checked); // Atualiza o Formik com o novo valor
@@ -646,6 +665,9 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                         <MenuItem value="45">45 minutos</MenuItem>
                         <MenuItem value="60">60 minutos</MenuItem>
                       </Field>
+                     {!queueId && ( <Typography variant="subtitle1" gutterBottom color="textPrimary">
+                        {i18n.t("queueModal.form.rotateInfo")}
+                      </Typography>)}
                     </div>
                     <div>
                       {showIntegrations && (
@@ -778,14 +800,13 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                                 values.chatbots.length > 0 &&
                                 values.chatbots.map((info, index) => (
                                   <Step
-                                    key={`${
-                                      info.id ? info.id : index
-                                    }-chatbots`}
+                                    key={`${info.id ? info.id : index
+                                      }-chatbots`}
                                     onClick={() => setActiveStep(index)}
                                   >
                                     <StepLabel key={`${info.id}-chatbots`}>
                                       {isNameEdit !== index &&
-                                      queue.chatbots[index]?.name ? (
+                                        queue.chatbots[index]?.name ? (
                                         <div
                                           className={classes.greetingMessage}
                                           variant="body1"
@@ -869,8 +890,8 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                                                       ?.queueType
                                                   )
                                                 }
-                                                // helpertext={touched?.chatbots?.[index]?.queueType && errors?.chatbots?.[index]?.queueType}
-                                                // value={`chatbots[${index}].queueType`}
+                                              // helpertext={touched?.chatbots?.[index]?.queueType && errors?.chatbots?.[index]?.queueType}
+                                              // value={`chatbots[${index}].queueType`}
                                               >
                                                 <MenuItem value={"text"}>
                                                   {i18n.t(
@@ -967,23 +988,23 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
 
                                               {!queue.chatbots[index]
                                                 ?.greetingMessage && (
-                                                <CustomToolTip
-                                                  title={i18n.t(
-                                                    "queueModal.bot.toolTipMessageTitle"
-                                                  )}
-                                                  content={i18n.t(
-                                                    "queueModal.bot.toolTipMessageContent"
-                                                  )}
-                                                >
-                                                  <HelpOutlineOutlinedIcon
-                                                    color="secondary"
-                                                    style={{
-                                                      marginLeft: "4px",
-                                                    }}
-                                                    fontSize="small"
-                                                  />
-                                                </CustomToolTip>
-                                              )}
+                                                  <CustomToolTip
+                                                    title={i18n.t(
+                                                      "queueModal.bot.toolTipMessageTitle"
+                                                    )}
+                                                    content={i18n.t(
+                                                      "queueModal.bot.toolTipMessageContent"
+                                                    )}
+                                                  >
+                                                    <HelpOutlineOutlinedIcon
+                                                      color="secondary"
+                                                      style={{
+                                                        marginLeft: "4px",
+                                                      }}
+                                                      fontSize="small"
+                                                    />
+                                                  </CustomToolTip>
+                                                )}
 
                                               <IconButton
                                                 size="small"
@@ -1003,460 +1024,460 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                                               >
                                                 {queue.chatbots[index]
                                                   .queueType === "text" && (
-                                                  <Grid xs={12} md={12} item>
-                                                    <Field
-                                                      as={TextField}
-                                                      name={`chatbots[${index}].greetingMessage`}
-                                                      label={i18n.t(
-                                                        "queueModal.form.message"
-                                                      )}
-                                                      variant="outlined"
-                                                      margin="dense"
-                                                      fullWidth
-                                                      multiline
-                                                      error={
-                                                        touched.greetingMessage &&
-                                                        Boolean(
+                                                    <Grid xs={12} md={12} item>
+                                                      <Field
+                                                        as={TextField}
+                                                        name={`chatbots[${index}].greetingMessage`}
+                                                        label={i18n.t(
+                                                          "queueModal.form.message"
+                                                        )}
+                                                        variant="outlined"
+                                                        margin="dense"
+                                                        fullWidth
+                                                        multiline
+                                                        error={
+                                                          touched.greetingMessage &&
+                                                          Boolean(
+                                                            errors.greetingMessage
+                                                          )
+                                                        }
+                                                        helperText={
+                                                          touched.greetingMessage &&
                                                           errors.greetingMessage
-                                                        )
-                                                      }
-                                                      helperText={
-                                                        touched.greetingMessage &&
-                                                        errors.greetingMessage
-                                                      }
-                                                      className={
-                                                        classes.textField
-                                                      }
-                                                    />
-                                                  </Grid>
-                                                )}
+                                                        }
+                                                        className={
+                                                          classes.textField
+                                                        }
+                                                      />
+                                                    </Grid>
+                                                  )}
                                               </div>
                                               {queue.chatbots[index]
                                                 .queueType === "queue" && (
-                                                <>
-                                                  <Grid xs={12} md={12} item>
-                                                    <Field
-                                                      as={TextField}
-                                                      name={`chatbots[${index}].greetingMessage`}
-                                                      label={i18n.t(
-                                                        "queueModal.form.message"
-                                                      )}
-                                                      variant="outlined"
-                                                      margin="dense"
-                                                      fullWidth
-                                                      multiline
-                                                      error={
-                                                        touched.greetingMessage &&
-                                                        Boolean(
-                                                          errors.greetingMessage
-                                                        )
-                                                      }
-                                                      helperText={
-                                                        touched.greetingMessage &&
-                                                        errors.greetingMessage
-                                                      }
-                                                      className={
-                                                        classes.textField
-                                                      }
-                                                    />
-                                                  </Grid>
-                                                  <Grid xs={12} md={8} item>
-                                                    <FormControl
-                                                      variant="outlined"
-                                                      margin="dense"
-                                                      className={
-                                                        classes.FormControl
-                                                      }
-                                                      fullWidth
-                                                    >
-                                                      <InputLabel id="queue-selection-label">
-                                                        {i18n.t(
-                                                          "queueModal.form.queue"
-                                                        )}
-                                                      </InputLabel>
+                                                  <>
+                                                    <Grid xs={12} md={12} item>
                                                       <Field
-                                                        as={Select}
-                                                        name={`chatbots[${index}].optQueueId`}
+                                                        as={TextField}
+                                                        name={`chatbots[${index}].greetingMessage`}
+                                                        label={i18n.t(
+                                                          "queueModal.form.message"
+                                                        )}
+                                                        variant="outlined"
+                                                        margin="dense"
+                                                        fullWidth
+                                                        multiline
                                                         error={
-                                                          touched?.chatbots?.[
-                                                            index
-                                                          ]?.optQueueId &&
+                                                          touched.greetingMessage &&
                                                           Boolean(
+                                                            errors.greetingMessage
+                                                          )
+                                                        }
+                                                        helperText={
+                                                          touched.greetingMessage &&
+                                                          errors.greetingMessage
+                                                        }
+                                                        className={
+                                                          classes.textField
+                                                        }
+                                                      />
+                                                    </Grid>
+                                                    <Grid xs={12} md={8} item>
+                                                      <FormControl
+                                                        variant="outlined"
+                                                        margin="dense"
+                                                        className={
+                                                          classes.FormControl
+                                                        }
+                                                        fullWidth
+                                                      >
+                                                        <InputLabel id="queue-selection-label">
+                                                          {i18n.t(
+                                                            "queueModal.form.queue"
+                                                          )}
+                                                        </InputLabel>
+                                                        <Field
+                                                          as={Select}
+                                                          name={`chatbots[${index}].optQueueId`}
+                                                          error={
+                                                            touched?.chatbots?.[
+                                                              index
+                                                            ]?.optQueueId &&
+                                                            Boolean(
+                                                              errors?.chatbots?.[
+                                                                index
+                                                              ]?.optQueueId
+                                                            )
+                                                          }
+                                                          helpertext={
+                                                            touched?.chatbots?.[
+                                                              index
+                                                            ]?.optQueueId &&
                                                             errors?.chatbots?.[
                                                               index
                                                             ]?.optQueueId
-                                                          )
-                                                        }
-                                                        helpertext={
-                                                          touched?.chatbots?.[
-                                                            index
-                                                          ]?.optQueueId &&
-                                                          errors?.chatbots?.[
-                                                            index
-                                                          ]?.optQueueId
-                                                        }
-                                                        // value={`chatbots[${index}].optQueueId`}
-                                                        className={
-                                                          classes.textField1
-                                                        }
-                                                      >
-                                                        {queues.map((queue) => (
-                                                          <MenuItem
-                                                            key={queue.id}
-                                                            value={queue.id}
-                                                          >
-                                                            {queue.name}
-                                                          </MenuItem>
-                                                        ))}
-                                                      </Field>
-                                                    </FormControl>
-                                                  </Grid>
-                                                </>
-                                              )}
+                                                          }
+                                                          // value={`chatbots[${index}].optQueueId`}
+                                                          className={
+                                                            classes.textField1
+                                                          }
+                                                        >
+                                                          {queues.map((queue) => (
+                                                            <MenuItem
+                                                              key={queue.id}
+                                                              value={queue.id}
+                                                            >
+                                                              {queue.name}
+                                                            </MenuItem>
+                                                          ))}
+                                                        </Field>
+                                                      </FormControl>
+                                                    </Grid>
+                                                  </>
+                                                )}
                                               {queue.chatbots[index]
                                                 .queueType === "attendent" && (
-                                                <>
-                                                  <Grid xs={12} md={12} item>
-                                                    <Field
-                                                      as={TextField}
-                                                      name={`chatbots[${index}].greetingMessage`}
-                                                      label={i18n.t(
-                                                        "queueModal.form.message"
-                                                      )}
-                                                      variant="outlined"
-                                                      margin="dense"
-                                                      fullWidth
-                                                      multiline
-                                                      error={
-                                                        touched.greetingMessage &&
-                                                        Boolean(
-                                                          errors.greetingMessage
-                                                        )
-                                                      }
-                                                      helperText={
-                                                        touched.greetingMessage &&
-                                                        errors.greetingMessage
-                                                      }
-                                                      className={
-                                                        classes.textField
-                                                      }
-                                                    />
-                                                  </Grid>
-
-                                                  <Grid xs={12} md={4} item>
-                                                    <Autocomplete
-                                                      style={{
-                                                        marginTop: "8px",
-                                                      }}
-                                                      variant="outlined"
-                                                      margin="dense"
-                                                      getOptionLabel={(
-                                                        option
-                                                      ) => `${option.name}`}
-                                                      value={
-                                                        queue.chatbots[index]
-                                                          .user
-                                                      }
-                                                      onChange={(
-                                                        e,
-                                                        newValue
-                                                      ) => {
-                                                        if (newValue != null) {
-                                                          setFieldValue(
-                                                            `chatbots[${index}].optUserId`,
-                                                            newValue.id
-                                                          );
-                                                        } else {
-                                                          setFieldValue(
-                                                            `chatbots[${index}].optUserId`,
-                                                            null
-                                                          );
-                                                        }
-                                                        if (
-                                                          newValue != null &&
-                                                          Array.isArray(
-                                                            newValue.queues
+                                                  <>
+                                                    <Grid xs={12} md={12} item>
+                                                      <Field
+                                                        as={TextField}
+                                                        name={`chatbots[${index}].greetingMessage`}
+                                                        label={i18n.t(
+                                                          "queueModal.form.message"
+                                                        )}
+                                                        variant="outlined"
+                                                        margin="dense"
+                                                        fullWidth
+                                                        multiline
+                                                        error={
+                                                          touched.greetingMessage &&
+                                                          Boolean(
+                                                            errors.greetingMessage
                                                           )
-                                                        ) {
+                                                        }
+                                                        helperText={
+                                                          touched.greetingMessage &&
+                                                          errors.greetingMessage
+                                                        }
+                                                        className={
+                                                          classes.textField
+                                                        }
+                                                      />
+                                                    </Grid>
+
+                                                    <Grid xs={12} md={4} item>
+                                                      <Autocomplete
+                                                        style={{
+                                                          marginTop: "8px",
+                                                        }}
+                                                        variant="outlined"
+                                                        margin="dense"
+                                                        getOptionLabel={(
+                                                          option
+                                                        ) => `${option.name}`}
+                                                        value={
+                                                          queue.chatbots[index]
+                                                            .user
+                                                        }
+                                                        onChange={(
+                                                          e,
+                                                          newValue
+                                                        ) => {
+                                                          if (newValue != null) {
+                                                            setFieldValue(
+                                                              `chatbots[${index}].optUserId`,
+                                                              newValue.id
+                                                            );
+                                                          } else {
+                                                            setFieldValue(
+                                                              `chatbots[${index}].optUserId`,
+                                                              null
+                                                            );
+                                                          }
                                                           if (
-                                                            newValue.queues
-                                                              .length === 1
+                                                            newValue != null &&
+                                                            Array.isArray(
+                                                              newValue.queues
+                                                            )
                                                           ) {
+                                                            if (
+                                                              newValue.queues
+                                                                .length === 1
+                                                            ) {
+                                                              setSelectedQueueOption(
+                                                                newValue.queues[0]
+                                                                  .id
+                                                              );
+                                                              setFieldValue(
+                                                                `chatbots[${index}].optQueueId`,
+                                                                newValue.queues[0]
+                                                                  .id
+                                                              );
+                                                            }
+                                                            setQueues(
+                                                              newValue.queues
+                                                            );
+                                                          } else {
+                                                            setQueues(allQueues);
                                                             setSelectedQueueOption(
-                                                              newValue.queues[0]
-                                                                .id
+                                                              ""
+                                                            );
+                                                          }
+                                                        }}
+                                                        options={userOptions}
+                                                        filterOptions={
+                                                          filterOptions
+                                                        }
+                                                        freeSolo
+                                                        fullWidth
+                                                        autoHighlight
+                                                        noOptionsText={i18n.t(
+                                                          "transferTicketModal.noOptions"
+                                                        )}
+                                                        loading={loading}
+                                                        size="small"
+                                                        renderOption={(
+                                                          option
+                                                        ) => (
+                                                          <span>
+                                                            {" "}
+                                                            <UserStatusIcon
+                                                              user={option}
+                                                            />{" "}
+                                                            {option.name}
+                                                          </span>
+                                                        )}
+                                                        renderInput={(params) => (
+                                                          <TextField
+                                                            {...params}
+                                                            label={i18n.t(
+                                                              "transferTicketModal.fieldLabel"
+                                                            )}
+                                                            variant="outlined"
+                                                            onChange={(e) =>
+                                                              setSearchParam(
+                                                                e.target.value
+                                                              )
+                                                            }
+                                                            InputProps={{
+                                                              ...params.InputProps,
+                                                              endAdornment: (
+                                                                <Fragment>
+                                                                  {loading ? (
+                                                                    <CircularProgress
+                                                                      color="inherit"
+                                                                      size={20}
+                                                                    />
+                                                                  ) : null}
+                                                                  {
+                                                                    params
+                                                                      .InputProps
+                                                                      .endAdornment
+                                                                  }
+                                                                </Fragment>
+                                                              ),
+                                                            }}
+                                                          />
+                                                        )}
+                                                      />
+                                                    </Grid>
+                                                    <Grid xs={12} md={4} item>
+                                                      <FormControl
+                                                        variant="outlined"
+                                                        margin="dense"
+                                                        fullWidth
+                                                        className={
+                                                          classes.formControl
+                                                        }
+                                                      >
+                                                        <InputLabel>
+                                                          {i18n.t(
+                                                            "transferTicketModal.fieldQueueLabel"
+                                                          )}
+                                                        </InputLabel>
+                                                        <Select
+                                                          value={
+                                                            selectedQueueOption
+                                                          }
+                                                          onChange={(e) => {
+                                                            setSelectedQueueOption(
+                                                              e.target.value
                                                             );
                                                             setFieldValue(
                                                               `chatbots[${index}].optQueueId`,
-                                                              newValue.queues[0]
-                                                                .id
-                                                            );
-                                                          }
-                                                          setQueues(
-                                                            newValue.queues
-                                                          );
-                                                        } else {
-                                                          setQueues(allQueues);
-                                                          setSelectedQueueOption(
-                                                            ""
-                                                          );
-                                                        }
-                                                      }}
-                                                      options={userOptions}
-                                                      filterOptions={
-                                                        filterOptions
-                                                      }
-                                                      freeSolo
-                                                      fullWidth
-                                                      autoHighlight
-                                                      noOptionsText={i18n.t(
-                                                        "transferTicketModal.noOptions"
-                                                      )}
-                                                      loading={loading}
-                                                      size="small"
-                                                      renderOption={(
-                                                        option
-                                                      ) => (
-                                                        <span>
-                                                          {" "}
-                                                          <UserStatusIcon
-                                                            user={option}
-                                                          />{" "}
-                                                          {option.name}
-                                                        </span>
-                                                      )}
-                                                      renderInput={(params) => (
-                                                        <TextField
-                                                          {...params}
-                                                          label={i18n.t(
-                                                            "transferTicketModal.fieldLabel"
-                                                          )}
-                                                          variant="outlined"
-                                                          onChange={(e) =>
-                                                            setSearchParam(
                                                               e.target.value
-                                                            )
-                                                          }
-                                                          InputProps={{
-                                                            ...params.InputProps,
-                                                            endAdornment: (
-                                                              <Fragment>
-                                                                {loading ? (
-                                                                  <CircularProgress
-                                                                    color="inherit"
-                                                                    size={20}
-                                                                  />
-                                                                ) : null}
-                                                                {
-                                                                  params
-                                                                    .InputProps
-                                                                    .endAdornment
-                                                                }
-                                                              </Fragment>
-                                                            ),
+                                                            );
                                                           }}
-                                                        />
-                                                      )}
-                                                    />
-                                                  </Grid>
-                                                  <Grid xs={12} md={4} item>
-                                                    <FormControl
-                                                      variant="outlined"
-                                                      margin="dense"
-                                                      fullWidth
-                                                      className={
-                                                        classes.formControl
-                                                      }
-                                                    >
-                                                      <InputLabel>
-                                                        {i18n.t(
-                                                          "transferTicketModal.fieldQueueLabel"
-                                                        )}
-                                                      </InputLabel>
-                                                      <Select
-                                                        value={
-                                                          selectedQueueOption
-                                                        }
-                                                        onChange={(e) => {
-                                                          setSelectedQueueOption(
-                                                            e.target.value
-                                                          );
-                                                          setFieldValue(
-                                                            `chatbots[${index}].optQueueId`,
-                                                            e.target.value
-                                                          );
-                                                        }}
-                                                        label={i18n.t(
-                                                          "transferTicketModal.fieldQueuePlaceholder"
-                                                        )}
-                                                      >
-                                                        {queues.map((queue) => (
-                                                          <MenuItem
-                                                            key={queue.id}
-                                                            value={queue.id}
-                                                          >
-                                                            {queue.name}
-                                                          </MenuItem>
-                                                        ))}
-                                                      </Select>
-                                                    </FormControl>
-                                                  </Grid>
-                                                </>
-                                              )}
+                                                          label={i18n.t(
+                                                            "transferTicketModal.fieldQueuePlaceholder"
+                                                          )}
+                                                        >
+                                                          {queues.map((queue) => (
+                                                            <MenuItem
+                                                              key={queue.id}
+                                                              value={queue.id}
+                                                            >
+                                                              {queue.name}
+                                                            </MenuItem>
+                                                          ))}
+                                                        </Select>
+                                                      </FormControl>
+                                                    </Grid>
+                                                  </>
+                                                )}
                                               {queue.chatbots[index]
                                                 .queueType ===
                                                 "integration" && (
-                                                <>
-                                                  <Grid xs={12} md={12} item>
-                                                    <Field
-                                                      as={TextField}
-                                                      name={`chatbots[${index}].greetingMessage`}
-                                                      label={i18n.t(
-                                                        "queueModal.form.message"
-                                                      )}
-                                                      variant="outlined"
-                                                      margin="dense"
-                                                      fullWidth
-                                                      multiline
-                                                      error={
-                                                        touched.greetingMessage &&
-                                                        Boolean(
-                                                          errors.greetingMessage
-                                                        )
-                                                      }
-                                                      helperText={
-                                                        touched.greetingMessage &&
-                                                        errors.greetingMessage
-                                                      }
-                                                      className={
-                                                        classes.textField
-                                                      }
-                                                    />
-                                                  </Grid>
-                                                  <Grid xs={12} md={8} item>
-                                                    <FormControl
-                                                      variant="outlined"
-                                                      margin="dense"
-                                                      className={
-                                                        classes.FormControl
-                                                      }
-                                                      fullWidth
-                                                    >
-                                                      <InputLabel id="optIntegrationId-selection-label">
-                                                        {i18n.t(
-                                                          "queueModal.form.integration"
-                                                        )}
-                                                      </InputLabel>
+                                                  <>
+                                                    <Grid xs={12} md={12} item>
                                                       <Field
-                                                        as={Select}
-                                                        name={`chatbots[${index}].optIntegrationId`}
+                                                        as={TextField}
+                                                        name={`chatbots[${index}].greetingMessage`}
+                                                        label={i18n.t(
+                                                          "queueModal.form.message"
+                                                        )}
+                                                        variant="outlined"
+                                                        margin="dense"
+                                                        fullWidth
+                                                        multiline
                                                         error={
-                                                          touched?.chatbots?.[
-                                                            index
-                                                          ]?.optIntegrationId &&
+                                                          touched.greetingMessage &&
                                                           Boolean(
+                                                            errors.greetingMessage
+                                                          )
+                                                        }
+                                                        helperText={
+                                                          touched.greetingMessage &&
+                                                          errors.greetingMessage
+                                                        }
+                                                        className={
+                                                          classes.textField
+                                                        }
+                                                      />
+                                                    </Grid>
+                                                    <Grid xs={12} md={8} item>
+                                                      <FormControl
+                                                        variant="outlined"
+                                                        margin="dense"
+                                                        className={
+                                                          classes.FormControl
+                                                        }
+                                                        fullWidth
+                                                      >
+                                                        <InputLabel id="optIntegrationId-selection-label">
+                                                          {i18n.t(
+                                                            "queueModal.form.integration"
+                                                          )}
+                                                        </InputLabel>
+                                                        <Field
+                                                          as={Select}
+                                                          name={`chatbots[${index}].optIntegrationId`}
+                                                          error={
+                                                            touched?.chatbots?.[
+                                                              index
+                                                            ]?.optIntegrationId &&
+                                                            Boolean(
+                                                              errors?.chatbots?.[
+                                                                index
+                                                              ]?.optIntegrationId
+                                                            )
+                                                          }
+                                                          helpertext={
+                                                            touched?.chatbots?.[
+                                                              index
+                                                            ]?.optIntegrationId &&
                                                             errors?.chatbots?.[
                                                               index
                                                             ]?.optIntegrationId
-                                                          )
-                                                        }
-                                                        helpertext={
-                                                          touched?.chatbots?.[
-                                                            index
-                                                          ]?.optIntegrationId &&
-                                                          errors?.chatbots?.[
-                                                            index
-                                                          ]?.optIntegrationId
-                                                        }
-                                                        // value={`chatbots[${index}].optQueueId`}
-                                                        className={
-                                                          classes.textField1
-                                                        }
-                                                      >
-                                                        {integrations.map(
-                                                          (integration) => (
-                                                            <MenuItem
-                                                              key={
-                                                                integration.id
-                                                              }
-                                                              value={
-                                                                integration.id
-                                                              }
-                                                            >
-                                                              {integration.name}
-                                                            </MenuItem>
-                                                          )
-                                                        )}
-                                                      </Field>
-                                                    </FormControl>
-                                                  </Grid>
-                                                </>
-                                              )}
+                                                          }
+                                                          // value={`chatbots[${index}].optQueueId`}
+                                                          className={
+                                                            classes.textField1
+                                                          }
+                                                        >
+                                                          {integrations.map(
+                                                            (integration) => (
+                                                              <MenuItem
+                                                                key={
+                                                                  integration.id
+                                                                }
+                                                                value={
+                                                                  integration.id
+                                                                }
+                                                              >
+                                                                {integration.name}
+                                                              </MenuItem>
+                                                            )
+                                                          )}
+                                                        </Field>
+                                                      </FormControl>
+                                                    </Grid>
+                                                  </>
+                                                )}
                                               {queue.chatbots[index]
                                                 .queueType === "file" && (
-                                                <>
-                                                  <Grid xs={12} md={12} item>
-                                                    <Field
-                                                      as={TextField}
-                                                      name={`chatbots[${index}].greetingMessage`}
-                                                      label={i18n.t(
-                                                        "queueModal.form.message"
-                                                      )}
-                                                      variant="outlined"
-                                                      margin="dense"
-                                                      fullWidth
-                                                      multiline
-                                                      error={
-                                                        touched.greetingMessage &&
-                                                        Boolean(
+                                                  <>
+                                                    <Grid xs={12} md={12} item>
+                                                      <Field
+                                                        as={TextField}
+                                                        name={`chatbots[${index}].greetingMessage`}
+                                                        label={i18n.t(
+                                                          "queueModal.form.message"
+                                                        )}
+                                                        variant="outlined"
+                                                        margin="dense"
+                                                        fullWidth
+                                                        multiline
+                                                        error={
+                                                          touched.greetingMessage &&
+                                                          Boolean(
+                                                            errors.greetingMessage
+                                                          )
+                                                        }
+                                                        helperText={
+                                                          touched.greetingMessage &&
                                                           errors.greetingMessage
+                                                        }
+                                                        className={
+                                                          classes.textField
+                                                        }
+                                                      />
+                                                    </Grid>
+                                                    <InputLabel>
+                                                      {"Selecione um Arquivo"}
+                                                    </InputLabel>
+                                                    <Field
+                                                      as={Select}
+                                                      name={`chatbots[${index}].optFileId`}
+                                                      error={
+                                                        touched?.chatbots?.[index]
+                                                          ?.optFileId &&
+                                                        Boolean(
+                                                          errors?.chatbots?.[
+                                                            index
+                                                          ]?.optFileId
                                                         )
                                                       }
-                                                      helperText={
-                                                        touched.greetingMessage &&
-                                                        errors.greetingMessage
+                                                      helpertext={
+                                                        touched?.chatbots?.[index]
+                                                          ?.optFileId &&
+                                                        errors?.chatbots?.[index]
+                                                          ?.optFileId
                                                       }
                                                       className={
-                                                        classes.textField
+                                                        classes.textField1
                                                       }
-                                                    />
-                                                  </Grid>
-                                                  <InputLabel>
-                                                    {"Selecione um Arquivo"}
-                                                  </InputLabel>
-                                                  <Field
-                                                    as={Select}
-                                                    name={`chatbots[${index}].optFileId`}
-                                                    error={
-                                                      touched?.chatbots?.[index]
-                                                        ?.optFileId &&
-                                                      Boolean(
-                                                        errors?.chatbots?.[
-                                                          index
-                                                        ]?.optFileId
-                                                      )
-                                                    }
-                                                    helpertext={
-                                                      touched?.chatbots?.[index]
-                                                        ?.optFileId &&
-                                                      errors?.chatbots?.[index]
-                                                        ?.optFileId
-                                                    }
-                                                    className={
-                                                      classes.textField1
-                                                    }
-                                                  >
-                                                    {file.map((f) => (
-                                                      <MenuItem
-                                                        key={f.id}
-                                                        value={f.id}
-                                                      >
-                                                        {f.name}
-                                                      </MenuItem>
-                                                    ))}
-                                                  </Field>
-                                                </>
-                                              )}
+                                                    >
+                                                      {file.map((f) => (
+                                                        <MenuItem
+                                                          key={f.id}
+                                                          value={f.id}
+                                                        >
+                                                          {f.name}
+                                                        </MenuItem>
+                                                      ))}
+                                                    </Field>
+                                                  </>
+                                                )}
                                               <IconButton
                                                 size="small"
                                                 onClick={() =>
@@ -1491,7 +1512,7 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                     </div>
                   </Box>
                 )}
-                {tab === 1 && (
+                {tab === 2 && (
                   <>
                     {/* <Typography variant="subtitle1">
                       {i18n.t("queueModal.rotation.title.rotation")}
@@ -1527,7 +1548,7 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                               variant="outlined"
                               margin="dense"
                               inputProps={{ min: 1 }}
-                              //disabled
+                            //disabled
                             />
                           </Grid>
                           <Grid item sm={6}>
@@ -1542,7 +1563,7 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                     </DialogContent>
                   </>
                 )}
-                {tab === 2 && schedulesEnabled && (
+                {tab === 1 && schedulesEnabled && (
                   <Paper style={{ padding: 20 }}>
                     <SchedulesForm
                       loading={false}
@@ -1554,32 +1575,32 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                 )}
               </DialogContent>
               <DialogActions>
-                  <Button
-                    onClick={handleClose}
-                    // color="secondary"
-                    disabled={isSubmitting}
-                  // variant="outlined"
-                  >
-                    {i18n.t("queueModal.buttons.cancel")}
-                  </Button>
-                  <Button
-                    type="submit"
-                    color="primary"
-                    disabled={isSubmitting}
-                    variant="contained"
-                    className={classes.btnWrapper}
-                  >
-                    {queueId
-                      ? `${i18n.t("queueModal.buttons.okEdit")}`
-                      : `${i18n.t("queueModal.buttons.okAdd")}`}
-                    {isSubmitting && (
-                      <CircularProgress
-                        size={24}
-                        className={classes.buttonProgress}
-                      />
-                    )}
-                  </Button>
-                </DialogActions>
+                <Button
+                  onClick={handleClose}
+                  // color="secondary"
+                  disabled={isSubmitting}
+                // variant="outlined"
+                >
+                  {i18n.t("queueModal.buttons.cancel")}
+                </Button>
+                <Button
+                  type="submit"
+                  color="primary"
+                  disabled={isSubmitting}
+                  variant="contained"
+                  className={classes.btnWrapper}
+                >
+                  {queueId
+                    ? `${i18n.t("queueModal.buttons.okEdit")}`
+                    : `${i18n.t("queueModal.buttons.okAdd")}`}
+                  {isSubmitting && (
+                    <CircularProgress
+                      size={24}
+                      className={classes.buttonProgress}
+                    />
+                  )}
+                </Button>
+              </DialogActions>
             </Form>
           )}
         </Formik>
