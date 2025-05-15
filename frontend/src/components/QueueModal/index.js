@@ -538,12 +538,12 @@ const QueueModal = ({ open, onClose, queueId, onEdit }) => {
                   aria-label="disabled tabs example"
                 >
                   <Tab label={i18n.t("queueModal.title.queueData")} />
-                  {schedulesEnabled && (
-                    <Tab label={i18n.t("queueModal.title.text")} />
-                  )}
-                  {queue.ativarRoteador && (
-                    <Tab label={i18n.t("queueModal.rotation.title.rotation")} />
-                  )}
+                  
+                    <Tab label={i18n.t("queueModal.title.text")}  disabled={!schedulesEnabled}/>
+                  
+                  
+                    <Tab label={i18n.t("queueModal.rotation.title.rotation")}  disabled={!queue.ativarRoteador}/>
+                
                 </Tabs>
                 {tab === 0 && (
                   <Box marginTop={"1rem"}>
