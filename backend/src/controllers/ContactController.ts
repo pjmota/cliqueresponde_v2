@@ -34,6 +34,7 @@ import Tag from "../models/Tag";
 import ContactTag from "../models/ContactTag";
 import logger from "../utils/logger";
 import UpsertContactCustomFieldBasedOnUserService from "../services/ContactCustomFieldService/UpsertContactCustomFieldBasedOnUserService";
+import FindAllContactForTags from "../services/ContactServices/FindAllContactForTagService";
 
 type IndexQuery = {
   searchParam: string;
@@ -470,6 +471,17 @@ export const getContactTags = async (
 
   return res.status(200).json({ tags: tags });
 
+}
+
+export const getAllContactForTags = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const tagId = req.query.tagId as string;
+
+  const contactTags = await FindAllContactForTags({ tagId });
+
+  return res.status(200).json(contactTags);
 }
 
 export const toggleDisableBot = async (req: Request, res: Response): Promise<Response> => {

@@ -62,6 +62,9 @@ class LogTransferTicketsTag extends Model<LogTransferTicketsTag> {
   
   @Column
   screenInfo: string;
+
+  @Column
+  contacts: string;
 }
 
 export default LogTransferTicketsTag;

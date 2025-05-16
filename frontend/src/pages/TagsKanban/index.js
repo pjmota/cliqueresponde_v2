@@ -207,7 +207,14 @@ const Tags = () => {
   };
 
   const handleTransferTicketForTag = (params) => {
-    setTicketTagParams(params);
+
+    const tagTickets = {
+      id: params.id,
+      name: params.name,
+      data: params.ticketTags
+    }
+
+    setTicketTagParams(tagTickets);
     setTicketTagModalOpen(true);
   };
 
@@ -234,8 +241,8 @@ const Tags = () => {
         <TransferTicketForTagModal
           open={ticketTagModalOpen}
           onClose={setTicketTagModalOpen}
-          title={i18n.t("tagsKanban.transferTicketforTagModal.title")}
-          ticketTag={ticketTagParams}
+          title={i18n.t("tagsKanban.transferTicketforTagModal.titleLane")}
+          paramData={ticketTagParams}
           kanban={1}
         >
         </TransferTicketForTagModal>
