@@ -238,13 +238,15 @@ export const changeTagsforTickets = async (
   res: Response
 ) => {
 
-  const ticketIds = req.body.tickets;
+  const paramsId = req.body.paramsId;
   const currentTag = req.body.currentTag;
-  const screenInfo = req.body.screenInfo;
+  const screenInfo = Number(req.body.screenInfo);
   const user = req.user;
   const nextTag = Number(req.params.tagId)
 
-  const changed = await ChangeTagTickets({ticketIds, user, nextTag, currentTag, screenInfo})
+  const changed = await ChangeTagTickets({paramsId, user, nextTag, currentTag, screenInfo})
 
-  return res.status(200).json({ message: `Tickets atualizados com a tag ${nextTag}` });
+  const message = screenInfo === 1 ? `Tickets atualizados com a tag ${nextTag}` : `Contatos atualizados com a tag ${nextTag}`
+
+  return res.status(200).json({ message: message });
 } 

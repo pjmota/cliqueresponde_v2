@@ -25,6 +25,7 @@ contactRoutes.get("/contacts/profile/:number", isAuth, ContactController.getCont
 contactRoutes.put("/contacts/block/:contactId", isAuth, ContactController.blockUnblock);
 contactRoutes.post("/contacts/upload", isAuth, upload.array("file"), ContactController.upload);
 contactRoutes.get("/contactTags/:contactId", isAuth, ContactController.getContactTags);
+contactRoutes.get("/contactTags", isAuth, ContactController.getAllContactForTags);
 contactRoutes.put("/contacts/toggleDisableBot/:contactId", isAuth, ContactController.toggleDisableBot);
 contactRoutes.put("/contact-wallet/:contactId", isAuth, ContactController.updateContactWallet);
 
