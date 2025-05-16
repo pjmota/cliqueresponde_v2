@@ -1641,14 +1641,21 @@ const messages = {
           deleted: "Lane excluída com sucesso.",
         },
         transferTicketforTagModal: {
-          title: "Transferir ticket",
+          titleLane: "Transferir tickets",
+          titleTag: "Transferir Contatos",
           label: {
             currentTag: "Tag atual",
             nextTag: "Próxima tag",
           },
           table: {
             ticketId: "Ticket ID",
+            contactId: "Contato ID",
             tagId: "Tag ID"
+          },
+          confirmationModal: {
+            titleLane: "Transferir tickets para a tag:",
+            titleTag: "Transferir contatos para a tag:",
+            message: "Tem certeza que deseja transferir? Esta ação não poderá ser revertida.",
           }
         }
       },

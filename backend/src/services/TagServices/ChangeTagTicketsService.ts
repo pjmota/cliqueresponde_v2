@@ -3,13 +3,14 @@ import TicketTag from "../../models/TicketTag";
 import logger from "../../utils/logger";
 import Company from "../../models/Company";
 import LogTransferTicketsTag from "../../models/LogTransferTicketsTag";
+import ContactTag from "../../models/ContactTag";
 
 interface Request {
-  ticketIds?: string;
+  paramsId?: string;
   user: User;
   nextTag: number;
   currentTag: number;
-  screenInfo?: string;
+  screenInfo?: number;
 }
 
 interface User {
@@ -20,33 +21,46 @@ interface User {
 
 
 const ChangeTagTickets = async ({
-  ticketIds,
+  paramsId,
   user,
   nextTag,
   currentTag,
   screenInfo
 }: Request) => {
 
-  const ticketIdArray = ticketIds.split(",").map(id => parseInt(id.trim(), 10));
+  const idsArray = paramsId.split(",").map(id => parseInt(id.trim(), 10));
 
-  await TicketTag.update(
-    { tagId: nextTag },
-    {
-      where: {
-        ticketId: {
-          [Op.in]: ticketIdArray
+  if(screenInfo === 1) {
+    await TicketTag.update(
+      { tagId: nextTag },
+      {
+        where: {
+          ticketId: {
+            [Op.in]: idsArray
+          }
         }
       }
-    }
-  );
+    );
+  } else {
+    await ContactTag.update(
+      { tagId: nextTag },
+      {
+        where: {
+          contactId: {
+            [Op.in]: idsArray
+          }
+        }
+      }
+    )
+  }
 
   await LogTransferTicketsTag.create({
     currentTagId: currentTag,
     nextTagId: nextTag,
-    tickets: ticketIds,
+    ...(screenInfo === 1 ? {tickets: paramsId} : {contacts: paramsId}),
     userId: user.id,
     companyId: user.companyId,
-    screenInfo
+    screenInfo: screenInfo === 1 ? 'Lane page' : 'Tag page'
   });
 
 }

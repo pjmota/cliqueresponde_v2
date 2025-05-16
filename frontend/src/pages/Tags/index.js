@@ -42,6 +42,8 @@ import TransferTicketForTagModal from "../../components/TransferTicketForTagModa
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOAD_TAGS":
+      return action.payload;
+    case "LOAD_MORE_TAGS":
       return [...state, ...action.payload];
     case "UPDATE_TAGS":
       const tag = action.payload;
@@ -88,18 +90,23 @@ const Tags = () => {
   const [searchParam, setSearchParam] = useState("");
   const [tags, dispatch] = useReducer(reducer, []);
   const [tagModalOpen, setTagModalOpen] = useState(false);
-  const [ticketTagParams, setTicketTagParams] = useState({})
-  const [ticketTagModalOpen, setTicketTagModalOpen] = useState(false);
+  const [contactTagParams, setContactTagParams] = useState({})
+  const [contactTagModalOpen, setContactTagModalOpen] = useState(false);
   //const pageNumberRef = useRef(1);
 
   useEffect(() => {
+    if (contactTagModalOpen) return;
+
     const delayDebounceFn = setTimeout(() => {
       const fetchMoreTags = async () => {
         try {
           const { data } = await api.get("/tags/", {
             params: { searchParam, pageNumber, kanban: 0 },
           });
-          dispatch({ type: "LOAD_TAGS", payload: data.tags });
+
+          const actionType = pageNumber === 1 ? "LOAD_TAGS" : "LOAD_MORE_TAGS";
+
+          dispatch({ type: actionType, payload: data.tags });
           setHasMore(data.hasMore);
           setLoading(false);
         } catch (err) {
@@ -113,7 +120,8 @@ const Tags = () => {
       }
     }, 300);
     return () => clearTimeout(delayDebounceFn);
-  }, [searchParam, pageNumber]);
+  }, [searchParam, pageNumber, contactTagModalOpen]);
+  
 
   useEffect(() => {
     const onCompanyTags = (data) => {
@@ -190,14 +198,19 @@ const Tags = () => {
     }
   };
 
-  const handleTransferTicketForTag = async (params) => {
-console.log('params', params)
-    const {data} = await api.get(`/ticket-tags/`, {
+  const handleTransferContactForTag = async (params) => {
+    const {data} = await api.get(`/contactTags/`, {
       params: { tagId: params.id },
     })
-console.log('data', data)
-    setTicketTagParams({...params, ...data});
-    setTicketTagModalOpen(true);
+
+    const tagContacts = {
+      id: params.id,
+      name: params.name,
+      data
+    }
+
+    setContactTagParams(tagContacts);
+    setContactTagModalOpen(true);
   };
 
   return (
@@ -224,12 +237,12 @@ console.log('data', data)
         tagId={selectedTag && selectedTag.id}
         kanban={0}
       />
-      {ticketTagModalOpen && (
+      {contactTagModalOpen && (
         <TransferTicketForTagModal
-          open={ticketTagModalOpen}
-          onClose={setTicketTagModalOpen}
-          title={i18n.t("tagsKanban.transferTicketforTagModal.title")}
-          ticketTag={ticketTagParams}
+          open={contactTagModalOpen}
+          onClose={setContactTagModalOpen}
+          title={i18n.t("tagsKanban.transferTicketforTagModal.titleTag")}
+          paramData={contactTagParams}
           kanban={0}
         >
         </TransferTicketForTagModal>
@@ -319,18 +332,19 @@ console.log('data', data)
                     >
                       <DeleteOutlineIcon />
                     </IconButton>
-                    {/* <Tooltip placement="top" title={i18n.t("tagsKanban.buttons.transferTickets")}>
+                    <Tooltip placement="top" title={i18n.t("tagsKanban.buttons.transferTickets")}>
                       <span>
                         <IconButton 
                           size="small" 
                           onClick={() => {
-                            handleTransferTicketForTag(tag)
+                            handleTransferContactForTag(tag)
                           }}
+                          disabled={!tag?.contacts?.length}
                         >
                           <Transform />
                         </IconButton>
                       </span>
-                    </Tooltip> */}
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}
