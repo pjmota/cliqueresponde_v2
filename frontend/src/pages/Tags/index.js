@@ -33,14 +33,17 @@ import TableRowSkeleton from "../../components/TableRowSkeleton";
 import TagModal from "../../components/TagModal";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import toastError from "../../errors/toastError";
-import { Chip } from "@material-ui/core";
+import { Chip, Tooltip } from "@material-ui/core";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import { MoreHoriz } from "@material-ui/icons";
+import { MoreHoriz, Transform } from "@material-ui/icons";
 import ContactTagListModal from "../../components/ContactTagListModal";
+import TransferTicketForTagModal from "../../components/TransferTicketForTagModal";
 
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOAD_TAGS":
+      return action.payload;
+    case "LOAD_MORE_TAGS":
       return [...state, ...action.payload];
     case "UPDATE_TAGS":
       const tag = action.payload;
@@ -87,16 +90,23 @@ const Tags = () => {
   const [searchParam, setSearchParam] = useState("");
   const [tags, dispatch] = useReducer(reducer, []);
   const [tagModalOpen, setTagModalOpen] = useState(false);
+  const [contactTagParams, setContactTagParams] = useState({})
+  const [contactTagModalOpen, setContactTagModalOpen] = useState(false);
   //const pageNumberRef = useRef(1);
 
   useEffect(() => {
+    if (contactTagModalOpen) return;
+
     const delayDebounceFn = setTimeout(() => {
       const fetchMoreTags = async () => {
         try {
           const { data } = await api.get("/tags/", {
             params: { searchParam, pageNumber, kanban: 0 },
           });
-          dispatch({ type: "LOAD_TAGS", payload: data.tags });
+
+          const actionType = pageNumber === 1 ? "LOAD_TAGS" : "LOAD_MORE_TAGS";
+
+          dispatch({ type: actionType, payload: data.tags });
           setHasMore(data.hasMore);
           setLoading(false);
         } catch (err) {
@@ -110,7 +120,8 @@ const Tags = () => {
       }
     }, 300);
     return () => clearTimeout(delayDebounceFn);
-  }, [searchParam, pageNumber]);
+  }, [searchParam, pageNumber, contactTagModalOpen]);
+  
 
   useEffect(() => {
     const onCompanyTags = (data) => {
@@ -187,6 +198,21 @@ const Tags = () => {
     }
   };
 
+  const handleTransferContactForTag = async (params) => {
+    const {data} = await api.get(`/contactTags/`, {
+      params: { tagId: params.id },
+    })
+
+    const tagContacts = {
+      id: params.id,
+      name: params.name,
+      data
+    }
+
+    setContactTagParams(tagContacts);
+    setContactTagModalOpen(true);
+  };
+
   return (
     <MainContainer className={classes.mainContainer}>
       {contactModalOpen && (
@@ -211,6 +237,16 @@ const Tags = () => {
         tagId={selectedTag && selectedTag.id}
         kanban={0}
       />
+      {contactTagModalOpen && (
+        <TransferTicketForTagModal
+          open={contactTagModalOpen}
+          onClose={setContactTagModalOpen}
+          title={i18n.t("tagsKanban.transferTicketforTagModal.titleTag")}
+          paramData={contactTagParams}
+          kanban={0}
+        >
+        </TransferTicketForTagModal>
+      )}
       <MainHeader>
         <Title>{i18n.t("tags.title")} ({tags.length})</Title>
         <MainHeaderButtonsWrapper>
@@ -296,6 +332,19 @@ const Tags = () => {
                     >
                       <DeleteOutlineIcon />
                     </IconButton>
+                    <Tooltip placement="top" title={i18n.t("tagsKanban.buttons.transferTickets")}>
+                      <span>
+                        <IconButton 
+                          size="small" 
+                          onClick={() => {
+                            handleTransferContactForTag(tag)
+                          }}
+                          disabled={!tag?.contacts?.length}
+                        >
+                          <Transform />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}

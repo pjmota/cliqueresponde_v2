@@ -20,7 +20,7 @@ const messages = {
           login: "Já tem uma conta? Entre!",
         },
       },
-      
+
       login: {
         title: "Login",
         form: {
@@ -530,6 +530,7 @@ const messages = {
           color: "Cor",
           orderQueue: "Ordem da fila (Bot)",
           rotate: "Rodízio",
+          rotateInfo:"Crie a fila para configurar Rodizio",
           timeRotate: "Tempo de Rodízio",
           greetingMessage: "Mensagem de saudação",
           complationMessage: "Mensagem de conclusão",
@@ -569,7 +570,7 @@ const messages = {
           selectIntegration: "Selecione uma Integração",
           addOptions: "Adicionar opções",
         },
-        rotation:{
+        rotation: {
           toolTipTitle: "Adicione opções para configurar rodízio",
           toolTip:
             "O rodízio seguirá a ordem configurada.",
@@ -724,9 +725,9 @@ const messages = {
           allowAfterSales: "Visualiza Pós-Venda",
           allowAfterSalesEnable: "Habilitado",
           allowAfterSalesDisable: "Desabilitado",
-		      isAfterSalesManager: "Coordenador Pós-Venda",
-		      isAfterSalesManagerEnable: "Habilitado",
-		      isAfterSalesManagerDisable: "Desabilitado",
+          isAfterSalesManager: "Coordenador Pós-Venda",
+          isAfterSalesManagerEnable: "Habilitado",
+          isAfterSalesManagerDisable: "Desabilitado",
           contactCustomFields: "Campos personalizados",
         },
         tabs: {
@@ -880,6 +881,7 @@ const messages = {
           no: "NÃO",
           open: "Abertos",
           resolverd: "Resolvidos",
+          notResponse: "Sem respostas",
         },
         toasts: {
           deleted: "O atendimento que você estava foi deletado.",
@@ -1628,14 +1630,35 @@ const messages = {
           tickets: "Tickets",
           actions: "Ações",
           id: "Id da tag",
-          sequence:"Sequencia"
+          sequence: "Sequencia"
         },
         buttons: {
           add: "Nova Lane",
+          transferTickets: "Transferir tickets para outra tag.",
+          editTag: "Editar lane",
+          deleteTag: "Deletar Lane"
         },
         toasts: {
           deleted: "Lane excluída com sucesso.",
         },
+        transferTicketforTagModal: {
+          titleLane: "Transferir tickets",
+          titleTag: "Transferir Contatos",
+          label: {
+            currentTag: "Tag atual",
+            nextTag: "Próxima tag",
+          },
+          table: {
+            ticketId: "Ticket ID",
+            contactId: "Contato ID",
+            tagId: "Tag ID"
+          },
+          confirmationModal: {
+            titleLane: "Transferir tickets para a tag:",
+            titleTag: "Transferir contatos para a tag:",
+            message: "Tem certeza que deseja transferir? Esta ação não poderá ser revertida.",
+          }
+        }
       },
 
       files: {
@@ -1717,7 +1740,9 @@ const messages = {
             requiredTag: "Tag obrigatoria para fechar ticket",
             closeTicketOnTransfer: "Fechar ticket ao transferir para outra fila",
             DirectTicketsToWallets: "Mover automaticamente cliente para carteira",
-            showNotificationPending: "Mostrar notificação para tickets pendentes"
+            showNotificationPending: "Mostrar notificação para tickets pendentes",
+            allowMetaOficialApi:
+              "Permitir uso da API oficial da Meta para envio e recebimento mensagens",
           },
           customMessages: {
             sendQueuePositionMessage: "Mensagem de posição na fila",

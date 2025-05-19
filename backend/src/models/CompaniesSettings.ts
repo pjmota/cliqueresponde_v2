@@ -13,7 +13,8 @@ import {
     AutoIncrement,
     ForeignKey,
     BelongsTo,
-    Default
+    Default,
+    AllowNull
   } from "sequelize-typescript";
   import Company from "./Company";
  
@@ -125,6 +126,11 @@ import {
 
     @Column
     showNotificationPending: boolean;
+
+    @AllowNull(true)
+    @Default(false)
+    @Column
+    allowMetaOficialApi: boolean;
   }
   
   export default CompaniesSettings;

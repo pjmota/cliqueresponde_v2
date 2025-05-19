@@ -20,4 +20,6 @@ tagRoutes.put("/tags/:tagId", isAuth, TagController.update);
 tagRoutes.delete("/tags/:tagId", isAuth, TagController.remove);
 tagRoutes.delete("/tags-contacts/:tagId/:contactId", isAuth, TagController.removeContactTag);
 
+tagRoutes.put("/tags/kanban/:tagId", isAuth, TagController.changeTagsforTickets);
+
 export default tagRoutes;
