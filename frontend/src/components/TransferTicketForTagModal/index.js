@@ -134,7 +134,7 @@ const TransferTicketForTagModal = ({
                       <TableCell align="center">
                         {ticket.ticketId ? ticket.ticketId : ticket.contactId}
                       </TableCell>
-                      <TableCell align="center">{ticket.tagId}</TableCell>
+                      <TableCell align="center">{ticket.tagId ? ticket.tagId : 'Sem tag definida'}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
