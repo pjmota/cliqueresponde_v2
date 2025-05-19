@@ -31,16 +31,25 @@ const ChangeTagTickets = async ({
   const idsArray = paramsId.split(",").map(id => parseInt(id.trim(), 10));
 
   if(screenInfo === 1) {
-    await TicketTag.update(
-      { tagId: nextTag },
-      {
-        where: {
-          ticketId: {
-            [Op.in]: idsArray
+    if(currentTag === null) {
+      idsArray.forEach(async id => {
+        await TicketTag.create({
+          ticketId: id,
+          tagId: nextTag
+        })
+      });
+    } else {
+      await TicketTag.update(
+        { tagId: nextTag },
+        {
+          where: {
+            ticketId: {
+              [Op.in]: idsArray
+            }
           }
         }
-      }
-    );
+      );
+    }
   } else {
     await ContactTag.update(
       { tagId: nextTag },
