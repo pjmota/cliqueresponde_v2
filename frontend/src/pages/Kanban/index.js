@@ -719,22 +719,52 @@ const Kanban = () => {
 
   const CustomLaneHeader = ({ title, label, id, ...props }) => {
     const classes = useStyles();
-    
     const tag = tags.find((t) => t.id.toString() === id); // Encontre a tag correspondente ao ID da lane
-
-    const filteredTickets = tickets.filter((ticket) => {
+    
+    /* const filteredTickets = tickets.filter((ticket) => {
+      console.log('id', id, ticket)
       const tagIds = ticket.tags && Array.isArray(ticket.tags) ? ticket.tags.map((t) => t.id) : [];
       return tagIds.includes(Number(id));
     }).map((ticket) => ({
       ...ticket,
       ticketId: ticket.id,
       tagId: Number(id),
+    })); */
+
+    const filteredTickets = tickets
+    .filter((ticket) => {
+      if (id === "lane0") {
+        return ticket.tags && Array.isArray(ticket.tags) && ticket.tags.length === 0;
+      }
+      const tagIds = ticket.tags && Array.isArray(ticket.tags) ? ticket.tags.map((t) => t.id) : [];
+      return tagIds.includes(Number(id));
+    })
+    .map((ticket) => ({
+      ...ticket,
+      ticketId: ticket.id,
+      tagId: id === "lane0" ? null : Number(id),
     }));
+
+    let colorIcon = '';
+
+    if(tag === undefined) {
+      if(filteredTickets?.length === 0) {
+        colorIcon = '#ffffff3d'
+      } else {
+        colorIcon = 'black'
+      }
+    } else {
+      if(!filteredTickets?.length){
+        colorIcon = '#ffffff3d'
+      } else {
+        colorIcon = 'white'
+      }
+    }
   
     return (
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 8px' }}>
         <span>{title}</span>
-        {id !== 'lane0' && tag ? (
+        {/* {id !== 'lane0' && tag ? ( */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
             <span>{label}</span>
             <Tooltip placement="top" title={i18n.t("tagsKanban.buttons.transferTickets")}>
@@ -742,25 +772,23 @@ const Kanban = () => {
                 <IconButton 
                   size="small" 
                   onClick={() => {
-
-                    handleTransferTicketsForTag({...tag, filteredTickets});
+                    handleTransferTicketsForTag({...(tag === undefined ? {name: 'Em aberto', id: null} : {tag}), filteredTickets});
                   }}
-                  disabled={!filteredTickets?.length}
+                  disabled={tag !== undefined && !filteredTickets?.length || tag === undefined && !filteredTickets?.length}
                 >
-                  <Transform style={{ color: !filteredTickets?.length ? '#ffffff3d' : 'white' }} />
+                  <Transform style={{ color: colorIcon }} />
                 </IconButton>
               </span>
             </Tooltip>
           </div>
-        ) : (
+        {/* ) : (
           <span>{label}</span>
-        )}
+        )} */}
       </div>
     );
   };
 
   const handleTransferTicketsForTag = (params) => {
-    
     const tagTickets = {
       id: params.id,
       name: params.name,
