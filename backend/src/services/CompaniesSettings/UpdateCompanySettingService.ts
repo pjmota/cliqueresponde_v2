@@ -5,6 +5,7 @@
  */
 import sequelize from "../../database";
 import CompaniesSettings from "../../models/CompaniesSettings";
+import logger from "../../utils/logger";
 
 type Params = {
   companyId: number,
@@ -13,6 +14,8 @@ type Params = {
 };
 
 const UpdateCompanySettingsService = async ({companyId, column, data}:Params): Promise<any> => {
+
+  logger.info(`REQUEST: Atualizando configuração da empresa ${companyId} - ${column} - ${data}`);
 
   const [results, metadata] = await sequelize.query(`UPDATE "CompaniesSettings" SET "${column}"='${data}' WHERE "companyId"=${companyId}`)
 

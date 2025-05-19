@@ -29,7 +29,8 @@ export default async function getHappeningsNotContinued(
         t."queueId",
         q."name" as "queueName",
         q."color" as "queueColor",
-        max(m."createdAt") as "lastDate"
+        max(m."createdAt") as "lastDate",
+        CEIL(EXTRACT(EPOCH FROM (NOW() - MAX(m."createdAt")))/60) AS "tempoEmMinutos"
       from
         "Tickets" t
       join "Messages" m on
@@ -56,8 +57,9 @@ export default async function getHappeningsNotContinued(
         c."number",
         t."updatedAt",
         u."name"
-      order by t."updatedAt" asc
-    `  
+      order by "tempoEmMinutos" DESC
+    `
+
   const happeningsNotContinued: DataReturn[] = await sequelize.query(
     query,
     { 

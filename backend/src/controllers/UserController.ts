@@ -111,10 +111,10 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 
   if (!companyUser) {
 
-    const dataNowMoreTwoDays = new Date();
-    dataNowMoreTwoDays.setDate(dataNowMoreTwoDays.getDate() + 3);
+    const dataNow = new Date();
+    dataNow.setDate(dataNow.getDate() + 7);
 
-    const date = dataNowMoreTwoDays.toISOString().split("T")[0];
+    const date = dataNow.toISOString().split("T")[0];
 
     const companyData = {
       name: companyName,
